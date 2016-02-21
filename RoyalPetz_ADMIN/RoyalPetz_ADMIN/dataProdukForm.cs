@@ -17,6 +17,7 @@ namespace RoyalPetz_ADMIN
     {
         private int originModuleID = 0;
         private int selectedProductID = 0;
+        private stokPecahBarangForm parentForm;
 
         private Data_Access DS = new Data_Access();
 
@@ -30,6 +31,18 @@ namespace RoyalPetz_ADMIN
             InitializeComponent();
 
             originModuleID = moduleID;
+
+            // accessed from other form other than Master -> Data Produk
+            // it means that this form is only displayed for browsing / searching purpose only
+            newButton.Visible = false;
+        }
+
+        public dataProdukForm(int moduleID, stokPecahBarangForm thisParentForm)
+        {
+            InitializeComponent();
+
+            originModuleID = moduleID;
+            parentForm = thisParentForm;
 
             // accessed from other form other than Master -> Data Produk
             // it means that this form is only displayed for browsing / searching purpose only
@@ -51,6 +64,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.BROWSE_STOK_PECAH_BARANG:
+                    parentForm.setNewSelectedProductID(selectedProductID);
                     this.Close();
                     break;
 
