@@ -50,7 +50,8 @@ namespace RoyalPetz_ADMIN
         public const int EDIT_SUPPLIER = 214;
         public const int NEW_PRODUK = 215;
         public const int EDIT_PRODUK = 216;
-
+        public const int NEW_REQUEST_ORDER = 217;
+        public const int EDIT_REQUEST_ORDER = 218;
 
     }
 }

@@ -29,21 +29,16 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.dataMutasiBarangGridView = new System.Windows.Forms.DataGridView();
-            this.noMutasi = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tujuanMutasi = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.asalMutasi = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tanggalMutasi = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.totalMutasi = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataRequestOrderGridView = new System.Windows.Forms.DataGridView();
             this.newButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataMutasiBarangGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataMutasiBarangGridView
+            // dataRequestOrderGridView
             // 
-            this.dataMutasiBarangGridView.AllowUserToAddRows = false;
-            this.dataMutasiBarangGridView.AllowUserToDeleteRows = false;
-            this.dataMutasiBarangGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
+            this.dataRequestOrderGridView.AllowUserToAddRows = false;
+            this.dataRequestOrderGridView.AllowUserToDeleteRows = false;
+            this.dataRequestOrderGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -51,52 +46,14 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataMutasiBarangGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataMutasiBarangGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataMutasiBarangGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.noMutasi,
-            this.tujuanMutasi,
-            this.asalMutasi,
-            this.tanggalMutasi,
-            this.totalMutasi});
-            this.dataMutasiBarangGridView.Location = new System.Drawing.Point(0, 50);
-            this.dataMutasiBarangGridView.Name = "dataMutasiBarangGridView";
-            this.dataMutasiBarangGridView.RowHeadersVisible = false;
-            this.dataMutasiBarangGridView.Size = new System.Drawing.Size(938, 496);
-            this.dataMutasiBarangGridView.TabIndex = 33;
-            this.dataMutasiBarangGridView.DoubleClick += new System.EventHandler(this.dataSalesDataGridView_DoubleClick);
-            // 
-            // noMutasi
-            // 
-            this.noMutasi.HeaderText = "NO MUTASI";
-            this.noMutasi.Name = "noMutasi";
-            this.noMutasi.ReadOnly = true;
-            this.noMutasi.Width = 180;
-            // 
-            // tujuanMutasi
-            // 
-            this.tujuanMutasi.HeaderText = "TUJUAN MUTASI";
-            this.tujuanMutasi.Name = "tujuanMutasi";
-            this.tujuanMutasi.Width = 180;
-            // 
-            // asalMutasi
-            // 
-            this.asalMutasi.HeaderText = "ASAL MUTASI";
-            this.asalMutasi.Name = "asalMutasi";
-            this.asalMutasi.Width = 180;
-            // 
-            // tanggalMutasi
-            // 
-            this.tanggalMutasi.HeaderText = "TANGGAL MUTASI";
-            this.tanggalMutasi.Name = "tanggalMutasi";
-            this.tanggalMutasi.ReadOnly = true;
-            this.tanggalMutasi.Width = 180;
-            // 
-            // totalMutasi
-            // 
-            this.totalMutasi.HeaderText = "TOTAL MUTASI";
-            this.totalMutasi.Name = "totalMutasi";
-            this.totalMutasi.Width = 200;
+            this.dataRequestOrderGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataRequestOrderGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataRequestOrderGridView.Location = new System.Drawing.Point(0, 50);
+            this.dataRequestOrderGridView.Name = "dataRequestOrderGridView";
+            this.dataRequestOrderGridView.RowHeadersVisible = false;
+            this.dataRequestOrderGridView.Size = new System.Drawing.Size(938, 496);
+            this.dataRequestOrderGridView.TabIndex = 33;
+            this.dataRequestOrderGridView.DoubleClick += new System.EventHandler(this.dataSalesDataGridView_DoubleClick);
             // 
             // newButton
             // 
@@ -116,26 +73,22 @@
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(938, 549);
             this.Controls.Add(this.newButton);
-            this.Controls.Add(this.dataMutasiBarangGridView);
+            this.Controls.Add(this.dataRequestOrderGridView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "dataMutasiBarangForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "DATA MUTASI";
-            ((System.ComponentModel.ISupportInitialize)(this.dataMutasiBarangGridView)).EndInit();
+            this.Text = "REQUEST ORDER";
+            this.Load += new System.EventHandler(this.dataMutasiBarangForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataMutasiBarangGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn noMutasi;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tujuanMutasi;
-        private System.Windows.Forms.DataGridViewTextBoxColumn asalMutasi;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tanggalMutasi;
-        private System.Windows.Forms.DataGridViewTextBoxColumn totalMutasi;
+        private System.Windows.Forms.DataGridView dataRequestOrderGridView;
         private System.Windows.Forms.Button newButton;
     }
 }
