@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Globalization;
 
 namespace RoyalPetz_ADMIN
 {
@@ -18,11 +19,19 @@ namespace RoyalPetz_ADMIN
         private int originModuleID = 0;
         private int selectedBranchFromID = 0;
         private int selectedBranchToID = 0;
+        private string previousInput = "";
+        private double globalTotalValue = 0;
+        private bool isLoading = false;
+
+        private int selectedROID = 0;
+        private string selectedROInvoice = "";
+
         private Data_Access DS = new Data_Access();
-        List<string> detailRequestQty = new List<string>();
-        string previousInput = "";
-        private globalUtilities gUtil = new globalUtilities();
+        private List<string> detailRequestQty = new List<string>();
         
+        private globalUtilities gUtil = new globalUtilities();
+        private CultureInfo culture = new CultureInfo("id-ID");
+
         public permintaanProdukForm()
         {
             InitializeComponent();
@@ -32,6 +41,83 @@ namespace RoyalPetz_ADMIN
         {
             InitializeComponent();
             originModuleID = moduleID;
+        }
+
+        public permintaanProdukForm(int moduleID, int roID)
+        {
+            InitializeComponent();
+            originModuleID = moduleID;
+            selectedROID = roID;
+        }
+
+        private string getBranchName(int branchID)
+        {
+            string result = "";
+
+            Data_Access tempDS = new Data_Access();
+            result = tempDS.getDataSingleValue("SELECT ifnull(BRANCH_NAME, '') FROM MASTER_BRANCH WHERE BRANCH_ID = " + branchID).ToString();
+            tempDS.mySqlClose();
+            
+            return result;
+        }
+
+        private string getProductName(int productID)
+        {
+            string result = "";
+
+            result = DS.getDataSingleValue("SELECT ifnull(PRODUCT_NAME, '') FROM MASTER_PRODUCT WHERE ID = " + productID).ToString();
+
+            return result;
+        }
+
+        private void loadDataHeaderRO()
+        {
+            MySqlDataReader rdr;
+            string sqlCommand = "";
+
+            DS.mySqlConnect();
+
+            sqlCommand = "SELECT * FROM REQUEST_ORDER_HEADER WHERE ID = " + selectedROID;
+
+            using (rdr = DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        ROinvoiceTextBox.Text = rdr.GetString("RO_INVOICE");
+                        RODateTimePicker.Value = rdr.GetDateTime("RO_DATETIME");
+                        branchFromCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_FROM"));
+                        selectedBranchFromID = rdr.GetInt32("RO_BRANCH_ID_FROM");
+                        branchToCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_TO"));
+                        selectedBranchToID = rdr.GetInt32("RO_BRANCH_ID_TO");
+                        durationTextBox.Text = Convert.ToInt32((rdr.GetDateTime("RO_EXPIRED") - rdr.GetDateTime("RO_DATETIME")).TotalDays).ToString();
+                        totalLabel.Text = "Rp. " + rdr.GetString("RO_TOTAL");
+                    }
+
+                    rdr.Close();
+                }
+            }
+        }
+
+        private void loadDataDetailRO()
+        {
+            MySqlDataReader rdr;
+            string sqlCommand = "";
+            string productName = "";
+
+            sqlCommand = "SELECT R.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL R, MASTER_PRODUCT M WHERE R.RO_ID = '" + selectedROInvoice + "' AND R.PRODUCT_ID = M.PRODUCT_ID";
+
+            using (rdr = DS.getData(sqlCommand))
+            {
+                while (rdr.Read())
+                {
+                    productName = rdr.GetString("PRODUCT_NAME");
+                    detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("RO_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("RO_SUBTOTAL"));
+                }
+
+                rdr.Close();
+            }
         }
 
         private int getProductID(int selectedIndex)
@@ -50,6 +136,7 @@ namespace RoyalPetz_ADMIN
                 total = total + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value);
             }
 
+            globalTotalValue = total;
             totalLabel.Text = "Rp. " + total.ToString();
         }
 
@@ -74,6 +161,9 @@ namespace RoyalPetz_ADMIN
             double productQty = 0;
             double hppValue = 0;
             double subTotal = 0;
+
+            if (isLoading)
+                return;
 
             DataGridViewTextBoxEditingControl dataGridViewTextBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
             
@@ -136,6 +226,7 @@ namespace RoyalPetz_ADMIN
             DataGridViewRow selectedRow = detailRequestOrderDataGridView.Rows[rowSelectedIndex];
 
             selectedRow.Cells["hpp"].Value = hpp;
+            selectedRow.Cells["productId"].Value = selectedProductID;
 
             if (null != selectedRow.Cells["qty"].Value)
             {
@@ -174,6 +265,7 @@ namespace RoyalPetz_ADMIN
             DataGridViewTextBoxColumn stockQtyColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn basePriceColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn subTotalColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn productIdColumn = new DataGridViewTextBoxColumn();
 
             sqlCommand = "SELECT ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
 
@@ -190,34 +282,37 @@ namespace RoyalPetz_ADMIN
                 }
             }
 
-            // PRODUCT NAME COLUMN
+            rdr.Close();
 
+            // PRODUCT NAME COLUMN
             productNameCmb.HeaderText = "NAMA PRODUK";
             productNameCmb.Name = "productName";
             productNameCmb.Width = 300;
-            //productNameCmb.ReadOnly = true;
-
             detailRequestOrderDataGridView.Columns.Add(productNameCmb);
 
             stockQtyColumn.HeaderText = "QTY";
             stockQtyColumn.Name = "qty";
             stockQtyColumn.Width = 100;
-
             detailRequestOrderDataGridView.Columns.Add(stockQtyColumn);
 
             basePriceColumn.HeaderText = "HARGA POKOK";
             basePriceColumn.Name = "HPP";
             basePriceColumn.Width = 200;
             basePriceColumn.ReadOnly = true;
-
             detailRequestOrderDataGridView.Columns.Add(basePriceColumn);
 
             subTotalColumn.HeaderText = "SUBTOTAL";
             subTotalColumn.Name = "subTotal";
             subTotalColumn.Width = 200;
             subTotalColumn.ReadOnly = true;
-
             detailRequestOrderDataGridView.Columns.Add(subTotalColumn);
+
+            productIdColumn.HeaderText = "PRODUCT_ID";
+            productIdColumn.Name = "productID";
+            productIdColumn.Width = 200;
+            productIdColumn.Visible = false;
+            detailRequestOrderDataGridView.Columns.Add(productIdColumn);
+
         }
 
         private void permintaanProdukForm_Load(object sender, EventArgs e)
@@ -227,6 +322,16 @@ namespace RoyalPetz_ADMIN
             fillInProductNameCombo();
 
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
+
+            if (originModuleID == globalConstants.EDIT_REQUEST_ORDER)
+            {
+                isLoading = true;
+                loadDataHeaderRO();
+                selectedROInvoice = ROinvoiceTextBox.Text;
+                ROinvoiceTextBox.ReadOnly = true;
+                loadDataDetailRO();
+                isLoading = false;
+            }
         }
 
         private bool invoiceExist()
@@ -243,16 +348,7 @@ namespace RoyalPetz_ADMIN
 
         private void ROinvoiceTextBox_TextChanged(object sender, EventArgs e)
         {
-            ROinvoiceTextBox.Text = ROinvoiceTextBox.Text.Trim();
-
-            if (invoiceExist())
-            {
-                errorLabel.Text = "NO PERMINTAAN SUDAH ADA";
-            }
-            else
-            {
-                errorLabel.Text = "";
-            }
+            
         }
 
         private void fillInBranchFromCombo()
@@ -273,6 +369,8 @@ namespace RoyalPetz_ADMIN
                     branchFromComboHidden.Items.Add(rdr.GetString("BRANCH_ID"));
                 }
             }
+
+            rdr.Close();
         }
         
         private void fillInBranchToCombo()
@@ -293,6 +391,8 @@ namespace RoyalPetz_ADMIN
                     branchToComboHidden.Items.Add(rdr.GetString("BRANCH_ID"));
                 }
             }
+
+            rdr.Close();
         }
 
         private void branchFromCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -320,6 +420,12 @@ namespace RoyalPetz_ADMIN
 
         private bool dataValidated()
         {
+            if (ROinvoiceTextBox.Text.Equals(""))
+            {
+                errorLabel.Text = "NO PERMINTAAN TIDAK BOLEH KOSONG";
+                return false;
+            }
+
             return true;
         }
 
@@ -328,14 +434,47 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand = "";
 
+            string roInvoice = "";
+            int branchIDFrom = 0;
+            int branchIDTo = 0;
+            string roDateTime = "";
+            double roTotal = 0;
+            string roDateExpired = "";
+            DateTime selectedRODate;
+            DateTime expiredRODate;
+
+            string selectedDate = RODateTimePicker.Value.ToShortDateString();
+            selectedRODate = RODateTimePicker.Value;
+            expiredRODate = selectedRODate.AddDays(Convert.ToDouble(durationTextBox.Text));
+
+            roInvoice = ROinvoiceTextBox.Text;
+            branchIDFrom = selectedBranchFromID;
+            branchIDTo = selectedBranchToID;
+
+            roDateTime = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(selectedDate));
+            roDateExpired = String.Format(culture, "{0:dd-MM-yyyy}", expiredRODate);
+            roTotal = globalTotalValue;
+            
             DS.beginTransaction();
 
             try
             {
                 DS.mySqlConnect();
 
-                
+                // SAVE HEADER TABLE
+                sqlCommand = "INSERT INTO REQUEST_ORDER_HEADER (RO_INVOICE, RO_BRANCH_ID_FROM, RO_BRANCH_ID_TO, RO_DATETIME, RO_TOTAL, RO_EXPIRED, RO_ACTIVE) VALUES " +
+                                    "('" + roInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " + roTotal + ", STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y'), 1)";
                 DS.executeNonQueryCommand(sqlCommand);
+
+                // SAVE DETAIL TABLE
+                for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count - 1;i++ )
+                {
+                    sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_ID, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
+                                        "('" + roInvoice + "', " + Convert.ToInt32(detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+                    
+                    DS.executeNonQueryCommand(sqlCommand);
+
+                }
 
                 DS.commit();
             }
@@ -371,7 +510,7 @@ namespace RoyalPetz_ADMIN
         {
             if (dataValidated())
             {
-                return savedataTransaction();
+                return saveDataTransaction();
             }
 
             return false;
@@ -382,6 +521,19 @@ namespace RoyalPetz_ADMIN
             if (saveData())
             {
                 MessageBox.Show("SUCCESS");
+            }
+        }
+
+        private void ROinvoiceTextBox_Validated(object sender, EventArgs e)
+        {
+            //ROinvoiceTextBox.Text = ROinvoiceTextBox.Text.Trim();
+            if (invoiceExist())
+            {
+                errorLabel.Text = "NO PERMINTAAN SUDAH ADA";
+            }
+            else
+            {
+                errorLabel.Text = "";
             }
         }
     }

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataRequestOrderGridView = new System.Windows.Forms.DataGridView();
             this.newButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).BeginInit();
@@ -39,14 +39,14 @@
             this.dataRequestOrderGridView.AllowUserToAddRows = false;
             this.dataRequestOrderGridView.AllowUserToDeleteRows = false;
             this.dataRequestOrderGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataRequestOrderGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataRequestOrderGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataRequestOrderGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataRequestOrderGridView.Location = new System.Drawing.Point(0, 50);
             this.dataRequestOrderGridView.Name = "dataRequestOrderGridView";
@@ -80,6 +80,8 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "REQUEST ORDER";
+            this.Activated += new System.EventHandler(this.dataMutasiBarangForm_Activated);
+            this.Deactivate += new System.EventHandler(this.dataMutasiBarangForm_Deactivate);
             this.Load += new System.EventHandler(this.dataMutasiBarangForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).EndInit();
             this.ResumeLayout(false);

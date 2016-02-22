@@ -257,7 +257,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.61244F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 193F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 194F));
             this.tableLayoutPanel2.Controls.Add(this.ROinvoiceTextBox, 0, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(261, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -275,6 +275,7 @@
             this.ROinvoiceTextBox.Size = new System.Drawing.Size(174, 27);
             this.ROinvoiceTextBox.TabIndex = 16;
             this.ROinvoiceTextBox.TextChanged += new System.EventHandler(this.ROinvoiceTextBox_TextChanged);
+            this.ROinvoiceTextBox.Validated += new System.EventHandler(this.ROinvoiceTextBox_Validated);
             // 
             // label6
             // 

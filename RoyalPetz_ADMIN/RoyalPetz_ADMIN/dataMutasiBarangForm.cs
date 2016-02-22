@@ -34,7 +34,7 @@ namespace RoyalPetz_ADMIN
                 newButton.Visible = false;
         }
 
-        private void displaySpecificForm()
+        private void displaySpecificForm(int roID = 0)
         {
             switch (originModuleID)
             {
@@ -44,8 +44,16 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.PERMINTAAN_BARANG:
-                        permintaanProdukForm permintaanProdukDisplayedForm = new permintaanProdukForm(globalConstants.NEW_REQUEST_ORDER);
-                        permintaanProdukDisplayedForm.ShowDialog(this);
+                        if (roID == 0)
+                        { 
+                            permintaanProdukForm permintaanProdukDisplayedForm = new permintaanProdukForm(globalConstants.NEW_REQUEST_ORDER);
+                            permintaanProdukDisplayedForm.ShowDialog(this);
+                        }
+                        else
+                        { 
+                            permintaanProdukForm editPermintaanProdukDisplayedForm = new permintaanProdukForm(globalConstants.EDIT_REQUEST_ORDER, roID);
+                            editPermintaanProdukDisplayedForm.ShowDialog(this);
+                        }
                     break;
 
                 case globalConstants.PENERIMAAN_BARANG:
@@ -57,7 +65,14 @@ namespace RoyalPetz_ADMIN
 
         private void dataSalesDataGridView_DoubleClick(object sender, EventArgs e)
         {
-            displaySpecificForm();
+            if (dataRequestOrderGridView.Rows.Count <= 0)
+                return;
+
+            int rowSelectedIndex = dataRequestOrderGridView.SelectedCells[0].RowIndex;
+            DataGridViewRow selectedRow = dataRequestOrderGridView.Rows[rowSelectedIndex];
+            selectedROID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
+
+            displaySpecificForm(selectedROID);
         }
 
         private void newButton_Click(object sender, EventArgs e)
@@ -73,7 +88,10 @@ namespace RoyalPetz_ADMIN
 
             DS.mySqlConnect();
 
-            sqlCommand = "SELECT * FROM REQUEST_ORDER_HEADER WHERE RO_ACTIVE = 1 AND RO_EXPIRED > " + DateTime.Now;
+            sqlCommand = "SELECT ID, RO_INVOICE AS 'NO PERMINTAAN', RO_DATETIME AS 'TANGGAL PERMINTAAN', RO_EXPIRED AS 'TANGGAL EXPIRED', M1.BRANCH_NAME AS 'ASAL PERMINTAAN', M2.BRANCH_NAME AS 'TUJUAN PERMINTAAN', RO_TOTAL AS 'TOTAL' " +
+                                "FROM REQUEST_ORDER_HEADER LEFT OUTER JOIN MASTER_BRANCH M1 ON (RO_BRANCH_ID_FROM = M1.BRANCH_ID) " +
+                                "LEFT OUTER JOIN MASTER_BRANCH M2 ON (RO_BRANCH_ID_TO = M2.BRANCH_ID) " +
+                                "WHERE RO_ACTIVE = 1 AND RO_EXPIRED > '" + DateTime.Now + "'";
 
             using (rdr = DS.getData(sqlCommand))
             {
@@ -83,11 +101,16 @@ namespace RoyalPetz_ADMIN
                     dataRequestOrderGridView.DataSource = dt;
 
                     dataRequestOrderGridView.Columns["ID"].Visible = false;
-                    //dataPelangganDataGridView.Columns["CUSTOMER_ID"].Visible = false;
-                    //dataPelangganDataGridView.Columns["NAMA PELANGGAN"].Width = 300;
-                    //dataPelangganDataGridView.Columns["TANGGAL BERGABUNG"].Width = 200;
-                    //dataPelangganDataGridView.Columns["GROUP CUSTOMER"].Width = 200;
+
+                    dataRequestOrderGridView.Columns["NO PERMINTAAN"].Width = 200;
+                    dataRequestOrderGridView.Columns["TANGGAL PERMINTAAN"].Width = 200;
+                    dataRequestOrderGridView.Columns["TANGGAL EXPIRED"].Width = 200;
+                    dataRequestOrderGridView.Columns["ASAL PERMINTAAN"].Width = 200;
+                    dataRequestOrderGridView.Columns["TUJUAN PERMINTAAN"].Width = 200;
+                    dataRequestOrderGridView.Columns["TOTAL"].Width = 200;
                 }
+
+                rdr.Close();
             }
 
 
@@ -96,6 +119,16 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataMutasiBarangForm_Deactivate(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataMutasiBarangForm_Activated(object sender, EventArgs e)
+        {
+            loadROdata();
         }
     }
 }
