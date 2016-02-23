@@ -65,7 +65,7 @@ namespace RoyalPetz_ADMIN
         {
             string result = "";
 
-            result = DS.getDataSingleValue("SELECT ifnull(PRODUCT_NAME, '') FROM MASTER_PRODUCT WHERE ID = " + productID).ToString();
+            result = DS.getDataSingleValue("SELECT ifnull(PRODUCT_NAME, '') FROM MASTER_PRODUCT WHERE PRODUCT_ID = " + productID).ToString();
 
             return result;
         }
@@ -87,10 +87,13 @@ namespace RoyalPetz_ADMIN
                     {
                         ROinvoiceTextBox.Text = rdr.GetString("RO_INVOICE");
                         RODateTimePicker.Value = rdr.GetDateTime("RO_DATETIME");
-                        branchFromCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_FROM"));
+                        
+                        //branchFromCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_FROM"));
                         selectedBranchFromID = rdr.GetInt32("RO_BRANCH_ID_FROM");
-                        branchToCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_TO"));
+                        
+                        //branchToCombo.Text = getBranchName(rdr.GetInt32("RO_BRANCH_ID_TO"));
                         selectedBranchToID = rdr.GetInt32("RO_BRANCH_ID_TO");
+                        
                         durationTextBox.Text = Convert.ToInt32((rdr.GetDateTime("RO_EXPIRED") - rdr.GetDateTime("RO_DATETIME")).TotalDays).ToString();
                         totalLabel.Text = "Rp. " + rdr.GetString("RO_TOTAL");
                     }
@@ -106,25 +109,25 @@ namespace RoyalPetz_ADMIN
             string sqlCommand = "";
             string productName = "";
 
-            sqlCommand = "SELECT R.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL R, MASTER_PRODUCT M WHERE R.RO_ID = '" + selectedROInvoice + "' AND R.PRODUCT_ID = M.PRODUCT_ID";
+            sqlCommand = "SELECT R.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL R, MASTER_PRODUCT M WHERE R.RO_INVOICE = '" + selectedROInvoice + "' AND R.PRODUCT_ID = M.PRODUCT_ID";
 
             using (rdr = DS.getData(sqlCommand))
             {
                 while (rdr.Read())
                 {
                     productName = rdr.GetString("PRODUCT_NAME");
-                    detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("RO_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("RO_SUBTOTAL"));
+                    detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("RO_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("RO_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
                 }
 
                 rdr.Close();
             }
         }
 
-        private int getProductID(int selectedIndex)
+        private string getProductID(int selectedIndex)
         {
             string productID = "";
             productID = productIDComboHidden.Items[selectedIndex].ToString();
-            return Convert.ToInt32(productID);
+            return productID;
         }
 
         private void calculateTotal()
@@ -211,10 +214,13 @@ namespace RoyalPetz_ADMIN
         {
             int selectedIndex = 0;
             int rowSelectedIndex = 0;
-            int selectedProductID = 0;
+            string selectedProductID = "";
             double hpp = 0;
             double productQty = 0;
             double subTotal = 0;
+
+            if (isLoading)
+                return;
 
             DataGridViewComboBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewComboBoxEditingControl;
 
@@ -245,13 +251,13 @@ namespace RoyalPetz_ADMIN
             MessageBox.Show(saveFileDialog1.FileName);
         }
 
-        private double getHPPValue(int productID)
+        private double getHPPValue(string productID)
         {
             double result = 0;
 
             DS.mySqlConnect();
 
-            result = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(PRODUCT_BASE_PRICE, 0) FROM MASTER_PRODUCT WHERE ID = " + productID));
+            result = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(PRODUCT_BASE_PRICE, 0) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
 
             return result;
         }
@@ -267,7 +273,7 @@ namespace RoyalPetz_ADMIN
             DataGridViewTextBoxColumn subTotalColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn productIdColumn = new DataGridViewTextBoxColumn();
 
-            sqlCommand = "SELECT ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
+            sqlCommand = "SELECT PRODUCT_ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
 
             productIDComboHidden.Items.Clear();
             productNameComboHidden.Items.Clear();
@@ -277,7 +283,7 @@ namespace RoyalPetz_ADMIN
                 while (rdr.Read())
                 {
                     productNameCmb.Items.Add(rdr.GetString("PRODUCT_NAME"));
-                    productIDComboHidden.Items.Add(rdr.GetString("ID"));
+                    productIDComboHidden.Items.Add(rdr.GetString("PRODUCT_ID"));
                     productNameComboHidden.Items.Add(rdr.GetString("PRODUCT_NAME"));
                 }
             }
@@ -326,10 +332,16 @@ namespace RoyalPetz_ADMIN
             if (originModuleID == globalConstants.EDIT_REQUEST_ORDER)
             {
                 isLoading = true;
+
                 loadDataHeaderRO();
                 selectedROInvoice = ROinvoiceTextBox.Text;
                 ROinvoiceTextBox.ReadOnly = true;
+
+                branchFromCombo.Text = getBranchName(selectedBranchFromID);
+                branchToCombo.Text = getBranchName(selectedBranchToID);
+
                 loadDataDetailRO();
+                
                 isLoading = false;
             }
         }
@@ -348,7 +360,18 @@ namespace RoyalPetz_ADMIN
 
         private void ROinvoiceTextBox_TextChanged(object sender, EventArgs e)
         {
-            
+            if (isLoading)
+                return;
+
+            ROinvoiceTextBox.Text = ROinvoiceTextBox.Text.Trim();
+            if (invoiceExist())
+            {
+                errorLabel.Text = "NO PERMINTAAN SUDAH ADA";
+            }
+            else
+            {
+                errorLabel.Text = "";
+            }
         }
 
         private void fillInBranchFromCombo()
@@ -380,6 +403,7 @@ namespace RoyalPetz_ADMIN
 
             sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME FROM MASTER_BRANCH WHERE BRANCH_ACTIVE = 1 AND BRANCH_ID <> " + selectedBranchFromID + " ORDER BY BRANCH_NAME ASC";
 
+            branchToCombo.Text = "";
             branchToCombo.Items.Clear();
             branchToComboHidden.Items.Clear();
 
@@ -399,7 +423,8 @@ namespace RoyalPetz_ADMIN
         {
             int selectedIndex = branchFromCombo.SelectedIndex;
 
-            selectedBranchFromID = Convert.ToInt32(branchFromComboHidden.Items[selectedIndex]);
+            if (!isLoading)
+                selectedBranchFromID = Convert.ToInt32(branchFromComboHidden.Items[selectedIndex]);
 
             fillInBranchToCombo();
         }
@@ -411,7 +436,8 @@ namespace RoyalPetz_ADMIN
 
         private void branchToCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedBranchToID = Convert.ToInt32(branchToComboHidden.Items[branchToCombo.SelectedIndex].ToString());
+            if (!isLoading)
+                selectedBranchToID = Convert.ToInt32(branchToComboHidden.Items[branchToCombo.SelectedIndex].ToString());
         }
 
         private void detailRequestOrderDataGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -423,6 +449,12 @@ namespace RoyalPetz_ADMIN
             if (ROinvoiceTextBox.Text.Equals(""))
             {
                 errorLabel.Text = "NO PERMINTAAN TIDAK BOLEH KOSONG";
+                return false;
+            }
+
+            if (detailRequestOrderDataGridView.Rows.Count <= 0)
+            {
+                errorLabel.Text = "TIDAK ADA BARANG YANG DIMINTA";
                 return false;
             }
 
@@ -461,21 +493,58 @@ namespace RoyalPetz_ADMIN
             {
                 DS.mySqlConnect();
 
-                // SAVE HEADER TABLE
-                sqlCommand = "INSERT INTO REQUEST_ORDER_HEADER (RO_INVOICE, RO_BRANCH_ID_FROM, RO_BRANCH_ID_TO, RO_DATETIME, RO_TOTAL, RO_EXPIRED, RO_ACTIVE) VALUES " +
-                                    "('" + roInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " + roTotal + ", STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y'), 1)";
-                DS.executeNonQueryCommand(sqlCommand);
-
-                // SAVE DETAIL TABLE
-                for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count - 1;i++ )
+                switch(originModuleID)
                 {
-                    sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_ID, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
-                                        "('" + roInvoice + "', " + Convert.ToInt32(detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
-                    
-                    DS.executeNonQueryCommand(sqlCommand);
+                    case globalConstants.NEW_REQUEST_ORDER:
+                        // SAVE HEADER TABLE
+                        sqlCommand = "INSERT INTO REQUEST_ORDER_HEADER (RO_INVOICE, RO_BRANCH_ID_FROM, RO_BRANCH_ID_TO, RO_DATETIME, RO_TOTAL, RO_EXPIRED, RO_ACTIVE) VALUES " +
+                                            "('" + roInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " + roTotal + ", STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y'), 1)";
+                        DS.executeNonQueryCommand(sqlCommand);
 
+                        // SAVE DETAIL TABLE
+                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
+                        {
+                            if (null != detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
+                            {
+                                sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
+                                                    "('" + roInvoice + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+
+                                DS.executeNonQueryCommand(sqlCommand);
+                            }
+                        }
+                        break;
+
+                    case globalConstants.EDIT_REQUEST_ORDER:
+                        // UPDATE HEADER TABLE
+                        sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET " +
+                                            "RO_BRANCH_ID_FROM = " + branchIDFrom + ", " +
+                                            "RO_BRANCH_ID_TO = " + branchIDTo + ", " +
+                                            "RO_DATETIME = STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " +
+                                            "RO_TOTAL = " + roTotal + ", " +
+                                            "RO_EXPIRED = STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y') " +
+                                            "WHERE RO_INVOICE = '" + roInvoice + "'";
+                    
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // DELETE DETAIL TABLE
+                        sqlCommand = "DELETE FROM REQUEST_ORDER_DETAIL WHERE RO_INVOICE = '" + roInvoice + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // RE-INSERT DETAIL TABLE
+                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
+                        {
+                            if (null != detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
+                            {
+                                sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
+                                                    "('" + roInvoice + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+
+                                DS.executeNonQueryCommand(sqlCommand);
+                            }
+                        }
+                        break;
                 }
 
+                
                 DS.commit();
             }
             catch (Exception e)
@@ -526,14 +595,34 @@ namespace RoyalPetz_ADMIN
 
         private void ROinvoiceTextBox_Validated(object sender, EventArgs e)
         {
-            //ROinvoiceTextBox.Text = ROinvoiceTextBox.Text.Trim();
-            if (invoiceExist())
+            
+        }
+
+        private void detailRequestOrderDataGridView_KeyPress(object sender, KeyPressEventArgs e)
+        {
+          //  if (e.GetHashCode() == Keys.Delete)
+        }
+
+        private void deleteCurrentRow()
+        {
+            if (detailRequestOrderDataGridView.SelectedCells.Count > 0)
             {
-                errorLabel.Text = "NO PERMINTAAN SUDAH ADA";
+                int rowSelectedIndex = detailRequestOrderDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailRequestOrderDataGridView.Rows[rowSelectedIndex];    
+
+                detailRequestOrderDataGridView.Rows.Remove(selectedRow);
             }
-            else
+        }
+
+        private void detailRequestOrderDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
             {
-                errorLabel.Text = "";
+                if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?","WARNING", MessageBoxButtons.YesNo))
+                {
+                    deleteCurrentRow();
+                    calculateTotal();
+                }
             }
         }
     }

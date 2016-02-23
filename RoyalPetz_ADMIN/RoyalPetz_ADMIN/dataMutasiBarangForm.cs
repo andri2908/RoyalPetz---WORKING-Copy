@@ -32,6 +32,9 @@ namespace RoyalPetz_ADMIN
 
             if ((moduleID != globalConstants.PERMINTAAN_BARANG) && (moduleID != globalConstants.CEK_DATA_MUTASI))
                 newButton.Visible = false;
+
+            if (moduleID != globalConstants.PERMINTAAN_MUTASI_BARANG)
+                importButton.Visible = false;
         }
 
         private void displaySpecificForm(int roID = 0)
@@ -129,6 +132,21 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangForm_Activated(object sender, EventArgs e)
         {
             loadROdata();
+        }
+
+        private void dataRequestOrderGridView_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                if (dataRequestOrderGridView.Rows.Count <= 0)
+                    return;
+
+                int rowSelectedIndex = dataRequestOrderGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = dataRequestOrderGridView.Rows[rowSelectedIndex];
+                selectedROID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
+
+                displaySpecificForm(selectedROID);
+            }
         }
     }
 }
