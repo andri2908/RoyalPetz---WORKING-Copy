@@ -369,6 +369,12 @@
     <Compile Include="dataKategoriProdukForm.Designer.cs">
       <DependentUpon>dataKategoriProdukForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TabOrderManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TabSchemeProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="cashierForm.resx">
       <DependentUpon>cashierForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -534,6 +540,7 @@
     <EmbeddedResource Include="dataKategoriProdukForm.resx">
       <DependentUpon>dataKategoriProdukForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TabSchemeProvider.resx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
