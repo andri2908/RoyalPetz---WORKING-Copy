@@ -22,6 +22,7 @@ namespace RoyalPetz_ADMIN
         public const int TAMBAH_HAPUS_JURNAL_HARIAN = 58;
         public const int TAMBAH_HAPUS_USER = 59;
         public const int PERMINTAAN_MUTASI_BARANG = 60;
+        public const int MUTASI_BARANG = 61;
 
         public const int STOK_PECAH_BARANG = 101;
         public const int PENYESUAIAN_STOK = 102;

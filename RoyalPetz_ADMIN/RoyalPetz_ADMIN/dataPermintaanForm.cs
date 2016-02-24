@@ -35,6 +35,9 @@ namespace RoyalPetz_ADMIN
         {
             InitializeComponent();
             originModuleID = moduleID;
+
+            if (moduleID == globalConstants.CEK_DATA_MUTASI)
+                newButton.Visible = false;
         }
         
         private void displaySpecificForm(int roID = 0)
@@ -111,19 +114,19 @@ namespace RoyalPetz_ADMIN
 
             DS.mySqlConnect();
 
-            sqlCommand = "SELECT ID, RO_INVOICE AS 'NO PERMINTAAN', RO_DATETIME AS 'TANGGAL PERMINTAAN', RO_EXPIRED AS 'TANGGAL EXPIRED', M1.BRANCH_NAME AS 'ASAL PERMINTAAN', M2.BRANCH_NAME AS 'TUJUAN PERMINTAAN', RO_TOTAL AS 'TOTAL' " +
+            sqlCommand = "SELECT ID, RO_INVOICE AS 'NO PERMINTAAN', DATE_FORMAT(RO_DATETIME, '%d-%m-%Y')  AS 'TANGGAL PERMINTAAN', RO_EXPIRED AS 'TANGGAL EXPIRED', M1.BRANCH_NAME AS 'ASAL PERMINTAAN', M2.BRANCH_NAME AS 'TUJUAN PERMINTAAN', RO_TOTAL AS 'TOTAL' " +
                                 "FROM REQUEST_ORDER_HEADER LEFT OUTER JOIN MASTER_BRANCH M1 ON (RO_BRANCH_ID_FROM = M1.BRANCH_ID) " +
                                 "LEFT OUTER JOIN MASTER_BRANCH M2 ON (RO_BRANCH_ID_TO = M2.BRANCH_ID) " +
                                 "WHERE 1 = 1";
 
             if (!showAll)
             {
-                if (!showExpiredCheckBox.Checked)
+                if (showExpiredCheckBox.Checked)
                 {
                     sqlCommand = sqlCommand + " AND RO_EXPIRED > '" + DateTime.Now + "'";
                 }
 
-                if (!showExpiredCheckBox.Checked)
+                if (!showApprovedROCheckbox.Checked)
                 {
                     sqlCommand = sqlCommand + " AND RO_ACTIVE = 1";
                 }
@@ -135,7 +138,7 @@ namespace RoyalPetz_ADMIN
 
                 dateFrom = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(RODtPicker_1.Value));
                 dateTo = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(RODtPicker_2.Value));
-                sqlCommand = sqlCommand + " AND RO_DATETIME >= '" + dateFrom + "' AND RO_DATETIME <= '" + dateTo + "'";
+                sqlCommand = sqlCommand + " AND DATE_FORMAT(RO_DATETIME, '%d-%m-%Y')  >= '" + dateFrom + "' AND DATE_FORMAT(RO_DATETIME, '%d-%m-%Y')  <= '" + dateTo + "'";
 
                 if (branchFromCombo.SelectedIndex > 0)
                 {

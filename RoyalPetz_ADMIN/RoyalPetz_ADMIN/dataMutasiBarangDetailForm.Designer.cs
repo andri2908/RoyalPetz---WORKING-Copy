@@ -30,13 +30,22 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.detailRequestOrderDataGridView = new System.Windows.Forms.DataGridView();
+            this.productName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.qtyRequest = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hpp = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SUBTOTAL = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.productID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.ROExpiredDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.RODateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.approveButton = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -45,8 +54,13 @@
             this.label10 = new System.Windows.Forms.Label();
             this.rejectButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.noMutasiTextBox = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.PMDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.label11 = new System.Windows.Forms.Label();
             this.totalApproved = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.totalApprovedLabel = new System.Windows.Forms.Label();
@@ -56,32 +70,18 @@
             this.branchFromTextBox = new System.Windows.Forms.TextBox();
             this.totalLabel = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.reprintButton = new System.Windows.Forms.Button();
-            this.productName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.qtyRequest = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hpp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SUBTOTAL = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RODateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.ROExpiredDateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.errorLabel = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.noMutasiTextBox = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.PMDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.errorLabel = new System.Windows.Forms.Label();
+            this.reprintButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.detailRequestOrderDataGridView)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.tableLayoutPanel7.SuspendLayout();
             this.SuspendLayout();
             // 
             // detailRequestOrderDataGridView
@@ -110,6 +110,48 @@
             this.detailRequestOrderDataGridView.RowHeadersVisible = false;
             this.detailRequestOrderDataGridView.Size = new System.Drawing.Size(894, 297);
             this.detailRequestOrderDataGridView.TabIndex = 39;
+            // 
+            // productName
+            // 
+            this.productName.HeaderText = "NAMA PRODUK";
+            this.productName.Name = "productName";
+            this.productName.ReadOnly = true;
+            this.productName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.productName.Width = 300;
+            // 
+            // qtyRequest
+            // 
+            this.qtyRequest.HeaderText = "QTY REQ";
+            this.qtyRequest.Name = "qtyRequest";
+            this.qtyRequest.ReadOnly = true;
+            this.qtyRequest.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.qtyRequest.Width = 150;
+            // 
+            // qty
+            // 
+            this.qty.HeaderText = "QTY";
+            this.qty.Name = "qty";
+            this.qty.Width = 150;
+            // 
+            // hpp
+            // 
+            this.hpp.HeaderText = "HARGA POKOK";
+            this.hpp.Name = "hpp";
+            this.hpp.ReadOnly = true;
+            this.hpp.Width = 200;
+            // 
+            // SUBTOTAL
+            // 
+            this.SUBTOTAL.HeaderText = "SUBTOTAL";
+            this.SUBTOTAL.Name = "SUBTOTAL";
+            this.SUBTOTAL.ReadOnly = true;
+            this.SUBTOTAL.Width = 200;
+            // 
+            // productID
+            // 
+            this.productID.HeaderText = "productID";
+            this.productID.Name = "productID";
+            this.productID.Visible = false;
             // 
             // label2
             // 
@@ -142,7 +184,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 186F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 172F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 173F));
             this.tableLayoutPanel3.Controls.Add(this.ROExpiredDateTimePicker, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.RODateTimePicker, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.label7, 2, 0);
@@ -153,6 +195,50 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(600, 32);
             this.tableLayoutPanel3.TabIndex = 22;
+            // 
+            // ROExpiredDateTimePicker
+            // 
+            this.ROExpiredDateTimePicker.Enabled = false;
+            this.ROExpiredDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ROExpiredDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.ROExpiredDateTimePicker.Location = new System.Drawing.Point(429, 3);
+            this.ROExpiredDateTimePicker.Name = "ROExpiredDateTimePicker";
+            this.ROExpiredDateTimePicker.Size = new System.Drawing.Size(137, 27);
+            this.ROExpiredDateTimePicker.TabIndex = 23;
+            // 
+            // RODateTimePicker
+            // 
+            this.RODateTimePicker.Enabled = false;
+            this.RODateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RODateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.RODateTimePicker.Location = new System.Drawing.Point(3, 3);
+            this.RODateTimePicker.Name = "RODateTimePicker";
+            this.RODateTimePicker.Size = new System.Drawing.Size(137, 27);
+            this.RODateTimePicker.TabIndex = 22;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label7.Location = new System.Drawing.Point(220, 7);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(178, 18);
+            this.label7.TabIndex = 24;
+            this.label7.Text = "TANGGAL EXPIRED";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label5.Location = new System.Drawing.Point(406, 7);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(14, 18);
+            this.label5.TabIndex = 20;
+            this.label5.Text = ":";
             // 
             // approveButton
             // 
@@ -177,18 +263,6 @@
             this.label8.Size = new System.Drawing.Size(11, 18);
             this.label8.TabIndex = 26;
             this.label8.Text = ":";
-            // 
-            // label7
-            // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label7.Location = new System.Drawing.Point(221, 7);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(178, 18);
-            this.label7.TabIndex = 24;
-            this.label7.Text = "TANGGAL EXPIRED";
             // 
             // label1
             // 
@@ -283,18 +357,6 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "TUJUAN PERMINTAAN";
             // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label5.Location = new System.Drawing.Point(407, 7);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(14, 18);
-            this.label5.TabIndex = 20;
-            this.label5.Text = ":";
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -335,6 +397,81 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(888, 269);
             this.tableLayoutPanel1.TabIndex = 36;
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 5;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 13F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 183F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 176F));
+            this.tableLayoutPanel7.Controls.Add(this.noMutasiTextBox, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label15, 2, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label16, 3, 0);
+            this.tableLayoutPanel7.Controls.Add(this.PMDateTimePicker, 4, 0);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(285, 3);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 1;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(600, 32);
+            this.tableLayoutPanel7.TabIndex = 49;
+            // 
+            // noMutasiTextBox
+            // 
+            this.noMutasiTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.noMutasiTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.noMutasiTextBox.Location = new System.Drawing.Point(3, 3);
+            this.noMutasiTextBox.MaxLength = 30;
+            this.noMutasiTextBox.Name = "noMutasiTextBox";
+            this.noMutasiTextBox.Size = new System.Drawing.Size(179, 27);
+            this.noMutasiTextBox.TabIndex = 16;
+            this.noMutasiTextBox.TextChanged += new System.EventHandler(this.noMutasiTextBox_TextChanged);
+            // 
+            // label15
+            // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label15.Location = new System.Drawing.Point(225, 7);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(169, 18);
+            this.label15.TabIndex = 25;
+            this.label15.Text = "TANGGAL MUTASI";
+            // 
+            // label16
+            // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label16.Location = new System.Drawing.Point(408, 7);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(13, 18);
+            this.label16.TabIndex = 26;
+            this.label16.Text = ":";
+            // 
+            // PMDateTimePicker
+            // 
+            this.PMDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PMDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.PMDateTimePicker.Location = new System.Drawing.Point(427, 3);
+            this.PMDateTimePicker.Name = "PMDateTimePicker";
+            this.PMDateTimePicker.Size = new System.Drawing.Size(137, 27);
+            this.PMDateTimePicker.TabIndex = 27;
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label11.Location = new System.Drawing.Point(3, 10);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(111, 18);
+            this.label11.TabIndex = 47;
+            this.label11.Text = "NO MUTASI";
             // 
             // totalApproved
             // 
@@ -442,6 +579,18 @@
             this.label12.TabIndex = 44;
             this.label12.Text = ":";
             // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label14.Location = new System.Drawing.Point(268, 48);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(11, 18);
+            this.label14.TabIndex = 48;
+            this.label14.Text = ":";
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.SteelBlue;
@@ -450,79 +599,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1211, 29);
             this.panel1.TabIndex = 37;
-            // 
-            // reprintButton
-            // 
-            this.reprintButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.reprintButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reprintButton.Location = new System.Drawing.Point(338, 614);
-            this.reprintButton.Name = "reprintButton";
-            this.reprintButton.Size = new System.Drawing.Size(248, 37);
-            this.reprintButton.TabIndex = 43;
-            this.reprintButton.Text = "REPRINT PERMINTAAN";
-            this.reprintButton.UseVisualStyleBackColor = true;
-            // 
-            // productName
-            // 
-            this.productName.HeaderText = "NAMA PRODUK";
-            this.productName.Name = "productName";
-            this.productName.ReadOnly = true;
-            this.productName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.productName.Width = 300;
-            // 
-            // qtyRequest
-            // 
-            this.qtyRequest.HeaderText = "QTY REQ";
-            this.qtyRequest.Name = "qtyRequest";
-            this.qtyRequest.ReadOnly = true;
-            this.qtyRequest.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.qtyRequest.Width = 150;
-            // 
-            // qty
-            // 
-            this.qty.HeaderText = "QTY";
-            this.qty.Name = "qty";
-            this.qty.Width = 150;
-            // 
-            // hpp
-            // 
-            this.hpp.HeaderText = "HARGA POKOK";
-            this.hpp.Name = "hpp";
-            this.hpp.ReadOnly = true;
-            this.hpp.Width = 200;
-            // 
-            // SUBTOTAL
-            // 
-            this.SUBTOTAL.HeaderText = "SUBTOTAL";
-            this.SUBTOTAL.Name = "SUBTOTAL";
-            this.SUBTOTAL.ReadOnly = true;
-            this.SUBTOTAL.Width = 200;
-            // 
-            // productID
-            // 
-            this.productID.HeaderText = "productID";
-            this.productID.Name = "productID";
-            this.productID.Visible = false;
-            // 
-            // RODateTimePicker
-            // 
-            this.RODateTimePicker.Enabled = false;
-            this.RODateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RODateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.RODateTimePicker.Location = new System.Drawing.Point(3, 3);
-            this.RODateTimePicker.Name = "RODateTimePicker";
-            this.RODateTimePicker.Size = new System.Drawing.Size(137, 27);
-            this.RODateTimePicker.TabIndex = 22;
-            // 
-            // ROExpiredDateTimePicker
-            // 
-            this.ROExpiredDateTimePicker.Enabled = false;
-            this.ROExpiredDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ROExpiredDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.ROExpiredDateTimePicker.Location = new System.Drawing.Point(430, 3);
-            this.ROExpiredDateTimePicker.Name = "ROExpiredDateTimePicker";
-            this.ROExpiredDateTimePicker.Size = new System.Drawing.Size(137, 27);
-            this.ROExpiredDateTimePicker.TabIndex = 23;
             // 
             // errorLabel
             // 
@@ -537,92 +613,16 @@
             this.errorLabel.TabIndex = 36;
             this.errorLabel.Text = "   ";
             // 
-            // label11
+            // reprintButton
             // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label11.Location = new System.Drawing.Point(3, 10);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(111, 18);
-            this.label11.TabIndex = 47;
-            this.label11.Text = "NO MUTASI";
-            // 
-            // label14
-            // 
-            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label14.Location = new System.Drawing.Point(268, 48);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(11, 18);
-            this.label14.TabIndex = 48;
-            this.label14.Text = ":";
-            // 
-            // tableLayoutPanel7
-            // 
-            this.tableLayoutPanel7.ColumnCount = 5;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 13F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 183F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 19F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 176F));
-            this.tableLayoutPanel7.Controls.Add(this.noMutasiTextBox, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.label15, 2, 0);
-            this.tableLayoutPanel7.Controls.Add(this.label16, 3, 0);
-            this.tableLayoutPanel7.Controls.Add(this.PMDateTimePicker, 4, 0);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(285, 3);
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.RowCount = 1;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(600, 32);
-            this.tableLayoutPanel7.TabIndex = 49;
-            // 
-            // noMutasiTextBox
-            // 
-            this.noMutasiTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.noMutasiTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noMutasiTextBox.Location = new System.Drawing.Point(3, 3);
-            this.noMutasiTextBox.MaxLength = 30;
-            this.noMutasiTextBox.Name = "noMutasiTextBox";
-            this.noMutasiTextBox.Size = new System.Drawing.Size(179, 27);
-            this.noMutasiTextBox.TabIndex = 16;
-            this.noMutasiTextBox.TextChanged += new System.EventHandler(this.noMutasiTextBox_TextChanged);
-            // 
-            // label15
-            // 
-            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label15.Location = new System.Drawing.Point(225, 7);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(169, 18);
-            this.label15.TabIndex = 25;
-            this.label15.Text = "TANGGAL MUTASI";
-            // 
-            // label16
-            // 
-            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label16.Location = new System.Drawing.Point(408, 7);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(13, 18);
-            this.label16.TabIndex = 26;
-            this.label16.Text = ":";
-            // 
-            // PMDateTimePicker
-            // 
-            this.PMDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PMDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.PMDateTimePicker.Location = new System.Drawing.Point(427, 3);
-            this.PMDateTimePicker.Name = "PMDateTimePicker";
-            this.PMDateTimePicker.Size = new System.Drawing.Size(137, 27);
-            this.PMDateTimePicker.TabIndex = 27;
+            this.reprintButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.reprintButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reprintButton.Location = new System.Drawing.Point(338, 614);
+            this.reprintButton.Name = "reprintButton";
+            this.reprintButton.Size = new System.Drawing.Size(248, 37);
+            this.reprintButton.TabIndex = 43;
+            this.reprintButton.Text = "REPRINT MUTASI";
+            this.reprintButton.UseVisualStyleBackColor = true;
             // 
             // dataMutasiBarangDetailForm
             // 
@@ -641,7 +641,7 @@
             this.Name = "dataMutasiBarangDetailForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PERMINTAAN PRODUK";
+            this.Text = "PRODUK MUTASI";
             this.Load += new System.EventHandler(this.dataMutasiBarangDetailForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.detailRequestOrderDataGridView)).EndInit();
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -650,14 +650,14 @@
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel7.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.tableLayoutPanel7.ResumeLayout(false);
-            this.tableLayoutPanel7.PerformLayout();
             this.ResumeLayout(false);
 
         }

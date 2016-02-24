@@ -24,6 +24,7 @@ namespace RoyalPetz_ADMIN
         private string selectedROInvoice = "";
         private bool isLoading = false;
         private double globalTotalValue = 0;
+        private bool directMutasiBarang = false;
 
         private Data_Access DS = new Data_Access();
         private List<string> detailRequestQtyApproved = new List<string>();
@@ -36,12 +37,13 @@ namespace RoyalPetz_ADMIN
             InitializeComponent();
         }
 
-        public dataMutasiBarangDetailForm(int moduleID, int roID)
+        public dataMutasiBarangDetailForm(int moduleID, int roID = 0)
         {
             InitializeComponent();
 
             originModuleID = moduleID;
-            
+            selectedROID = roID;
+
             switch (originModuleID)
             {
                 case globalConstants.CEK_DATA_MUTASI:
@@ -54,7 +56,14 @@ namespace RoyalPetz_ADMIN
                     rejectButton.Visible = false;
                     detailRequestOrderDataGridView.ReadOnly = true;
                     break;
-            }
+
+                case globalConstants.MUTASI_BARANG:
+                    approveButton.Text = "SAVE MUTASI";
+                    reprintButton.Text = "REPRINT DATA MUTASI";
+                    rejectButton.Visible = false;
+                    directMutasiBarang = true;
+                    break;
+            }           
         }
 
         private void calculateTotal()
@@ -204,9 +213,25 @@ namespace RoyalPetz_ADMIN
         {
             bool result = false;
 
-            if (0 == Convert.ToInt32(DS.getDataSingleValue("SELECT RO_ACTIVE FROM REQUEST_ORDER_HEADER WHERE RO_INVOICE = '" + selectedROInvoice + "'")))
+            if (1 == Convert.ToInt32(DS.getDataSingleValue("SELECT RO_ACTIVE FROM REQUEST_ORDER_HEADER WHERE RO_INVOICE = '" + selectedROInvoice + "'")))
                 result = true;
 
+            return result;
+        }
+
+        private string getNoMutasi()
+        {
+            string result = "";
+
+            result = DS.getDataSingleValue("SELECT PM_INVOICE FROM PRODUCTS_MUTATION_HEADER WHERE RO_INVOICE = '" + selectedROInvoice + "'").ToString();
+            return result;
+        }
+
+        private DateTime getPMDateTimeValue()
+        {
+            DateTime result;
+
+            result = Convert.ToDateTime(DS.getDataSingleValue("SELECT PM_DATETIME FROM PRODUCTS_MUTATION_HEADER WHERE RO_INVOICE = '" + selectedROInvoice + "'"));
             return result;
         }
 
@@ -214,23 +239,46 @@ namespace RoyalPetz_ADMIN
         {
             errorLabel.Text = "";
 
-            isLoading = true;            
+            isLoading = true;
 
-            if (isNewRORequest())
-            {
-                subModuleID = globalConstants.NEW_PRODUCT_MUTATION;
-                loadDataHeaderRO();            
+            if (!directMutasiBarang)
+            { 
+                loadDataHeaderRO();
                 loadDataDetailRO();
+
+                if (isNewRORequest())
+                {
+                    subModuleID = globalConstants.NEW_PRODUCT_MUTATION;
+
+                    approveButton.Visible = true;
+                    rejectButton.Visible = true;
+                    reprintButton.Visible = false;
+                }
+                else
+                {
+                    //subModuleID = globalConstants.EDIT_PRODUCT_MUTATION;
+            
+                    noMutasiTextBox.ReadOnly = true;
+                    noMutasiTextBox.Text = getNoMutasi();
+                
+                    PMDateTimePicker.Enabled = false;
+                    PMDateTimePicker.Value = getPMDateTimeValue();
+
+                    detailRequestOrderDataGridView.ReadOnly = true;
+
+                    approveButton.Visible = false;
+                    rejectButton.Visible = false;
+                    reprintButton.Visible = true;
+                }
+
+                branchFromTextBox.Text = getBranchName(selectedBranchFromID);
+                branchToTextBox.Text = getBranchName(selectedBranchToID);
             }
             else
             {
-                subModuleID = globalConstants.EDIT_PRODUCT_MUTATION;
-                noMutasiTextBox.ReadOnly = true;
+                subModuleID = globalConstants.NEW_PRODUCT_MUTATION;
             }
-
-            branchFromTextBox.Text = getBranchName(selectedBranchFromID);
-            branchToTextBox.Text = getBranchName(selectedBranchToID);
-
+            
             isLoading = false;
 
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
@@ -243,7 +291,7 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand = "";
 
-            string roInvoice = "";
+            string roInvoice = "0";
             string noMutasi = "";
             int branchIDFrom = 0;
             int branchIDTo = 0;
@@ -277,47 +325,20 @@ namespace RoyalPetz_ADMIN
                         // SAVE DETAIL TABLE
                         for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
                         {
-                                sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
-                                                    "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+                            sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
+                                                "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
 
-                                DS.executeNonQueryCommand(sqlCommand);
+                            DS.executeNonQueryCommand(sqlCommand);
                         }
 
-                        // UPDATE REQUEST ORDER HEADER TABLE
-                        sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
-                        DS.executeNonQueryCommand(sqlCommand);
-                        break;
-
-                    case globalConstants.EDIT_PRODUCT_MUTATION:
-                        // UPDATE HEADER TABLE
-                        //sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET " +
-                        //                    "RO_BRANCH_ID_FROM = " + branchIDFrom + ", " +
-                        //                    "RO_BRANCH_ID_TO = " + branchIDTo + ", " +
-                        //                    "RO_DATETIME = STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " +
-                        //                    "RO_TOTAL = " + roTotal + ", " +
-                        //                    "RO_EXPIRED = STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y') " +
-                        //                    "WHERE RO_INVOICE = '" + roInvoice + "'";
-
-                       // DS.executeNonQueryCommand(sqlCommand);
-
-                        // DELETE DETAIL TABLE
-                        //sqlCommand = "DELETE FROM REQUEST_ORDER_DETAIL WHERE RO_INVOICE = '" + roInvoice + "'";
-                        //DS.executeNonQueryCommand(sqlCommand);
-
-                        // RE-INSERT DETAIL TABLE
-                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
-                        {
-                            //if (null != detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
-                            //{
-                            //    sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
-                            //                        "('" + roInvoice + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
-
-                            //    DS.executeNonQueryCommand(sqlCommand);
-                            //}
+                        if (!directMutasiBarang)
+                        { 
+                            // UPDATE REQUEST ORDER HEADER TABLE
+                            sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                            DS.executeNonQueryCommand(sqlCommand);
                         }
                         break;
                 }
-
 
                 DS.commit();
             }
@@ -360,7 +381,6 @@ namespace RoyalPetz_ADMIN
             return true;
         }
 
-
         private bool saveData()
         {
             if (dataValidated())
@@ -397,7 +417,7 @@ namespace RoyalPetz_ADMIN
         {
             noMutasiTextBox.Text = noMutasiTextBox.Text.Trim();
 
-            if (noMutasiExist())
+            if (noMutasiExist() && (subModuleID == globalConstants.NEW_PRODUCT_MUTATION))
             {
                 errorLabel.Text = "NO MUTASI SUDAH ADA";
                 noMutasiTextBox.Focus();

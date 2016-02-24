@@ -474,5 +474,11 @@ namespace RoyalPetz_ADMIN
             updateLabel();
             timer1.Start();
         }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            //dataMutasiBarangDetailForm displayForm = new dataMutasiBarangDetailForm(globalConstants.MUTASI_BARANG);
+            //displayForm.ShowDialog(this);
+        }
     }
 }
