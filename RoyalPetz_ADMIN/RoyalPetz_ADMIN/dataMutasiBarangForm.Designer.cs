@@ -49,10 +49,10 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataRequestOrderGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataRequestOrderGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataRequestOrderGridView.Location = new System.Drawing.Point(0, 50);
+            this.dataRequestOrderGridView.Location = new System.Drawing.Point(-1, 69);
             this.dataRequestOrderGridView.Name = "dataRequestOrderGridView";
             this.dataRequestOrderGridView.RowHeadersVisible = false;
-            this.dataRequestOrderGridView.Size = new System.Drawing.Size(938, 496);
+            this.dataRequestOrderGridView.Size = new System.Drawing.Size(940, 481);
             this.dataRequestOrderGridView.TabIndex = 33;
             this.dataRequestOrderGridView.DoubleClick += new System.EventHandler(this.dataSalesDataGridView_DoubleClick);
             this.dataRequestOrderGridView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dataRequestOrderGridView_KeyPress);
@@ -60,7 +60,7 @@
             // newButton
             // 
             this.newButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newButton.Location = new System.Drawing.Point(805, 7);
+            this.newButton.Location = new System.Drawing.Point(805, 13);
             this.newButton.Name = "newButton";
             this.newButton.Size = new System.Drawing.Size(95, 37);
             this.newButton.TabIndex = 34;
@@ -71,7 +71,7 @@
             // importButton
             // 
             this.importButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.importButton.Location = new System.Drawing.Point(510, 7);
+            this.importButton.Location = new System.Drawing.Point(510, 13);
             this.importButton.Name = "importButton";
             this.importButton.Size = new System.Drawing.Size(254, 37);
             this.importButton.TabIndex = 35;

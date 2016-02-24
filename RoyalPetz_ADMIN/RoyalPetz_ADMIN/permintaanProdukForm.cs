@@ -593,11 +593,6 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private void ROinvoiceTextBox_Validated(object sender, EventArgs e)
-        {
-            
-        }
-
         private void detailRequestOrderDataGridView_KeyPress(object sender, KeyPressEventArgs e)
         {
           //  if (e.GetHashCode() == Keys.Delete)

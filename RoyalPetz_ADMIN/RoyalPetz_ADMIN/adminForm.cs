@@ -266,13 +266,15 @@ namespace RoyalPetz_ADMIN
 
         private void toolStripMenuItem65_Click(object sender, EventArgs e)
         {
-            dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.PERMINTAAN_BARANG);
+            //dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.PERMINTAAN_BARANG);
+            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.PERMINTAAN_BARANG);
             displayedForm.ShowDialog(this);
         }
 
         private void toolStripMenuItem63_Click(object sender, EventArgs e)
         {
-            dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.CEK_DATA_MUTASI);
+            //dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.CEK_DATA_MUTASI);
+            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.CEK_DATA_MUTASI);
             displayedForm.ShowDialog(this);
         }
 
