@@ -28,14 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.detailRequestOrderDataGridView = new System.Windows.Forms.DataGridView();
-            this.productName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.qtyRequest = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hpp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SUBTOTAL = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.productID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -65,15 +59,18 @@
             this.label13 = new System.Windows.Forms.Label();
             this.totalApprovedLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.branchToTextBox = new System.Windows.Forms.TextBox();
+            this.branchToComboHidden = new System.Windows.Forms.ComboBox();
+            this.branchToCombo = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.branchFromTextBox = new System.Windows.Forms.TextBox();
+            this.branchFromComboHidden = new System.Windows.Forms.ComboBox();
+            this.branchFromCombo = new System.Windows.Forms.ComboBox();
             this.totalLabel = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.errorLabel = new System.Windows.Forms.Label();
             this.reprintButton = new System.Windows.Forms.Button();
+            this.productIDHiddenCombo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.detailRequestOrderDataGridView)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -89,69 +86,20 @@
             this.detailRequestOrderDataGridView.AllowUserToAddRows = false;
             this.detailRequestOrderDataGridView.AllowUserToDeleteRows = false;
             this.detailRequestOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.detailRequestOrderDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.detailRequestOrderDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.productName,
-            this.qtyRequest,
-            this.qty,
-            this.hpp,
-            this.SUBTOTAL,
-            this.productID});
             this.detailRequestOrderDataGridView.Location = new System.Drawing.Point(0, 308);
             this.detailRequestOrderDataGridView.Name = "detailRequestOrderDataGridView";
             this.detailRequestOrderDataGridView.RowHeadersVisible = false;
             this.detailRequestOrderDataGridView.Size = new System.Drawing.Size(894, 297);
             this.detailRequestOrderDataGridView.TabIndex = 39;
-            // 
-            // productName
-            // 
-            this.productName.HeaderText = "NAMA PRODUK";
-            this.productName.Name = "productName";
-            this.productName.ReadOnly = true;
-            this.productName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.productName.Width = 300;
-            // 
-            // qtyRequest
-            // 
-            this.qtyRequest.HeaderText = "QTY REQ";
-            this.qtyRequest.Name = "qtyRequest";
-            this.qtyRequest.ReadOnly = true;
-            this.qtyRequest.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.qtyRequest.Width = 150;
-            // 
-            // qty
-            // 
-            this.qty.HeaderText = "QTY";
-            this.qty.Name = "qty";
-            this.qty.Width = 150;
-            // 
-            // hpp
-            // 
-            this.hpp.HeaderText = "HARGA POKOK";
-            this.hpp.Name = "hpp";
-            this.hpp.ReadOnly = true;
-            this.hpp.Width = 200;
-            // 
-            // SUBTOTAL
-            // 
-            this.SUBTOTAL.HeaderText = "SUBTOTAL";
-            this.SUBTOTAL.Name = "SUBTOTAL";
-            this.SUBTOTAL.ReadOnly = true;
-            this.SUBTOTAL.Width = 200;
-            // 
-            // productID
-            // 
-            this.productID.HeaderText = "productID";
-            this.productID.Name = "productID";
-            this.productID.Visible = false;
             // 
             // label2
             // 
@@ -184,7 +132,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 186F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 173F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
             this.tableLayoutPanel3.Controls.Add(this.ROExpiredDateTimePicker, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.RODateTimePicker, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.label7, 2, 0);
@@ -201,7 +149,7 @@
             this.ROExpiredDateTimePicker.Enabled = false;
             this.ROExpiredDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ROExpiredDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.ROExpiredDateTimePicker.Location = new System.Drawing.Point(429, 3);
+            this.ROExpiredDateTimePicker.Location = new System.Drawing.Point(427, 3);
             this.ROExpiredDateTimePicker.Name = "ROExpiredDateTimePicker";
             this.ROExpiredDateTimePicker.Size = new System.Drawing.Size(137, 27);
             this.ROExpiredDateTimePicker.TabIndex = 23;
@@ -222,7 +170,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label7.Location = new System.Drawing.Point(220, 7);
+            this.label7.Location = new System.Drawing.Point(218, 7);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(178, 18);
             this.label7.TabIndex = 24;
@@ -234,7 +182,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label5.Location = new System.Drawing.Point(406, 7);
+            this.label5.Location = new System.Drawing.Point(404, 7);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 18);
             this.label5.TabIndex = 20;
@@ -514,7 +462,8 @@
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.41026F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.58974F));
-            this.tableLayoutPanel4.Controls.Add(this.branchToTextBox, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.branchToComboHidden, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.branchToCombo, 0, 0);
             this.tableLayoutPanel4.Location = new System.Drawing.Point(285, 155);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
@@ -522,22 +471,32 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(600, 32);
             this.tableLayoutPanel4.TabIndex = 23;
             // 
-            // branchToTextBox
+            // branchToComboHidden
             // 
-            this.branchToTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.branchToTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.branchToTextBox.Location = new System.Drawing.Point(3, 3);
-            this.branchToTextBox.Name = "branchToTextBox";
-            this.branchToTextBox.ReadOnly = true;
-            this.branchToTextBox.Size = new System.Drawing.Size(273, 27);
-            this.branchToTextBox.TabIndex = 17;
+            this.branchToComboHidden.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.branchToComboHidden.FormattingEnabled = true;
+            this.branchToComboHidden.Location = new System.Drawing.Point(341, 3);
+            this.branchToComboHidden.Name = "branchToComboHidden";
+            this.branchToComboHidden.Size = new System.Drawing.Size(256, 26);
+            this.branchToComboHidden.TabIndex = 2;
+            this.branchToComboHidden.Visible = false;
+            // 
+            // branchToCombo
+            // 
+            this.branchToCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.branchToCombo.FormattingEnabled = true;
+            this.branchToCombo.Location = new System.Drawing.Point(3, 3);
+            this.branchToCombo.Name = "branchToCombo";
+            this.branchToCombo.Size = new System.Drawing.Size(321, 26);
+            this.branchToCombo.TabIndex = 1;
             // 
             // tableLayoutPanel6
             // 
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.41026F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.58974F));
-            this.tableLayoutPanel6.Controls.Add(this.branchFromTextBox, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.branchFromComboHidden, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.branchFromCombo, 0, 0);
             this.tableLayoutPanel6.Location = new System.Drawing.Point(285, 117);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
@@ -545,15 +504,24 @@
             this.tableLayoutPanel6.Size = new System.Drawing.Size(600, 32);
             this.tableLayoutPanel6.TabIndex = 46;
             // 
-            // branchFromTextBox
+            // branchFromComboHidden
             // 
-            this.branchFromTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.branchFromTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.branchFromTextBox.Location = new System.Drawing.Point(3, 3);
-            this.branchFromTextBox.Name = "branchFromTextBox";
-            this.branchFromTextBox.ReadOnly = true;
-            this.branchFromTextBox.Size = new System.Drawing.Size(273, 27);
-            this.branchFromTextBox.TabIndex = 17;
+            this.branchFromComboHidden.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.branchFromComboHidden.FormattingEnabled = true;
+            this.branchFromComboHidden.Location = new System.Drawing.Point(341, 3);
+            this.branchFromComboHidden.Name = "branchFromComboHidden";
+            this.branchFromComboHidden.Size = new System.Drawing.Size(256, 26);
+            this.branchFromComboHidden.TabIndex = 1;
+            this.branchFromComboHidden.Visible = false;
+            // 
+            // branchFromCombo
+            // 
+            this.branchFromCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.branchFromCombo.FormattingEnabled = true;
+            this.branchFromCombo.Location = new System.Drawing.Point(3, 3);
+            this.branchFromCombo.Name = "branchFromCombo";
+            this.branchFromCombo.Size = new System.Drawing.Size(321, 26);
+            this.branchFromCombo.TabIndex = 0;
             // 
             // totalLabel
             // 
@@ -624,12 +592,23 @@
             this.reprintButton.Text = "REPRINT MUTASI";
             this.reprintButton.UseVisualStyleBackColor = true;
             // 
+            // productIDHiddenCombo
+            // 
+            this.productIDHiddenCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.productIDHiddenCombo.FormattingEnabled = true;
+            this.productIDHiddenCombo.Location = new System.Drawing.Point(571, 387);
+            this.productIDHiddenCombo.Name = "productIDHiddenCombo";
+            this.productIDHiddenCombo.Size = new System.Drawing.Size(256, 26);
+            this.productIDHiddenCombo.TabIndex = 44;
+            this.productIDHiddenCombo.Visible = false;
+            // 
             // dataMutasiBarangDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(896, 661);
+            this.Controls.Add(this.productIDHiddenCombo);
             this.Controls.Add(this.reprintButton);
             this.Controls.Add(this.approveButton);
             this.Controls.Add(this.rejectButton);
@@ -653,9 +632,7 @@
             this.tableLayoutPanel7.ResumeLayout(false);
             this.tableLayoutPanel7.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
-            this.tableLayoutPanel6.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -687,18 +664,10 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label totalLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.TextBox branchToTextBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
-        private System.Windows.Forms.TextBox branchFromTextBox;
         private System.Windows.Forms.Label totalApproved;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label totalApprovedLabel;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn qtyRequest;
-        private System.Windows.Forms.DataGridViewTextBoxColumn qty;
-        private System.Windows.Forms.DataGridViewTextBoxColumn hpp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SUBTOTAL;
-        private System.Windows.Forms.DataGridViewTextBoxColumn productID;
         private System.Windows.Forms.DateTimePicker RODateTimePicker;
         private System.Windows.Forms.DateTimePicker ROExpiredDateTimePicker;
         private System.Windows.Forms.Label errorLabel;
@@ -709,5 +678,10 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.DateTimePicker PMDateTimePicker;
+        private System.Windows.Forms.ComboBox branchToCombo;
+        private System.Windows.Forms.ComboBox branchFromCombo;
+        private System.Windows.Forms.ComboBox branchToComboHidden;
+        private System.Windows.Forms.ComboBox branchFromComboHidden;
+        private System.Windows.Forms.ComboBox productIDHiddenCombo;
     }
 }

@@ -139,7 +139,7 @@ namespace RoyalPetz_ADMIN
                 if (dataProdukGridView.Rows.Count <= 0)
                     return;
 
-                int selectedrowindex = dataProdukGridView.SelectedCells[0].RowIndex;
+                int selectedrowindex = (dataProdukGridView.SelectedCells[0].RowIndex) - 1;
 
                 DataGridViewRow selectedRow = dataProdukGridView.Rows[selectedrowindex];
                 selectedProductID = Convert.ToInt32(selectedRow.Cells["ID"].Value);

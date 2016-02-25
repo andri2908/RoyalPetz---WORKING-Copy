@@ -210,7 +210,7 @@ namespace RoyalPetz_ADMIN
                 if (dataRequestOrderGridView.Rows.Count <= 0)
                     return;
 
-                int rowSelectedIndex = dataRequestOrderGridView.SelectedCells[0].RowIndex;
+                int rowSelectedIndex = (dataRequestOrderGridView.SelectedCells[0].RowIndex)-1;
                 DataGridViewRow selectedRow = dataRequestOrderGridView.Rows[rowSelectedIndex];
                 selectedROID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
 
