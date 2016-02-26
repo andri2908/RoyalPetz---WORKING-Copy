@@ -31,7 +31,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataRequestOrderGridView = new System.Windows.Forms.DataGridView();
             this.newButton = new System.Windows.Forms.Button();
-            this.importButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,23 +67,12 @@
             this.newButton.UseVisualStyleBackColor = true;
             this.newButton.Click += new System.EventHandler(this.newButton_Click);
             // 
-            // importButton
-            // 
-            this.importButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.importButton.Location = new System.Drawing.Point(510, 13);
-            this.importButton.Name = "importButton";
-            this.importButton.Size = new System.Drawing.Size(254, 37);
-            this.importButton.TabIndex = 35;
-            this.importButton.Text = "IMPORT REQUEST ORDER";
-            this.importButton.UseVisualStyleBackColor = true;
-            // 
             // dataMutasiBarangForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(938, 549);
-            this.Controls.Add(this.importButton);
             this.Controls.Add(this.newButton);
             this.Controls.Add(this.dataRequestOrderGridView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -105,6 +93,5 @@
 
         private System.Windows.Forms.DataGridView dataRequestOrderGridView;
         private System.Windows.Forms.Button newButton;
-        private System.Windows.Forms.Button importButton;
     }
 }

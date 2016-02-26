@@ -132,7 +132,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 186F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 176F));
             this.tableLayoutPanel3.Controls.Add(this.ROExpiredDateTimePicker, 4, 0);
             this.tableLayoutPanel3.Controls.Add(this.RODateTimePicker, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.label7, 2, 0);
@@ -292,6 +292,7 @@
             this.rejectButton.TabIndex = 38;
             this.rejectButton.Text = "REJECT PERMINTAAN";
             this.rejectButton.UseVisualStyleBackColor = true;
+            this.rejectButton.Click += new System.EventHandler(this.rejectButton_Click);
             // 
             // label3
             // 
