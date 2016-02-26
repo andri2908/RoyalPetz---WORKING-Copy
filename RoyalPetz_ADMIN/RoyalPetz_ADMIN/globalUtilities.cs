@@ -11,16 +11,8 @@ namespace RoyalPetz_ADMIN
 {
     class globalUtilities
     {
-        private struct controlDetailValue
-        {
-            Control controlType;
-            string controlName;
-            int topPosition;
-        }
-
         public const string REGEX_NUMBER_WITH_2_DECIMAL = @"^[0-9]*\.?\d{0,2}$";
         public const string REGEX_NUMBER_ONLY = @"^[0-9]*$";
-        List<controlDetailValue> controlList = new List<controlDetailValue>();
 
         public string allTrim(string valueToTrim)
         {
@@ -95,7 +87,6 @@ namespace RoyalPetz_ADMIN
             }
 
         }
-
         public void reArrangeTabOrder(Control form)
         {
             TabOrderManager.TabScheme scheme;
