@@ -11,17 +11,9 @@ namespace RoyalPetz_ADMIN
 {
     class globalUtilities
     {
-        private struct controlDetailValue
-        {
-            Control controlType;
-            string controlName;
-            int topPosition;
-        }
-
         public const string REGEX_NUMBER_WITH_2_DECIMAL = @"^[0-9]*\.?\d{0,2}$";
         public const string REGEX_NUMBER_ONLY = @"^[0-9]*$";
-        List<controlDetailValue> controlList = new List<controlDetailValue>();
-
+        
         public string allTrim(string valueToTrim)
         {
             string temp = "";
@@ -104,5 +96,35 @@ namespace RoyalPetz_ADMIN
             tom.SetTabOrder(scheme);
 
         }
+
+        //public void FindPath()
+        //{
+        //    foreach (ManagementObject entity in new ManagementObjectSearcher("select * from Win32_USBHub Where DeviceID Like '%VID_XXXX&PID_XXXX%'").Get())
+        //    {
+        //        Entity = entity["DeviceID"].ToString();
+
+        //        foreach (ManagementObject controller in entity.GetRelated("Win32_USBController"))
+        //        {
+        //            foreach (ManagementObject obj in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_USBController.DeviceID='" + controller["PNPDeviceID"].ToString() + "'}").Get())
+        //            {
+        //                if (obj.ToString().Contains("DeviceID"))
+        //                    USBobjects.Add(obj["DeviceID"].ToString());
+
+        //            }
+        //        }
+
+        //    }
+
+        //    int VidPidposition = USBobjects.IndexOf(Entity);
+        //    for (int i = VidPidposition; i <= USBobjects.Count; i++)
+        //    {
+        //        if (USBobjects[i].Contains("USBSTOR"))
+        //        {
+        //            Secondentity = USBobjects[i];
+        //            break;
+        //        }
+
+        //    }
+        //}
     }
 }
