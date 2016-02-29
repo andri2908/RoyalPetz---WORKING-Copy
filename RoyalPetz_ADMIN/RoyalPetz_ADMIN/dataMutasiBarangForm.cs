@@ -131,7 +131,11 @@ namespace RoyalPetz_ADMIN
 
         private void dataRequestOrderGridView_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 13)
+        }
+
+        private void dataRequestOrderGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
             {
                 if (dataRequestOrderGridView.Rows.Count <= 0)
                     return;

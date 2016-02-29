@@ -234,6 +234,7 @@ namespace RoyalPetz_ADMIN
                     // input match RegEx, and Stock is enough
                     if (validInput)
                     {
+                        errorLabel.Text = "";
                         // check whether it's a new row or not
                         if (detailRequestQtyApproved.Count < rowSelectedIndex + 1)
                             detailRequestQtyApproved.Add(dataGridViewTextBoxEditingControl.Text); // NEW ROW
@@ -253,6 +254,7 @@ namespace RoyalPetz_ADMIN
                     {
                         // if stock is not enough
                         dataGridViewTextBoxEditingControl.Text = previousInput;
+                        errorLabel.Text = "JUMLAH STOK TIDAK MENCUKUPI";
                     }
                 }
                 catch (Exception ex)
@@ -338,10 +340,14 @@ namespace RoyalPetz_ADMIN
             MySqlDataReader rdr;
             string sqlCommand = "";
             string productName = "";
+            double qtyApproved;
+            double productQty;
+            double subTotal;
+            double hpp;
 
             if (subModuleID == globalConstants.NEW_PRODUCT_MUTATION)
                 // load all data from request order
-                sqlCommand = "SELECT R.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL R, MASTER_PRODUCT M WHERE R.RO_INVOICE = '" + selectedROInvoice + "' AND R.PRODUCT_ID = M.PRODUCT_ID";
+                sqlCommand = "SELECT R.*, M.PRODUCT_NAME, (M.PRODUCT_STOCK_QTY - M.PRODUCT_LIMIT_STOCK) AS PRODUCT_QTY FROM REQUEST_ORDER_DETAIL R, MASTER_PRODUCT M WHERE R.RO_INVOICE = '" + selectedROInvoice + "' AND R.PRODUCT_ID = M.PRODUCT_ID";
             else
                 // load all data from product mutation 
                 sqlCommand = "SELECT PM.*, M.PRODUCT_NAME FROM PRODUCTS_MUTATION_DETAIL PM, MASTER_PRODUCT M WHERE PM.PM_INVOICE = '" + noMutasiTextBox.Text + "' AND PM.PRODUCT_ID = M.PRODUCT_ID";
@@ -353,15 +359,32 @@ namespace RoyalPetz_ADMIN
                     productName = rdr.GetString("PRODUCT_NAME");
                     if (subModuleID == globalConstants.NEW_PRODUCT_MUTATION)
                     {
-                        detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("RO_QTY"), rdr.GetString("RO_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("RO_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
-                        detailRequestQtyApproved.Add(rdr.GetString("RO_QTY"));
+                        qtyApproved = rdr.GetDouble("RO_QTY");
+                        productQty = rdr.GetDouble("PRODUCT_QTY");
+                        hpp = rdr.GetDouble("PRODUCT_BASE_PRICE");
+
+                        if (productQty < 0)
+                            productQty = 0;
+
+                        if ((productQty < qtyApproved) && (productQty >= 0))
+                            qtyApproved = productQty;
+
+
+                        subTotal = Math.Round((hpp*qtyApproved),2);
+
+                        detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("RO_QTY"), qtyApproved.ToString(), hpp.ToString(), subTotal.ToString(), rdr.GetString("PRODUCT_ID"));
+                        detailRequestQtyApproved.Add(qtyApproved.ToString());
                     }
                     else
-                        detailRequestOrderDataGridView.Rows.Add(productName, rdr.GetString("PRODUCT_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("PM_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
-                    detailRequestQtyApproved.Add(rdr.GetString("PRODUCT_QTY"));
+                    {
+                        detailRequestOrderDataGridView.Rows.Add(productName, "0", rdr.GetString("PRODUCT_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("PM_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
+                        detailRequestQtyApproved.Add(rdr.GetString("PRODUCT_QTY"));
+                    }
                 }
 
                 rdr.Close();
+
+                calculateTotal();
             }
         }
 
@@ -562,6 +585,8 @@ namespace RoyalPetz_ADMIN
                     approveButton.Visible = true;
                     rejectButton.Visible = true;
                     reprintButton.Visible = false;
+
+                    noMutasiTextBox.Focus();
                 }
                 else
                 {
