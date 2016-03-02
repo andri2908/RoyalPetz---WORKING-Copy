@@ -54,7 +54,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.PENERIMAAN_BARANG:
-                        penerimaanBarangForm penerimaanBarangDisplayedForm = new penerimaanBarangForm();
+                        penerimaanBarangForm penerimaanBarangDisplayedForm = new penerimaanBarangForm(globalConstants.PENERIMAAN_BARANG_DARI_MUTASI, PMInvoice);
                         penerimaanBarangDisplayedForm.ShowDialog(this);
                     break;
             }
