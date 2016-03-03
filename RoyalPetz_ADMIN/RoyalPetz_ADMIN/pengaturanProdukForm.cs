@@ -37,7 +37,7 @@ namespace RoyalPetz_ADMIN
         }
 
         private Data_Access DS = new Data_Access();
-
+        private globalUtilities gutil = new globalUtilities();
         private int originModuleID;
         private bool isStartEditing = false;
 
@@ -229,8 +229,9 @@ namespace RoyalPetz_ADMIN
 
         private void pengaturanProdukForm_Load(object sender, EventArgs e)
         {
-            errorLabel.Text = "";
-            inisialisasiInterface();
+            //errorLabel.Text = "";
+            //inisialisasiInterface();
+            gutil.reArrangeTabOrder(this);
         }
 
         private void loadData()
@@ -424,15 +425,21 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
-                errorLabel.Text = "";
+                //errorLabel.Text = "";
                 namaProdukTextBox.ReadOnly = false;
                 namaProdukTextBox.BackColor = Color.White;
 
                 loadData();
 
-                MessageBox.Show("SUCCESS");
+                //MessageBox.Show("SUCCESS");
+                gutil.showSuccess(gutil.UPD);
             }
         }
 
+        private void pengaturanProdukForm_Activated(object sender, EventArgs e)
+        {
+            errorLabel.Text = "";
+            inisialisasiInterface();
+        }
     }
 }

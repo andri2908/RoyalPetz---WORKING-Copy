@@ -362,12 +362,12 @@ namespace RoyalPetz_ADMIN
 
             DS.beginTransaction();
 
-            noMutasi = noMutasiTextBox.Text;
-            branchIDFrom = selectedBranchFromID;
-            branchIDTo = selectedBranchToID;
-            selectedPMDate = PMDateTimePicker.Value;
-            PMDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPMDate);
-            PMTotal = globalTotalValue;
+            //noMutasi = noMutasiTextBox.Text;
+            //branchIDFrom = selectedBranchFromID;
+            //branchIDTo = selectedBranchToID;
+            //selectedPMDate = PMDateTimePicker.Value;
+            //PMDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPMDate);
+            //PMTotal = globalTotalValue;
 
             try
             {
