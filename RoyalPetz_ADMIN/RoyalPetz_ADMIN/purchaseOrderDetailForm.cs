@@ -23,13 +23,24 @@ namespace RoyalPetz_ADMIN
         private double globalTotalValue = 0;
         private List<string> detailQty = new List<string>();
         private List<string> detailHpp = new List<string>();
+        private CultureInfo culture = new CultureInfo("id-ID");
         string previousInput = "";
+
+        int originModuleID = globalConstants.NEW_PURCHASE_ORDER;
+        string selectedROInvoice = "";
         
         private int selectedSupplierID = 0;
 
         public purchaseOrderDetailForm()
         {
             InitializeComponent();
+        }
+
+        public purchaseOrderDetailForm(int moduleID, string roInvoice)
+        {
+            InitializeComponent();
+            originModuleID = moduleID;
+            selectedROInvoice = roInvoice;
         }
 
         private void fillInSupplierCombo()
@@ -298,6 +309,13 @@ namespace RoyalPetz_ADMIN
 
             addDataGridColumn();
 
+            isLoading = true;
+
+            loadDataHeader();
+            loadDataDetail();
+
+            isLoading = false;
+
             detailPODataGridView.EditingControlShowing += detailPODataGridView_EditingControlShowing;
 
             gUtil.reArrangeTabOrder(this);
@@ -329,6 +347,89 @@ namespace RoyalPetz_ADMIN
         private bool saveDataTransaction()
         {
             bool result = false;
+            string sqlCommand = "";
+
+            string roInvoice = "0";
+            string noMutasi = "";
+            int branchIDFrom = 0;
+            int branchIDTo = 0;
+            string PMDateTime = "";
+            double PMTotal = 0;
+            double qtyApproved = 0;
+            DateTime selectedPMDate;
+
+            roInvoice = ROInvoiceTextBox.Text;
+
+            DS.beginTransaction();
+
+            noMutasi = noMutasiTextBox.Text;
+            branchIDFrom = selectedBranchFromID;
+            branchIDTo = selectedBranchToID;
+            selectedPMDate = PMDateTimePicker.Value;
+            PMDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPMDate);
+            PMTotal = globalTotalValue;
+
+            try
+            {
+                DS.mySqlConnect();
+
+                switch (originModuleID)
+                {
+                    case globalConstants.PURCHASE_ORDER_DARI_RO:
+                        //// SAVE HEADER TABLE
+                        //sqlCommand = "INSERT INTO PRODUCTS_MUTATION_HEADER (PM_INVOICE, BRANCH_ID_FROM, BRANCH_ID_TO, PM_DATETIME, PM_TOTAL, RO_INVOICE) VALUES " +
+                        //                    "('" + noMutasi + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + PMTotal + ", '" + roInvoice + "')";
+                        //DS.executeNonQueryCommand(sqlCommand);
+
+                        //// SAVE DETAIL TABLE
+                        //for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count - 1; i++)
+                        //{
+                        //    if (null != detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value)
+                        //        qtyApproved = Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value);
+                        //    else
+                        //        qtyApproved = 0;
+
+                        //    sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
+                        //                        "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + qtyApproved + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+
+                        //    DS.executeNonQueryCommand(sqlCommand);
+                        //}
+
+                        break;
+
+                    case globalConstants.NEW_PURCHASE_ORDER:
+                        break;
+
+                    case globalConstants.EDIT_PURCHASE_ORDER:
+                        break;
+                }
+
+                DS.commit();
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    DS.rollBack();
+                }
+                catch (MySqlException ex)
+                {
+                    if (DS.getMyTransConnection() != null)
+                    {
+                        MessageBox.Show("An exception of type " + ex.GetType() +
+                                          " was encountered while attempting to roll back the transaction.");
+                    }
+                }
+
+                MessageBox.Show("An exception of type " + e.GetType() +
+                                  " was encountered while inserting the data.");
+                MessageBox.Show("Neither record was written to database.");
+            }
+            finally
+            {
+                DS.mySqlClose();
+                result = true;
+            }
 
             return result;
         }
@@ -349,6 +450,77 @@ namespace RoyalPetz_ADMIN
             {
                 errorLabel.Text = "";
                 gUtil.showSuccess(gUtil.INS);
+            }
+        }
+
+        private void loadDataHeader()
+        {
+            switch (originModuleID)
+            {
+                case globalConstants.PURCHASE_ORDER_DARI_RO:
+                    ROInvoiceTextBox.Text = selectedROInvoice;
+                    break;
+
+                case globalConstants.EDIT_PURCHASE_ORDER:
+                    break;
+            }
+        }
+
+        private void loadDataRODetail()
+        {
+            MySqlDataReader rdr;
+            string sqlCommand;
+
+            sqlCommand = "SELECT RO.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL RO, MASTER_PRODUCT M WHERE RO_INVOICE = '" + selectedROInvoice + "' AND RO.PRODUCT_ID = M.PRODUCT_ID";
+
+            using (rdr = DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    while(rdr.Read())
+                    {
+                        detailPODataGridView.Rows.Add(rdr.GetString("PRODUCT_NAME"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("RO_QTY"), rdr.GetString("RO_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
+                    }
+
+                    calculateTotal();
+                }
+            }
+
+        }
+
+        private void loadDataDetail()
+        {
+            switch (originModuleID)
+            {
+                case globalConstants.PURCHASE_ORDER_DARI_RO:
+                    loadDataRODetail();
+                    break;
+
+                case globalConstants.EDIT_PURCHASE_ORDER:
+                    break;
+            }
+        }
+
+        private void deleteCurrentRow()
+        {
+            if (detailPODataGridView.SelectedCells.Count > 0)
+            {
+                int rowSelectedIndex = detailPODataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailPODataGridView.Rows[rowSelectedIndex];
+
+                detailPODataGridView.Rows.Remove(selectedRow);
+            }
+        }
+
+        private void detailPODataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
+                {
+                    deleteCurrentRow();
+                    calculateTotal();
+                }
             }
         }
     }

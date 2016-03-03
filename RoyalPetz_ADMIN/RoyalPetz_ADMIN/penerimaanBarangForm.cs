@@ -105,7 +105,7 @@ namespace RoyalPetz_ADMIN
                         {
                             while (rdr.Read())
                             {
-                                detailGridView.Rows.Add(rdr.GetString("PRODUCT_NAME"), rdr.GetString("PRODUCT_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("PRODUCT_QTY"), rdr.GetString("PM_SUBTOTAL"));
+                                detailGridView.Rows.Add(rdr.GetString("PRODUCT_NAME"), rdr.GetString("PRODUCT_QTY"), rdr.GetString("PRODUCT_BASE_PRICE"), rdr.GetString("PRODUCT_QTY"), rdr.GetString("PM_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
 
                                 detailRequestQty.Add(rdr.GetString("PRODUCT_QTY"));
                                 detailHpp.Add(rdr.GetString("PRODUCT_BASE_PRICE"));
@@ -266,6 +266,15 @@ namespace RoyalPetz_ADMIN
             return true;
         }
 
+        private double getCurrentHpp(string productID)
+        {
+            double result = 0;
+
+            result = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_BASE_PRICE FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+
+            return result;
+        }
+        
         private bool saveDataTransaction()
         {
             bool result = false;
@@ -276,7 +285,9 @@ namespace RoyalPetz_ADMIN
             int branchIDTo = 0;
             string PRDateTime = "";
             double PRTotal = 0;
-            DateTime selectedPRDate;
+            double currentHPP = 0;
+            double newHPP = 0;
+            int priceChange = 0;
 
             string selectedDate = PRDtPicker.Value.ToShortDateString();
             PRDateTime = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(selectedDate));
@@ -307,13 +318,23 @@ namespace RoyalPetz_ADMIN
                 {
                     if (null != detailGridView.Rows[i].Cells["productID"].Value)
                     {
-                        sqlCommand = "INSERT INTO PRODUCTS_RECEIVED_DETAIL (PR_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PRODUCT_ACTUAL_QTY, PR_SUBTOTAL) VALUES " +
-                                            "('" + PRInvoice + "', '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyRequest"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["subtotal"].Value) + ")";
+                        currentHPP = getCurrentHpp(detailGridView.Rows[i].Cells["productID"].Value.ToString());
+                        newHPP = Convert.ToDouble(detailGridView.Rows[i].Cells["hpp"].Value);
+
+                        if (currentHPP > newHPP)
+                            priceChange = -1;
+                        else if (currentHPP == newHPP)
+                            priceChange = 0;
+                        else if (currentHPP < newHPP)
+                            priceChange = 1;
+
+                        sqlCommand = "INSERT INTO PRODUCTS_RECEIVED_DETAIL (PR_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PRODUCT_ACTUAL_QTY, PR_SUBTOTAL, PRODUCT_PRICE_CHANGE) VALUES " +
+                                            "('" + PRInvoice + "', '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + newHPP + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyRequest"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["subtotal"].Value) + ", " + priceChange + ")";
 
                         DS.executeNonQueryCommand(sqlCommand);
 
                         // UPDATE TO MASTER PRODUCT
-                        sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY + " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + " WHERE PRODUCT_ID = '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
+                        sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_BASE_PRICE = " + newHPP + ", PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY + " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + " WHERE PRODUCT_ID = '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
                         DS.executeNonQueryCommand(sqlCommand);
                     }
                 }
@@ -375,6 +396,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                saveButton.Visible = false;
                 gUtil.showSuccess(gUtil.INS);
             }
         }

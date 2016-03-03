@@ -46,7 +46,7 @@
             this.ROInvoiceTextBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.rejectButton = new System.Windows.Forms.Button();
+            this.createPOButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -69,7 +69,6 @@
             this.label14 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.errorLabel = new System.Windows.Forms.Label();
-            this.reprintButton = new System.Windows.Forms.Button();
             this.productIDHiddenCombo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.detailRequestOrderDataGridView)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
@@ -100,6 +99,7 @@
             this.detailRequestOrderDataGridView.RowHeadersVisible = false;
             this.detailRequestOrderDataGridView.Size = new System.Drawing.Size(894, 297);
             this.detailRequestOrderDataGridView.TabIndex = 39;
+            this.detailRequestOrderDataGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.detailRequestOrderDataGridView_KeyDown);
             // 
             // label2
             // 
@@ -192,11 +192,11 @@
             // 
             this.approveButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.approveButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.approveButton.Location = new System.Drawing.Point(49, 614);
+            this.approveButton.Location = new System.Drawing.Point(124, 614);
             this.approveButton.Name = "approveButton";
             this.approveButton.Size = new System.Drawing.Size(271, 37);
             this.approveButton.TabIndex = 41;
-            this.approveButton.Text = "APPROVE PERMINTAAN";
+            this.approveButton.Text = "APPROVE SEBAGAI MUTASI";
             this.approveButton.UseVisualStyleBackColor = true;
             this.approveButton.Click += new System.EventHandler(this.approveButton_Click);
             // 
@@ -282,17 +282,17 @@
             this.label10.TabIndex = 42;
             this.label10.Text = "TOTAL";
             // 
-            // rejectButton
+            // createPOButton
             // 
-            this.rejectButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.rejectButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rejectButton.Location = new System.Drawing.Point(606, 614);
-            this.rejectButton.Name = "rejectButton";
-            this.rejectButton.Size = new System.Drawing.Size(248, 37);
-            this.rejectButton.TabIndex = 38;
-            this.rejectButton.Text = "REJECT PERMINTAAN";
-            this.rejectButton.UseVisualStyleBackColor = true;
-            this.rejectButton.Click += new System.EventHandler(this.rejectButton_Click);
+            this.createPOButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.createPOButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.createPOButton.Location = new System.Drawing.Point(461, 614);
+            this.createPOButton.Name = "createPOButton";
+            this.createPOButton.Size = new System.Drawing.Size(248, 37);
+            this.createPOButton.TabIndex = 38;
+            this.createPOButton.Text = "APPROVE SEBAGAI PO";
+            this.createPOButton.UseVisualStyleBackColor = true;
+            this.createPOButton.Click += new System.EventHandler(this.createPOButton_Click);
             // 
             // label3
             // 
@@ -582,17 +582,6 @@
             this.errorLabel.TabIndex = 36;
             this.errorLabel.Text = "   ";
             // 
-            // reprintButton
-            // 
-            this.reprintButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.reprintButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reprintButton.Location = new System.Drawing.Point(338, 614);
-            this.reprintButton.Name = "reprintButton";
-            this.reprintButton.Size = new System.Drawing.Size(248, 37);
-            this.reprintButton.TabIndex = 43;
-            this.reprintButton.Text = "REPRINT MUTASI";
-            this.reprintButton.UseVisualStyleBackColor = true;
-            // 
             // productIDHiddenCombo
             // 
             this.productIDHiddenCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -610,9 +599,8 @@
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(896, 661);
             this.Controls.Add(this.productIDHiddenCombo);
-            this.Controls.Add(this.reprintButton);
             this.Controls.Add(this.approveButton);
-            this.Controls.Add(this.rejectButton);
+            this.Controls.Add(this.createPOButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.detailRequestOrderDataGridView);
@@ -657,12 +645,11 @@
         private System.Windows.Forms.TextBox ROInvoiceTextBox;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button rejectButton;
+        private System.Windows.Forms.Button createPOButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button reprintButton;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label totalLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.supplierHiddenCombo = new System.Windows.Forms.ComboBox();
             this.supplierCombo = new System.Windows.Forms.ComboBox();
             this.PODateTimePicker = new System.Windows.Forms.DateTimePicker();
@@ -58,17 +58,21 @@
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.productIDComboHidden = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.termOfPaymentCombo = new System.Windows.Forms.ComboBox();
             this.errorLabel = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.termOfPaymentCombo = new System.Windows.Forms.ComboBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.ROInvoiceTextBox = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.detailPODataGridView)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // supplierHiddenCombo
@@ -96,7 +100,7 @@
             // 
             this.PODateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PODateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.PODateTimePicker.Location = new System.Drawing.Point(261, 44);
+            this.PODateTimePicker.Location = new System.Drawing.Point(428, 3);
             this.PODateTimePicker.Name = "PODateTimePicker";
             this.PODateTimePicker.Size = new System.Drawing.Size(137, 27);
             this.PODateTimePicker.TabIndex = 21;
@@ -107,11 +111,11 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label9.Location = new System.Drawing.Point(3, 48);
+            this.label9.Location = new System.Drawing.Point(281, 8);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(124, 18);
+            this.label9.Size = new System.Drawing.Size(135, 18);
             this.label9.TabIndex = 20;
-            this.label9.Text = "TANGGAL PO";
+            this.label9.Text = "TANGGAL PO :";
             // 
             // tableLayoutPanel6
             // 
@@ -120,7 +124,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90.0641F));
             this.tableLayoutPanel6.Controls.Add(this.label15, 1, 0);
             this.tableLayoutPanel6.Controls.Add(this.durationTextBox, 0, 0);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(261, 162);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(261, 167);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -167,7 +171,7 @@
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label14.Location = new System.Drawing.Point(239, 170);
+            this.label14.Location = new System.Drawing.Point(239, 175);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(14, 18);
             this.label14.TabIndex = 39;
@@ -179,7 +183,7 @@
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label13.Location = new System.Drawing.Point(3, 170);
+            this.label13.Location = new System.Drawing.Point(3, 175);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(186, 18);
             this.label13.TabIndex = 38;
@@ -191,7 +195,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label8.Location = new System.Drawing.Point(239, 128);
+            this.label8.Location = new System.Drawing.Point(239, 133);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(14, 18);
             this.label8.TabIndex = 26;
@@ -226,9 +230,11 @@
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.61244F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 197F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 147F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 198F));
+            this.tableLayoutPanel2.Controls.Add(this.PODateTimePicker, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.POinvoiceTextBox, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label9, 2, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(261, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
@@ -252,7 +258,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label6.Location = new System.Drawing.Point(239, 48);
+            this.label6.Location = new System.Drawing.Point(239, 51);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(14, 18);
             this.label6.TabIndex = 12;
@@ -264,7 +270,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label5.Location = new System.Drawing.Point(239, 85);
+            this.label5.Location = new System.Drawing.Point(239, 90);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 18);
             this.label5.TabIndex = 20;
@@ -296,20 +302,21 @@
             // detailPODataGridView
             // 
             this.detailPODataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailPODataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailPODataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.detailPODataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailPODataGridView.Location = new System.Drawing.Point(5, 305);
             this.detailPODataGridView.Name = "detailPODataGridView";
             this.detailPODataGridView.RowHeadersVisible = false;
             this.detailPODataGridView.Size = new System.Drawing.Size(888, 308);
             this.detailPODataGridView.TabIndex = 46;
+            this.detailPODataGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.detailPODataGridView_KeyDown);
             // 
             // label10
             // 
@@ -317,7 +324,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label10.Location = new System.Drawing.Point(3, 217);
+            this.label10.Location = new System.Drawing.Point(3, 220);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(99, 29);
             this.label10.TabIndex = 35;
@@ -329,7 +336,7 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label12.Location = new System.Drawing.Point(239, 223);
+            this.label12.Location = new System.Drawing.Point(239, 225);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(14, 18);
             this.label12.TabIndex = 37;
@@ -341,7 +348,7 @@
             this.totalLabel.AutoSize = true;
             this.totalLabel.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.totalLabel.Location = new System.Drawing.Point(261, 217);
+            this.totalLabel.Location = new System.Drawing.Point(261, 220);
             this.totalLabel.Name = "totalLabel";
             this.totalLabel.Size = new System.Drawing.Size(83, 29);
             this.totalLabel.TabIndex = 36;
@@ -353,7 +360,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label3.Location = new System.Drawing.Point(3, 128);
+            this.label3.Location = new System.Drawing.Point(3, 133);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(190, 18);
             this.label3.TabIndex = 8;
@@ -365,7 +372,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label2.Location = new System.Drawing.Point(3, 85);
+            this.label2.Location = new System.Drawing.Point(3, 90);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 18);
             this.label2.TabIndex = 7;
@@ -378,7 +385,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.58974F));
             this.tableLayoutPanel3.Controls.Add(this.supplierHiddenCombo, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.supplierCombo, 0, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(261, 77);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(261, 82);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -404,8 +411,8 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.47287F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.527132F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 630F));
-            this.tableLayoutPanel1.Controls.Add(this.PODateTimePicker, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel5, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel6, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.label14, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.label13, 0, 4);
@@ -431,8 +438,35 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(888, 264);
             this.tableLayoutPanel1.TabIndex = 43;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.25F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.75F));
+            this.tableLayoutPanel4.Controls.Add(this.termOfPaymentCombo, 0, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(261, 123);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 38);
+            this.tableLayoutPanel4.TabIndex = 23;
+            // 
+            // termOfPaymentCombo
+            // 
+            this.termOfPaymentCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.termOfPaymentCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.termOfPaymentCombo.FormattingEnabled = true;
+            this.termOfPaymentCombo.Items.AddRange(new object[] {
+            "TUNAI",
+            "KREDIT"});
+            this.termOfPaymentCombo.Location = new System.Drawing.Point(3, 6);
+            this.termOfPaymentCombo.Name = "termOfPaymentCombo";
+            this.termOfPaymentCombo.Size = new System.Drawing.Size(171, 26);
+            this.termOfPaymentCombo.TabIndex = 21;
             // 
             // errorLabel
             // 
@@ -456,31 +490,39 @@
             this.panel1.Size = new System.Drawing.Size(897, 29);
             this.panel1.TabIndex = 44;
             // 
-            // termOfPaymentCombo
+            // label7
             // 
-            this.termOfPaymentCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.termOfPaymentCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.termOfPaymentCombo.FormattingEnabled = true;
-            this.termOfPaymentCombo.Items.AddRange(new object[] {
-            "TUNAI",
-            "KREDIT"});
-            this.termOfPaymentCombo.Location = new System.Drawing.Point(3, 6);
-            this.termOfPaymentCombo.Name = "termOfPaymentCombo";
-            this.termOfPaymentCombo.Size = new System.Drawing.Size(171, 26);
-            this.termOfPaymentCombo.TabIndex = 21;
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label7.Location = new System.Drawing.Point(3, 51);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(161, 18);
+            this.label7.TabIndex = 51;
+            this.label7.Text = "NO PERMINTAAN";
             // 
-            // tableLayoutPanel4
+            // tableLayoutPanel5
             // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.25F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.75F));
-            this.tableLayoutPanel4.Controls.Add(this.termOfPaymentCombo, 0, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(261, 118);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 38);
-            this.tableLayoutPanel4.TabIndex = 23;
+            this.tableLayoutPanel5.ColumnCount = 1;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
+            this.tableLayoutPanel5.Controls.Add(this.ROInvoiceTextBox, 0, 0);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(261, 44);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(600, 32);
+            this.tableLayoutPanel5.TabIndex = 51;
+            // 
+            // ROInvoiceTextBox
+            // 
+            this.ROInvoiceTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ROInvoiceTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ROInvoiceTextBox.Location = new System.Drawing.Point(3, 3);
+            this.ROInvoiceTextBox.Name = "ROInvoiceTextBox";
+            this.ROInvoiceTextBox.ReadOnly = true;
+            this.ROInvoiceTextBox.Size = new System.Drawing.Size(179, 27);
+            this.ROInvoiceTextBox.TabIndex = 16;
             // 
             // purchaseOrderDetailForm
             // 
@@ -509,9 +551,11 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -551,5 +595,8 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.ComboBox termOfPaymentCombo;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.TextBox ROInvoiceTextBox;
     }
 }
