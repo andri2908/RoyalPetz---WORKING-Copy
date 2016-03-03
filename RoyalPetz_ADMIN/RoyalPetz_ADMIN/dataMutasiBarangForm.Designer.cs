@@ -163,6 +163,7 @@
             this.branchToCombo.Name = "branchToCombo";
             this.branchToCombo.Size = new System.Drawing.Size(311, 26);
             this.branchToCombo.TabIndex = 42;
+            this.branchToCombo.SelectedIndexChanged += new System.EventHandler(this.branchToCombo_SelectedIndexChanged);
             // 
             // branchFromCombo
             // 
@@ -172,6 +173,7 @@
             this.branchFromCombo.Name = "branchFromCombo";
             this.branchFromCombo.Size = new System.Drawing.Size(311, 26);
             this.branchFromCombo.TabIndex = 40;
+            this.branchFromCombo.SelectedIndexChanged += new System.EventHandler(this.branchFromCombo_SelectedIndexChanged);
             // 
             // tableLayoutPanel2
             // 

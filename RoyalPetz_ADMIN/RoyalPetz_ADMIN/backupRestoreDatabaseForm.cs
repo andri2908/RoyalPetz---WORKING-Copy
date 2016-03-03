@@ -58,7 +58,11 @@ namespace RoyalPetz_ADMIN
 
         private void backupRestoreDatabaseForm_Load(object sender, EventArgs e)
         {
-            //gUtil.reArrangeTabOrder(this);
+            gUtil.reArrangeTabOrder(this);
+        }
+        private void backupRestoreDatabaseForm_Activated(object sender, EventArgs e)
+        {
+            //ig need something
         }
     }
 }

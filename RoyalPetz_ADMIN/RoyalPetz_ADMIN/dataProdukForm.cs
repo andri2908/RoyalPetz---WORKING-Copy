@@ -18,7 +18,7 @@ namespace RoyalPetz_ADMIN
         private int originModuleID = 0;
         private int selectedProductID = 0;
         private stokPecahBarangForm parentForm;
-
+        private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
 
         public dataProdukForm()
@@ -83,7 +83,10 @@ namespace RoyalPetz_ADMIN
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            loadProdukData();
+            if (!namaProdukTextBox.Text.Equals(""))
+            {
+                loadProdukData();
+            }
         }
 
         private void loadProdukData()
@@ -148,11 +151,6 @@ namespace RoyalPetz_ADMIN
             } */
         }
 
-        private void dataProdukForm_Activated(object sender, EventArgs e)
-        {
-            loadProdukData();
-        }
-
         private void dataProdukGridView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Enter) // Enter
@@ -167,6 +165,27 @@ namespace RoyalPetz_ADMIN
 
                 displaySpecificForm();
             }
+        }
+        private void dataProdukForm_Activated(object sender, EventArgs e)
+        {
+            if (!namaProdukTextBox.Text.Equals(""))
+            {
+                loadProdukData();
+            }
+        }
+
+        private void produknonactiveoption_CheckedChanged(object sender, EventArgs e)
+        {
+            dataProdukGridView.DataSource = null;
+            if (!namaProdukTextBox.Text.Equals(""))
+            {
+                loadProdukData();
+            }
+        }
+
+        private void dataProdukForm_Load(object sender, EventArgs e)
+        {
+            gutil.reArrangeTabOrder(this);
         }
     }
 }

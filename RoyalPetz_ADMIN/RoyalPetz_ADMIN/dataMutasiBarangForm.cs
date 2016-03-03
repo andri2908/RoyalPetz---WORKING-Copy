@@ -21,7 +21,7 @@ namespace RoyalPetz_ADMIN
         private int selectedBranchFromID = 0;
         private int selectedBranchToID = 0;
         private CultureInfo culture = new CultureInfo("id-ID");
-
+        private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
 
         public dataMutasiBarangForm()
@@ -54,10 +54,12 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.PENERIMAAN_BARANG:
-                        penerimaanBarangForm penerimaanBarangDisplayedForm = new penerimaanBarangForm(globalConstants.PENERIMAAN_BARANG_DARI_MUTASI, PMInvoice);
+                        penerimaanBarangForm penerimaanBarangDisplayedForm = new penerimaanBarangForm(globalConstants.PENERIMAAN_BARANG_DARI_MUTASI, selectedROID);
                         penerimaanBarangDisplayedForm.ShowDialog(this);
                     break;
             }
+
+            loadROdata();
         }
 
         private void dataSalesDataGridView_DoubleClick(object sender, EventArgs e)
@@ -104,8 +106,6 @@ namespace RoyalPetz_ADMIN
                     sqlCommand = sqlCommand + " AND PM_INVOICE LIKE '%" + noMutasiTextBox.Text + "%'";
                 }
 
-        //        dateFrom = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(PMDtPicker_1.Value));
-        //        dateTo = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(PMDtPicker_2.Value));
                 dateFrom = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(PMDtPicker_1.Value));
                 dateTo = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(PMDtPicker_2.Value));
                 sqlCommand = sqlCommand + " AND DATE_FORMAT(PM_DATETIME, '%Y%m%d')  >= '" + dateFrom + "' AND DATE_FORMAT(PM_DATETIME, '%Y%m%d')  <= '" + dateTo + "'";
@@ -148,7 +148,7 @@ namespace RoyalPetz_ADMIN
 
         private void dataMutasiBarangForm_Load(object sender, EventArgs e)
         {
-
+            gutil.reArrangeTabOrder(this);
         }
 
         private void dataMutasiBarangForm_Deactivate(object sender, EventArgs e)
@@ -159,6 +159,8 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangForm_Activated(object sender, EventArgs e)
         {
             //loadROdata();
+            fillInBranchCombo(branchFromCombo, branchFromComboHidden);
+            fillInBranchCombo(branchToCombo, branchToComboHidden);
         }
 
         private void dataRequestOrderGridView_KeyPress(object sender, KeyPressEventArgs e)
@@ -206,5 +208,17 @@ namespace RoyalPetz_ADMIN
         {
             loadROdata();
         }
+
+        private void branchFromCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedBranchFromID = Convert.ToInt32(branchFromComboHidden.Items[branchFromCombo.SelectedIndex]);
+        }
+
+        private void branchToCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedBranchToID = Convert.ToInt32(branchToComboHidden.Items[branchToCombo.SelectedIndex]);
+        }
+
+
     }
 }
