@@ -77,6 +77,8 @@
             this.catatPembelianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem65 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem66 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem67 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
             this.penjualanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,8 +125,7 @@
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem36 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -578,6 +579,7 @@
             this.catatPembelianToolStripMenuItem.BackColor = System.Drawing.Color.SteelBlue;
             this.catatPembelianToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem65,
+            this.toolStripMenuItem36,
             this.toolStripMenuItem66,
             this.toolStripMenuItem67});
             this.catatPembelianToolStripMenuItem.ForeColor = System.Drawing.Color.FloralWhite;
@@ -608,6 +610,25 @@
             this.toolStripMenuItem66.Size = new System.Drawing.Size(235, 22);
             this.toolStripMenuItem66.Text = "Penerimaan Barang";
             this.toolStripMenuItem66.Click += new System.EventHandler(this.toolStripMenuItem66_Click);
+            // 
+            // toolStripMenuItem11
+            // 
+            this.toolStripMenuItem11.BackColor = System.Drawing.Color.SteelBlue;
+            this.toolStripMenuItem11.ForeColor = System.Drawing.Color.FloralWhite;
+            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+            this.toolStripMenuItem11.ShowShortcutKeys = false;
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(205, 22);
+            this.toolStripMenuItem11.Text = "Dari Mutasi Barang";
+            this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click_1);
+            // 
+            // toolStripMenuItem12
+            // 
+            this.toolStripMenuItem12.BackColor = System.Drawing.Color.SteelBlue;
+            this.toolStripMenuItem12.ForeColor = System.Drawing.Color.FloralWhite;
+            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+            this.toolStripMenuItem12.ShowShortcutKeys = false;
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(205, 22);
+            this.toolStripMenuItem12.Text = "Dari PO";
             // 
             // toolStripMenuItem67
             // 
@@ -1065,24 +1086,15 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 69);
             // 
-            // toolStripMenuItem11
+            // toolStripMenuItem36
             // 
-            this.toolStripMenuItem11.BackColor = System.Drawing.Color.SteelBlue;
-            this.toolStripMenuItem11.ForeColor = System.Drawing.Color.FloralWhite;
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.ShowShortcutKeys = false;
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(205, 22);
-            this.toolStripMenuItem11.Text = "Dari Mutasi Barang";
-            this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click_1);
-            // 
-            // toolStripMenuItem12
-            // 
-            this.toolStripMenuItem12.BackColor = System.Drawing.Color.SteelBlue;
-            this.toolStripMenuItem12.ForeColor = System.Drawing.Color.FloralWhite;
-            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.ShowShortcutKeys = false;
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(205, 22);
-            this.toolStripMenuItem12.Text = "Dari PO";
+            this.toolStripMenuItem36.BackColor = System.Drawing.Color.SteelBlue;
+            this.toolStripMenuItem36.ForeColor = System.Drawing.Color.FloralWhite;
+            this.toolStripMenuItem36.Name = "toolStripMenuItem36";
+            this.toolStripMenuItem36.ShowShortcutKeys = false;
+            this.toolStripMenuItem36.Size = new System.Drawing.Size(235, 22);
+            this.toolStripMenuItem36.Text = "Purchase Order";
+            this.toolStripMenuItem36.Click += new System.EventHandler(this.toolStripMenuItem36_Click);
             // 
             // adminForm
             // 
@@ -1214,6 +1226,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem36;
     }
 }
 

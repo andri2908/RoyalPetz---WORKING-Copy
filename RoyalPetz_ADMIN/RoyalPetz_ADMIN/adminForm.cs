@@ -489,5 +489,11 @@ namespace RoyalPetz_ADMIN
             dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.PENERIMAAN_BARANG);
             displayedForm.ShowDialog(this);
         }
+
+        private void toolStripMenuItem36_Click(object sender, EventArgs e)
+        {
+            dataPOForm displayedForm = new dataPOForm();
+            displayedForm.ShowDialog(this);
+        }
     }
 }

@@ -22,11 +22,14 @@ namespace RoyalPetz_ADMIN
         int selectedToID = 0;
         double globalTotalValue = 0;
         bool isLoading = false;
+        
         private List<string> detailRequestQty = new List<string>();
         private List<string> detailHpp = new List<string>();
         string previousInput = "";
+
         globalUtilities gUtil = new globalUtilities();
         Data_Access DS = new Data_Access();
+        private CultureInfo culture = new CultureInfo("id-ID");
 
         public penerimaanBarangForm()
         {
@@ -219,21 +222,6 @@ namespace RoyalPetz_ADMIN
                 subTotal = Math.Round((hppValue * productQty), 2);
 
                 selectedRow.Cells["subtotal"].Value = subTotal;
-                //if (detailGridView.CurrentCell.ColumnIndex == 2)
-                //{
-                //    productQty = Convert.ToDouble(dataGridViewTextBoxEditingControl.Text);
-                //    hppValue = Convert.ToDouble(selectedRow.Cells["hpp"].Value);
-                //}
-                //else
-                //    productQty = Convert.ToDouble(selectedRow.Cells["qtyReceived"].Value);
-
-                //if (null != selectedRow.Cells["hpp"].Value)
-                //{
-                //    hppValue = Convert.ToDouble(selectedRow.Cells["hpp"].Value);
-                //    subTotal = Math.Round((hppValue * productQty), 2);
-
-                //    selectedRow.Cells["subtotal"].Value = subTotal;
-                //}
 
                 calculateTotal();
             }
@@ -280,7 +268,97 @@ namespace RoyalPetz_ADMIN
 
         private bool saveDataTransaction()
         {
-            return true;
+            bool result = false;
+            string sqlCommand = "";
+
+            string PRInvoice = "";
+            int branchIDFrom = 0;
+            int branchIDTo = 0;
+            string PRDateTime = "";
+            double PRTotal = 0;
+            DateTime selectedPRDate;
+
+            string selectedDate = PRDtPicker.Value.ToShortDateString();
+            PRDateTime = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(selectedDate));
+            
+            PRInvoice = prInvoiceTextBox.Text;
+            branchIDFrom = selectedFromID;
+            branchIDTo = selectedToID;
+            PRTotal = globalTotalValue;
+            
+            DS.beginTransaction();
+
+            try
+            {
+                DS.mySqlConnect();
+
+                // SAVE HEADER TABLE
+                if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                    sqlCommand = "INSERT INTO PRODUCTS_RECEIVED_HEADER (PR_INVOICE, PR_FROM, PR_TO, PR_DATE, PR_TOTAL, PM_INVOICE) " +
+                                        "VALUES ('" + PRInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PRDateTime + "', '%d-%m-%Y'), " + PRTotal + ", '" + noInvoiceTextBox.Text + "')";
+                else
+                    sqlCommand = "INSERT INTO PRODUCTS_RECEIVED_HEADER (PR_INVOICE, PR_FROM, PR_TO, PR_DATE, PR_TOTAL, PURCHASE_INVOICE) " +
+                                        "VALUES ('" + PRInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PRDateTime + "', '%d-%m-%Y'), " + PRTotal + ", '" + noInvoiceTextBox.Text + "')";
+
+                DS.executeNonQueryCommand(sqlCommand);
+
+                // SAVE DETAIL TABLE
+                for (int i = 0; i < detailGridView.Rows.Count; i++)
+                {
+                    if (null != detailGridView.Rows[i].Cells["productID"].Value)
+                    {
+                        sqlCommand = "INSERT INTO PRODUCTS_RECEIVED_DETAIL (PR_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PRODUCT_ACTUAL_QTY, PR_SUBTOTAL) VALUES " +
+                                            "('" + PRInvoice + "', '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyRequest"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ", " + Convert.ToDouble(detailGridView.Rows[i].Cells["subtotal"].Value) + ")";
+
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // UPDATE TO MASTER PRODUCT
+                        sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY + " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + " WHERE PRODUCT_ID = '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
+                    }
+                }
+
+                // UPDATE PRODUCT MUTATION / PO TABLE
+
+                if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                {
+                    sqlCommand = "UPDATE PRODUCTS_MUTATION_HEADER SET PM_RECEIVED = 1 WHERE PM_INVOICE = '" + noInvoiceTextBox.Text + "'";
+                    DS.executeNonQueryCommand(sqlCommand);
+                }
+                else
+                {
+
+                }
+
+                DS.commit();
+            }
+            catch (Exception e)
+            {
+                result = false;
+                try
+                {
+                    //myTrans.Rollback();
+                }
+                catch (MySqlException ex)
+                {
+                    if (DS.getMyTransConnection() != null)
+                    {
+                        MessageBox.Show("An exception of type " + ex.GetType() +
+                                          " was encountered while attempting to roll back the transaction.");
+                    }
+                }
+
+                MessageBox.Show("An exception of type " + e.GetType() +
+                                  " was encountered while inserting the data.");
+                MessageBox.Show("Neither record was written to database.");
+            }
+            finally
+            {
+                DS.mySqlClose();
+                result = true;
+            }
+
+            return result;
         }
 
         private bool saveData()

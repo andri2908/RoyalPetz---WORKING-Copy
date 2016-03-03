@@ -694,6 +694,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                result = false;
                 try
                 {
                     //myTrans.Rollback();
