@@ -25,7 +25,7 @@ namespace RoyalPetz_ADMIN
         public const int MUTASI_BARANG = 61;
         public const int PENERIMAAN_BARANG_DARI_MUTASI = 62;
         public const int PENERIMAAN_BARANG_DARI_PO = 63;
-        public const int PURCHASE_ORDER_DARI_RO = 63;
+        public const int PURCHASE_ORDER_DARI_RO = 64;
 
         public const int STOK_PECAH_BARANG = 101;
         public const int PENYESUAIAN_STOK = 102;

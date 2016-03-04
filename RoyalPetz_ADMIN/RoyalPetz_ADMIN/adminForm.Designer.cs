@@ -76,6 +76,7 @@
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
             this.catatPembelianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem65 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem36 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem66 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,7 +126,6 @@
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem36 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -171,6 +171,8 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(159, 20);
             this.fileToolStripMenuItem.Text = "Manajemen Sistem";
+            this.fileToolStripMenuItem.DropDownClosed += new System.EventHandler(this.fileToolStripMenuItem_DropDownClosed);
+            this.fileToolStripMenuItem.DropDownOpened += new System.EventHandler(this.fileToolStripMenuItem_DropDownOpened);
             // 
             // logInToolStripMenuItem
             // 
@@ -364,6 +366,8 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(75, 20);
             this.toolStripMenuItem1.Text = "Gudang";
+            this.toolStripMenuItem1.DropDownClosed += new System.EventHandler(this.toolStripMenuItem1_DropDownClosed);
+            this.toolStripMenuItem1.DropDownOpened += new System.EventHandler(this.toolStripMenuItem1_DropDownOpened);
             // 
             // toolStripMenuItem50
             // 
@@ -552,6 +556,8 @@
             this.pembelianToolStripMenuItem.Name = "pembelianToolStripMenuItem";
             this.pembelianToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
             this.pembelianToolStripMenuItem.Text = "Pembelian";
+            this.pembelianToolStripMenuItem.DropDownClosed += new System.EventHandler(this.pembelianToolStripMenuItem_DropDownClosed);
+            this.pembelianToolStripMenuItem.DropDownOpened += new System.EventHandler(this.pembelianToolStripMenuItem_DropDownOpened);
             // 
             // toolStripMenuItem7
             // 
@@ -598,6 +604,16 @@
             this.toolStripMenuItem65.Text = "Request Order";
             this.toolStripMenuItem65.Click += new System.EventHandler(this.toolStripMenuItem65_Click);
             // 
+            // toolStripMenuItem36
+            // 
+            this.toolStripMenuItem36.BackColor = System.Drawing.Color.SteelBlue;
+            this.toolStripMenuItem36.ForeColor = System.Drawing.Color.FloralWhite;
+            this.toolStripMenuItem36.Name = "toolStripMenuItem36";
+            this.toolStripMenuItem36.ShowShortcutKeys = false;
+            this.toolStripMenuItem36.Size = new System.Drawing.Size(235, 22);
+            this.toolStripMenuItem36.Text = "Purchase Order";
+            this.toolStripMenuItem36.Click += new System.EventHandler(this.toolStripMenuItem36_Click);
+            // 
             // toolStripMenuItem66
             // 
             this.toolStripMenuItem66.BackColor = System.Drawing.Color.SteelBlue;
@@ -629,6 +645,7 @@
             this.toolStripMenuItem12.ShowShortcutKeys = false;
             this.toolStripMenuItem12.Size = new System.Drawing.Size(205, 22);
             this.toolStripMenuItem12.Text = "Dari PO";
+            this.toolStripMenuItem12.Click += new System.EventHandler(this.toolStripMenuItem12_Click_1);
             // 
             // toolStripMenuItem67
             // 
@@ -662,6 +679,8 @@
             this.penjualanToolStripMenuItem.Name = "penjualanToolStripMenuItem";
             this.penjualanToolStripMenuItem.Size = new System.Drawing.Size(92, 20);
             this.penjualanToolStripMenuItem.Text = "Penjualan";
+            this.penjualanToolStripMenuItem.DropDownClosed += new System.EventHandler(this.penjualanToolStripMenuItem_DropDownClosed);
+            this.penjualanToolStripMenuItem.DropDownOpened += new System.EventHandler(this.penjualanToolStripMenuItem_DropDownOpened);
             // 
             // toolStripMenuItem17
             // 
@@ -752,6 +771,8 @@
             this.administrasiToolStripMenuItem.Name = "administrasiToolStripMenuItem";
             this.administrasiToolStripMenuItem.Size = new System.Drawing.Size(92, 20);
             this.administrasiToolStripMenuItem.Text = "Keuangan";
+            this.administrasiToolStripMenuItem.DropDownClosed += new System.EventHandler(this.administrasiToolStripMenuItem_DropDownClosed);
+            this.administrasiToolStripMenuItem.DropDownOpened += new System.EventHandler(this.administrasiToolStripMenuItem_DropDownOpened);
             // 
             // accountJurnalToolStripMenuItem
             // 
@@ -820,6 +841,8 @@
             this.toolStripMenuItem25.Name = "toolStripMenuItem25";
             this.toolStripMenuItem25.Size = new System.Drawing.Size(68, 20);
             this.toolStripMenuItem25.Text = "Report";
+            this.toolStripMenuItem25.DropDownClosed += new System.EventHandler(this.toolStripMenuItem25_DropDownClosed);
+            this.toolStripMenuItem25.DropDownOpened += new System.EventHandler(this.toolStripMenuItem25_DropDownOpened);
             // 
             // toolStripMenuItem26
             // 
@@ -841,6 +864,8 @@
             this.toolStripMenuItem74.Name = "toolStripMenuItem74";
             this.toolStripMenuItem74.Size = new System.Drawing.Size(66, 20);
             this.toolStripMenuItem74.Text = "Admin";
+            this.toolStripMenuItem74.DropDownClosed += new System.EventHandler(this.toolStripMenuItem74_DropDownClosed);
+            this.toolStripMenuItem74.DropDownOpened += new System.EventHandler(this.toolStripMenuItem74_DropDownOpened);
             // 
             // toolStripMenuItem27
             // 
@@ -900,6 +925,8 @@
             this.informasiToolStripMenuItem.Name = "informasiToolStripMenuItem";
             this.informasiToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
             this.informasiToolStripMenuItem.Text = "Informasi";
+            this.informasiToolStripMenuItem.DropDownClosed += new System.EventHandler(this.informasiToolStripMenuItem_DropDownClosed);
+            this.informasiToolStripMenuItem.DropDownOpened += new System.EventHandler(this.informasiToolStripMenuItem_DropDownOpened);
             // 
             // developerToolStripMenuItem
             // 
@@ -908,6 +935,7 @@
             this.developerToolStripMenuItem.Name = "developerToolStripMenuItem";
             this.developerToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.developerToolStripMenuItem.Text = "Developer";
+            this.developerToolStripMenuItem.Click += new System.EventHandler(this.developerToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -1023,7 +1051,7 @@
             this.toolStripButton2.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(66, 66);
+            this.toolStripButton2.Size = new System.Drawing.Size(65, 66);
             this.toolStripButton2.Text = "PIUTANG";
             this.toolStripButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
@@ -1035,7 +1063,7 @@
             this.toolStripButton5.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(62, 66);
+            this.toolStripButton5.Size = new System.Drawing.Size(61, 66);
             this.toolStripButton5.Text = "HUTANG";
             this.toolStripButton5.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
@@ -1064,7 +1092,7 @@
             this.toolStripButton7.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(70, 66);
+            this.toolStripButton7.Size = new System.Drawing.Size(68, 66);
             this.toolStripButton7.Text = "RET. BELI";
             this.toolStripButton7.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
@@ -1076,7 +1104,7 @@
             this.toolStripButton6.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(71, 66);
+            this.toolStripButton6.Size = new System.Drawing.Size(69, 66);
             this.toolStripButton6.Text = "RET. JUAL";
             this.toolStripButton6.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
@@ -1085,16 +1113,6 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 69);
-            // 
-            // toolStripMenuItem36
-            // 
-            this.toolStripMenuItem36.BackColor = System.Drawing.Color.SteelBlue;
-            this.toolStripMenuItem36.ForeColor = System.Drawing.Color.FloralWhite;
-            this.toolStripMenuItem36.Name = "toolStripMenuItem36";
-            this.toolStripMenuItem36.ShowShortcutKeys = false;
-            this.toolStripMenuItem36.Size = new System.Drawing.Size(235, 22);
-            this.toolStripMenuItem36.Text = "Purchase Order";
-            this.toolStripMenuItem36.Click += new System.EventHandler(this.toolStripMenuItem36_Click);
             // 
             // adminForm
             // 

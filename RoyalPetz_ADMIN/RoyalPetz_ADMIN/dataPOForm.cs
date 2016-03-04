@@ -18,6 +18,7 @@ namespace RoyalPetz_ADMIN
     {
         private int selectedPOID = 0;
         private int supplierID = 0;
+        private int originModuleID = 0;
 
         private Data_Access DS = new Data_Access();
         private globalUtilities gUtil = new globalUtilities();
@@ -26,6 +27,12 @@ namespace RoyalPetz_ADMIN
         public dataPOForm()
         {
             InitializeComponent();
+        }
+
+        public dataPOForm(int moduleID)
+        {
+            InitializeComponent();
+            originModuleID = moduleID;
         }
 
         private void newButton_Click(object sender, EventArgs e)
@@ -123,6 +130,12 @@ namespace RoyalPetz_ADMIN
             PODtPicker_2.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             fillInSupplierCombo();
+
+            if (originModuleID == globalConstants.PENERIMAAN_BARANG_DARI_PO)
+            {
+                newButton.Visible = false;
+            }
+
             gUtil.reArrangeTabOrder(this);
         }
 
