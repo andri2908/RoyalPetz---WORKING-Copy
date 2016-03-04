@@ -44,10 +44,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.supplierCombo = new System.Windows.Forms.ComboBox();
             this.displayButton = new System.Windows.Forms.Button();
-            this.dataRequestOrderGridView = new System.Windows.Forms.DataGridView();
+            this.dataPurchaseOrder = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -75,16 +75,16 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(311, 33);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(359, 33);
             this.tableLayoutPanel2.TabIndex = 43;
             // 
             // PODtPicker_1
             // 
             this.PODtPicker_1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PODtPicker_1.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.PODtPicker_1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.PODtPicker_1.Location = new System.Drawing.Point(3, 3);
             this.PODtPicker_1.Name = "PODtPicker_1";
-            this.PODtPicker_1.Size = new System.Drawing.Size(135, 27);
+            this.PODtPicker_1.Size = new System.Drawing.Size(144, 27);
             this.PODtPicker_1.TabIndex = 38;
             // 
             // label5
@@ -93,7 +93,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label5.Location = new System.Drawing.Point(144, 7);
+            this.label5.Location = new System.Drawing.Point(153, 7);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(16, 18);
             this.label5.TabIndex = 44;
@@ -102,10 +102,10 @@
             // PODtPicker_2
             // 
             this.PODtPicker_2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PODtPicker_2.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.PODtPicker_2.Location = new System.Drawing.Point(166, 3);
+            this.PODtPicker_2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.PODtPicker_2.Location = new System.Drawing.Point(175, 3);
             this.PODtPicker_2.Name = "PODtPicker_2";
-            this.PODtPicker_2.Size = new System.Drawing.Size(136, 27);
+            this.PODtPicker_2.Size = new System.Drawing.Size(145, 27);
             this.PODtPicker_2.TabIndex = 43;
             // 
             // label1
@@ -218,12 +218,13 @@
             this.displayButton.TabIndex = 53;
             this.displayButton.Text = "DISPLAY";
             this.displayButton.UseVisualStyleBackColor = true;
+            this.displayButton.Click += new System.EventHandler(this.displayButton_Click);
             // 
-            // dataRequestOrderGridView
+            // dataPurchaseOrder
             // 
-            this.dataRequestOrderGridView.AllowUserToAddRows = false;
-            this.dataRequestOrderGridView.AllowUserToDeleteRows = false;
-            this.dataRequestOrderGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
+            this.dataPurchaseOrder.AllowUserToAddRows = false;
+            this.dataPurchaseOrder.AllowUserToDeleteRows = false;
+            this.dataPurchaseOrder.BackgroundColor = System.Drawing.Color.FloralWhite;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -231,13 +232,14 @@
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataRequestOrderGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dataRequestOrderGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataRequestOrderGridView.Location = new System.Drawing.Point(0, 211);
-            this.dataRequestOrderGridView.Name = "dataRequestOrderGridView";
-            this.dataRequestOrderGridView.RowHeadersVisible = false;
-            this.dataRequestOrderGridView.Size = new System.Drawing.Size(921, 427);
-            this.dataRequestOrderGridView.TabIndex = 52;
+            this.dataPurchaseOrder.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dataPurchaseOrder.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataPurchaseOrder.Location = new System.Drawing.Point(0, 211);
+            this.dataPurchaseOrder.Name = "dataPurchaseOrder";
+            this.dataPurchaseOrder.RowHeadersVisible = false;
+            this.dataPurchaseOrder.Size = new System.Drawing.Size(921, 427);
+            this.dataPurchaseOrder.TabIndex = 52;
+            this.dataPurchaseOrder.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataPurchaseOrder_KeyDown);
             // 
             // dataPOForm
             // 
@@ -249,17 +251,18 @@
             this.Controls.Add(this.newButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.displayButton);
-            this.Controls.Add(this.dataRequestOrderGridView);
+            this.Controls.Add(this.dataPurchaseOrder);
             this.MaximizeBox = false;
             this.Name = "dataPOForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DATA PURCHASE ORDER";
+            this.Load += new System.EventHandler(this.dataPOForm_Load);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataRequestOrderGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -281,6 +284,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox supplierCombo;
         private System.Windows.Forms.Button displayButton;
-        private System.Windows.Forms.DataGridView dataRequestOrderGridView;
+        private System.Windows.Forms.DataGridView dataPurchaseOrder;
     }
 }

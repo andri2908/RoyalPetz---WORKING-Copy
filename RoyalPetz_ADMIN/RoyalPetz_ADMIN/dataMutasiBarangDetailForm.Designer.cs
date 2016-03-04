@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.detailRequestOrderDataGridView = new System.Windows.Forms.DataGridView();
             this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -70,6 +70,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.errorLabel = new System.Windows.Forms.Label();
             this.productIDHiddenCombo = new System.Windows.Forms.ComboBox();
+            this.rejectButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.detailRequestOrderDataGridView)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -85,14 +86,14 @@
             this.detailRequestOrderDataGridView.AllowUserToAddRows = false;
             this.detailRequestOrderDataGridView.AllowUserToDeleteRows = false;
             this.detailRequestOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.detailRequestOrderDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailRequestOrderDataGridView.Location = new System.Drawing.Point(0, 308);
             this.detailRequestOrderDataGridView.Name = "detailRequestOrderDataGridView";
@@ -192,7 +193,7 @@
             // 
             this.approveButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.approveButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.approveButton.Location = new System.Drawing.Point(124, 614);
+            this.approveButton.Location = new System.Drawing.Point(32, 614);
             this.approveButton.Name = "approveButton";
             this.approveButton.Size = new System.Drawing.Size(271, 37);
             this.approveButton.TabIndex = 41;
@@ -286,7 +287,7 @@
             // 
             this.createPOButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.createPOButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createPOButton.Location = new System.Drawing.Point(461, 614);
+            this.createPOButton.Location = new System.Drawing.Point(330, 614);
             this.createPOButton.Name = "createPOButton";
             this.createPOButton.Size = new System.Drawing.Size(248, 37);
             this.createPOButton.TabIndex = 38;
@@ -592,12 +593,24 @@
             this.productIDHiddenCombo.TabIndex = 44;
             this.productIDHiddenCombo.Visible = false;
             // 
+            // rejectButton
+            // 
+            this.rejectButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.rejectButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rejectButton.Location = new System.Drawing.Point(607, 614);
+            this.rejectButton.Name = "rejectButton";
+            this.rejectButton.Size = new System.Drawing.Size(248, 37);
+            this.rejectButton.TabIndex = 45;
+            this.rejectButton.Text = "REJECT PERMINTAAN";
+            this.rejectButton.UseVisualStyleBackColor = true;
+            // 
             // dataMutasiBarangDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(896, 661);
+            this.Controls.Add(this.rejectButton);
             this.Controls.Add(this.productIDHiddenCombo);
             this.Controls.Add(this.approveButton);
             this.Controls.Add(this.createPOButton);
@@ -672,5 +685,6 @@
         private System.Windows.Forms.ComboBox branchToComboHidden;
         private System.Windows.Forms.ComboBox branchFromComboHidden;
         private System.Windows.Forms.ComboBox productIDHiddenCombo;
+        private System.Windows.Forms.Button rejectButton;
     }
 }

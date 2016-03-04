@@ -62,5 +62,6 @@ namespace RoyalPetz_ADMIN
         public const int REJECT_PRODUCT_MUTATION = 221;
         public const int NEW_PURCHASE_ORDER = 222;
         public const int EDIT_PURCHASE_ORDER = 223;
+        public const int PRINTOUT_PURCHASE_ORDER = 224;
     }
 }

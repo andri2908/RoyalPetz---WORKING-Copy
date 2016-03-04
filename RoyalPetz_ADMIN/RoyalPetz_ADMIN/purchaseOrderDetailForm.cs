@@ -27,9 +27,10 @@ namespace RoyalPetz_ADMIN
         string previousInput = "";
 
         int originModuleID = globalConstants.NEW_PURCHASE_ORDER;
-        string selectedROInvoice = "";
-        
+        string selectedROInvoice = "";        
         private int selectedSupplierID = 0;
+        private int selectedPOID = 0;
+        private string selectedPOInvoice = "";
 
         public purchaseOrderDetailForm()
         {
@@ -41,6 +42,13 @@ namespace RoyalPetz_ADMIN
             InitializeComponent();
             originModuleID = moduleID;
             selectedROInvoice = roInvoice;
+        }
+
+        public purchaseOrderDetailForm(int moduleID, int poID)
+        {
+            InitializeComponent();
+            originModuleID = moduleID;
+            selectedPOID = poID;
         }
 
         private void fillInSupplierCombo()
@@ -302,19 +310,52 @@ namespace RoyalPetz_ADMIN
             }
         }
 
+        private bool isPOSent()
+        {
+            bool result = false;
+
+            if (1 == Convert.ToInt32(DS.getDataSingleValue("SELECT PURCHASE_SENT FROM PURCHASE_HEADER WHERE ID = " + selectedPOID)))
+                result = true;
+
+            return result;
+        }
+
         private void purchaseOrderDetailForm_Load(object sender, EventArgs e)
         {
             errorLabel.Text = "";
             fillInSupplierCombo();
+            PODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             addDataGridColumn();
+            termOfPaymentCombo.SelectedIndex = 0;
 
-            isLoading = true;
+            if (originModuleID != globalConstants.NEW_PURCHASE_ORDER && originModuleID!= globalConstants.PURCHASE_ORDER_DARI_RO)
+            { 
+                isLoading = true;
 
-            loadDataHeader();
-            loadDataDetail();
+                loadDataHeader();
+                loadDataDetail();
 
-            isLoading = false;
+                POinvoiceTextBox.ReadOnly = true;
+
+                if (isPOSent())
+                {
+                    saveButton.Visible = false;
+                    PODateTimePicker.Enabled = false;
+                    supplierCombo.Enabled = false;
+                    termOfPaymentCombo.Enabled = false;
+                    durationTextBox.ReadOnly = true;
+                    detailPODataGridView.ReadOnly = true;
+                    detailPODataGridView.AllowUserToAddRows = false;
+                }
+
+                isLoading = false;
+            }
+            else
+            {
+                // NEW PO
+                generateButton.Visible = false;
+            }
 
             detailPODataGridView.EditingControlShowing += detailPODataGridView_EditingControlShowing;
 
@@ -323,6 +364,9 @@ namespace RoyalPetz_ADMIN
 
         private void POinvoiceTextBox_TextChanged(object sender, EventArgs e)
         {
+            if (isLoading)
+                return;
+
             if (isPOInvoiceExist())
             {
                 errorLabel.Text = "NO PO SUDAH ADA";
@@ -349,25 +393,32 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand = "";
 
-            string roInvoice = "0";
-            string noMutasi = "";
-            int branchIDFrom = 0;
-            int branchIDTo = 0;
-            string PMDateTime = "";
-            double PMTotal = 0;
-            double qtyApproved = 0;
-            DateTime selectedPMDate;
+            string POInvoice = "0";
+            string roInvoice = "";
+            int supplierID = 0;
+            string PODateTime = "";
+            string PODueDateTime = "";
+            double POTotal = 0;
+            int termOfPaymentDuration = 0;
+            int termOfPayment;
+            DateTime selectedPODate;
+            DateTime PODueDate;
 
             roInvoice = ROInvoiceTextBox.Text;
+            POInvoice = POinvoiceTextBox.Text;
+            supplierID = selectedSupplierID;
+
+            selectedPODate = PODateTimePicker.Value;
+            PODateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPODate);
+
+            termOfPayment = termOfPaymentCombo.SelectedIndex;
+            termOfPaymentDuration = Convert.ToInt32(durationTextBox.Text);
+            PODueDate = selectedPODate.AddDays(termOfPaymentDuration);
+            PODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", PODueDate);
+
+            POTotal = globalTotalValue;
 
             DS.beginTransaction();
-
-            //noMutasi = noMutasiTextBox.Text;
-            //branchIDFrom = selectedBranchFromID;
-            //branchIDTo = selectedBranchToID;
-            //selectedPMDate = PMDateTimePicker.Value;
-            //PMDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPMDate);
-            //PMTotal = globalTotalValue;
 
             try
             {
@@ -376,31 +427,80 @@ namespace RoyalPetz_ADMIN
                 switch (originModuleID)
                 {
                     case globalConstants.PURCHASE_ORDER_DARI_RO:
-                        //// SAVE HEADER TABLE
-                        //sqlCommand = "INSERT INTO PRODUCTS_MUTATION_HEADER (PM_INVOICE, BRANCH_ID_FROM, BRANCH_ID_TO, PM_DATETIME, PM_TOTAL, RO_INVOICE) VALUES " +
-                        //                    "('" + noMutasi + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + PMTotal + ", '" + roInvoice + "')";
-                        //DS.executeNonQueryCommand(sqlCommand);
+                        // SAVE HEADER TABLE
+                        sqlCommand = "INSERT INTO PURCHASE_HEADER (PURCHASE_INVOICE, SUPPLIER_ID, PURCHASE_DATETIME, PURCHASE_TOTAL, PURCHASE_TERM_OF_PAYMENT, PURCHASE_TERM_OF_PAYMENT_DATE, RO_INVOICE) VALUES " +
+                                            "('" + POInvoice + "', " + supplierID + ", STR_TO_DATE('" + PODateTime + "', '%d-%m-%Y'), " + POTotal + ", " + termOfPayment + ", STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y'), '" + roInvoice + "')";
+                        DS.executeNonQueryCommand(sqlCommand);
 
-                        //// SAVE DETAIL TABLE
-                        //for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count - 1; i++)
-                        //{
-                        //    if (null != detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value)
-                        //        qtyApproved = Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value);
-                        //    else
-                        //        qtyApproved = 0;
+                        // SAVE DETAIL TABLE
+                        for (int i = 0; i < detailPODataGridView.Rows.Count - 1; i++)
+                        {
+                            //if (null != detailPODataGridView.Rows[i].Cells["qty"].Value)
+                            { 
+                                sqlCommand = "INSERT INTO PURCHASE_DETAIL (PURCHASE_INVOICE, PRODUCT_ID, PRODUCT_PRICE, PRODUCT_QTY, PURCHASE_SUBTOTAL) VALUES " +
+                                                    "('" + POInvoice + "', '" + detailPODataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["subTotal"].Value) + ")";
 
-                        //    sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
-                        //                        "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + qtyApproved + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+                                DS.executeNonQueryCommand(sqlCommand);
+                            }
+                        }
 
-                        //    DS.executeNonQueryCommand(sqlCommand);
-                        //}
+                        // UPDATE REQUEST ORDER TABLE
+                        sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
 
                         break;
 
                     case globalConstants.NEW_PURCHASE_ORDER:
+                        // SAVE HEADER TABLE
+                        sqlCommand = "INSERT INTO PURCHASE_HEADER (PURCHASE_INVOICE, SUPPLIER_ID, PURCHASE_DATETIME, PURCHASE_TOTAL, PURCHASE_TERM_OF_PAYMENT, PURCHASE_TERM_OF_PAYMENT_DATE) VALUES " +
+                                            "('" + POInvoice + "', " + supplierID + ", STR_TO_DATE('" + PODateTime + "', '%d-%m-%Y'), " + POTotal + ", " + termOfPayment + ", STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y'))";
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // SAVE DETAIL TABLE
+                        for (int i = 0; i < detailPODataGridView.Rows.Count - 1; i++)
+                        {
+                            //if (null != detailPODataGridView.Rows[i].Cells["qty"].Value)
+                            {
+                                sqlCommand = "INSERT INTO PURCHASE_DETAIL (PURCHASE_INVOICE, PRODUCT_ID, PRODUCT_PRICE, PRODUCT_QTY, PURCHASE_SUBTOTAL) VALUES " +
+                                                    "('" + POInvoice + "', '" + detailPODataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+
+                                DS.executeNonQueryCommand(sqlCommand);
+                            }
+                        }
                         break;
 
                     case globalConstants.EDIT_PURCHASE_ORDER:
+                        // SAVE HEADER TABLE
+                        sqlCommand = "UPDATE PURCHASE_HEADER " +
+                                            "SET SUPPLIER_ID = " + supplierID + ", " +
+                                            "PURCHASE_DATETIME = STR_TO_DATE('" + PODateTime + "', '%d-%m-%Y'), " +
+                                            "PURCHASE_TOTAL = " + POTotal + ", " +
+                                            "PURCHASE_TERM_OF_PAYMENT = " + termOfPayment + ", " + 
+                                            "PURCHASE_TERM_OF_PAYMENT_DATE = STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y') " +
+                                            "WHERE PURCHASE_INVOICE = '" +POInvoice+ "'";
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // DELETE DETAIL TABLE
+                        sqlCommand = "DELETE FROM PURCHASE_DETAIL WHERE PURCHASE_INVOICE = '" + POInvoice + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
+
+                        // RE-INSERT DETAIL TABLE
+                        for (int i = 0; i < detailPODataGridView.Rows.Count - 1; i++)
+                        {
+                            //if (null != detailPODataGridView.Rows[i].Cells["qty"].Value)
+                            {
+                                sqlCommand = "INSERT INTO PURCHASE_DETAIL (PURCHASE_INVOICE, PRODUCT_ID, PRODUCT_PRICE, PRODUCT_QTY, PURCHASE_SUBTOTAL) VALUES " +
+                                                    "('" + POInvoice + "', '" + detailPODataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(detailPODataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+
+                                DS.executeNonQueryCommand(sqlCommand);
+                            }
+                        }
+                        break;
+
+                    case globalConstants.PRINTOUT_PURCHASE_ORDER:
+                        // UPDATE PURCHASE ORDER TABLE
+                        sqlCommand = "UPDATE PURCHASE_ORDER_HEADER SET PURCHASE_SENT = 1 WHERE PO_INVOICE = '" + POInvoice + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
                         break;
                 }
 
@@ -408,6 +508,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                result = false;
                 try
                 {
                     DS.rollBack();
@@ -449,7 +550,43 @@ namespace RoyalPetz_ADMIN
             if (saveData())
             {
                 errorLabel.Text = "";
+                generateButton.Visible = true;
+
                 gUtil.showSuccess(gUtil.INS);
+            }
+        }
+
+        private void loadDataPOHeader()
+        {
+            MySqlDataReader rdr;
+            DataTable dt = new DataTable();
+            string sqlCommand = "";
+            
+            sqlCommand = "SELECT ID, PURCHASE_INVOICE, PURCHASE_DATETIME, " +
+                                "PURCHASE_TERM_OF_PAYMENT, " +
+                                "PURCHASE_TERM_OF_PAYMENT_DATE, " +
+                                "M.SUPPLIER_FULL_NAME, PURCHASE_TOTAL, IFNULL(RO_INVOICE,'') AS RO_INVOICE " +
+                                "FROM PURCHASE_HEADER P, MASTER_SUPPLIER M " +
+                                "WHERE P.SUPPLIER_ID = M.SUPPLIER_ID AND P.ID = " + selectedPOID;
+
+            using (rdr=DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        POinvoiceTextBox.Text = rdr.GetString("PURCHASE_INVOICE");
+                        PODateTimePicker.Value = rdr.GetDateTime("PURCHASE_DATETIME");
+
+                        ROInvoiceTextBox.Text = rdr.GetString("RO_INVOICE");
+                        
+                        supplierCombo.Text = rdr.GetString("SUPPLIER_FULL_NAME");
+                        termOfPaymentCombo.SelectedIndex = rdr.GetInt32("PURCHASE_TERM_OF_PAYMENT");
+                        durationTextBox.Text = Convert.ToInt32((rdr.GetDateTime("PURCHASE_TERM_OF_PAYMENT_DATE") - rdr.GetDateTime("PURCHASE_DATETIME")).TotalDays).ToString();
+                        totalLabel.Text = rdr.GetString("PURCHASE_TOTAL");
+                        globalTotalValue = rdr.GetDouble("PURCHASE_TOTAL");
+                    }
+                }
             }
         }
 
@@ -462,6 +599,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.EDIT_PURCHASE_ORDER:
+                    loadDataPOHeader();
                     break;
             }
         }
@@ -472,7 +610,7 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
 
             sqlCommand = "SELECT RO.*, M.PRODUCT_NAME FROM REQUEST_ORDER_DETAIL RO, MASTER_PRODUCT M WHERE RO_INVOICE = '" + selectedROInvoice + "' AND RO.PRODUCT_ID = M.PRODUCT_ID";
-
+            
             using (rdr = DS.getData(sqlCommand))
             {
                 if (rdr.HasRows)
@@ -488,6 +626,27 @@ namespace RoyalPetz_ADMIN
 
         }
 
+        private void loadDataPODetail()
+        {
+            MySqlDataReader rdr;
+            string sqlCommand;
+
+            sqlCommand = "SELECT PO.*, M.PRODUCT_NAME FROM PURCHASE_DETAIL PO, MASTER_PRODUCT M WHERE PURCHASE_INVOICE = '" + POinvoiceTextBox.Text + "' AND PO.PRODUCT_ID = M.PRODUCT_ID";
+
+            using (rdr = DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        detailPODataGridView.Rows.Add(rdr.GetString("PRODUCT_NAME"), rdr.GetString("PRODUCT_PRICE"), rdr.GetString("PRODUCT_QTY"), rdr.GetString("PURCHASE_SUBTOTAL"), rdr.GetString("PRODUCT_ID"));
+                    }
+
+                    calculateTotal();
+                }
+            }
+        }
+
         private void loadDataDetail()
         {
             switch (originModuleID)
@@ -497,6 +656,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.EDIT_PURCHASE_ORDER:
+                    loadDataPODetail();
                     break;
             }
         }
@@ -521,6 +681,30 @@ namespace RoyalPetz_ADMIN
                     deleteCurrentRow();
                     calculateTotal();
                 }
+            }
+        }
+
+        private void supplierCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedSupplierID = Convert.ToInt32(supplierHiddenCombo.Items[supplierCombo.SelectedIndex]);
+        }
+
+        private void generateButton_Click(object sender, EventArgs e)
+        {
+            originModuleID = globalConstants.PRINTOUT_PURCHASE_ORDER;
+
+            if (saveData())
+            {
+                saveButton.Visible = false;
+                POinvoiceTextBox.ReadOnly = true;
+                PODateTimePicker.Enabled = false;
+                supplierCombo.Enabled = false;
+                termOfPaymentCombo.Enabled = false;
+                durationTextBox.ReadOnly = true;
+                detailPODataGridView.ReadOnly = true;
+                detailPODataGridView.AllowUserToAddRows = false;
+
+                gUtil.showSuccess(gUtil.INS);
             }
         }
     }
