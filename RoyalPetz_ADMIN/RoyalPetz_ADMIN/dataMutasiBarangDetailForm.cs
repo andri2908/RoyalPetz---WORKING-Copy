@@ -744,6 +744,23 @@ namespace RoyalPetz_ADMIN
                 errorLabel.Text = "";
         }
         
+        private void rejectButton_Click(object sender, EventArgs e)
+        {
+            subModuleID = globalConstants.REJECT_PRODUCT_MUTATION;
+            if (saveData())
+            {
+                totalApproved.Text = "Rp. 0";
+
+                MessageBox.Show("SUCCESS");
+
+                noMutasiTextBox.ReadOnly = true;
+                PMDateTimePicker.Enabled = false;
+                detailRequestOrderDataGridView.ReadOnly = true;
+                approveButton.Visible = false;
+                rejectButton.Visible = false;
+                //reprintButton.Visible = false;
+            }
+        }
         private void dataMutasiBarangDetailForm_Activated(object sender, EventArgs e)
         {
             errorLabel.Text = "";
