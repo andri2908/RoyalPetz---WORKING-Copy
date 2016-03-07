@@ -19,6 +19,8 @@ namespace RoyalPetz_ADMIN
         private int selectedSupplierID = 0;
         private double globalTotalValue = 0;
         private string previousInput = "";
+        private int originModuleID = 0;
+
         private List<string> detailQty = new List<string>();
         private CultureInfo culture = new CultureInfo("id-ID");
 
@@ -28,6 +30,12 @@ namespace RoyalPetz_ADMIN
         public dataReturPermintaanForm()
         {
             InitializeComponent();
+        }
+
+        public dataReturPermintaanForm(int moduleID)
+        {
+            InitializeComponent();
+            originModuleID = moduleID;
         }
 
         private void fillInSupplierCombo()
@@ -269,7 +277,17 @@ namespace RoyalPetz_ADMIN
             detailReturDataGridView.EditingControlShowing += detailReturDataGridView_EditingControlShowing;
 
             ReturDtPicker_1.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;           
-            fillInSupplierCombo();
+          
+            if (originModuleID == globalConstants.RETUR_PEMBELIAN_KE_SUPPLIER)
+            {
+                fillInSupplierCombo();
+            }
+            else
+            {
+                supplierCombo.Visible = false;
+                label2.Visible = false;
+                label5.Visible = false;
+            }
 
             addColumnToDataGrid();
 
@@ -311,9 +329,9 @@ namespace RoyalPetz_ADMIN
                 return false;
             }
 
-            if (selectedSupplierID == 0)
+            if (selectedSupplierID == 0 && originModuleID == globalConstants.RETUR_PEMBELIAN_KE_SUPPLIER)
             {
-                errorLabel.Text = "SUPPLIER TIDAK BOLEH KOSONG";
+                errorLabel.Text = "INPUT UNTUK SUPPLIER TIDAK VALID";
                 return false;
             }
 
@@ -333,6 +351,7 @@ namespace RoyalPetz_ADMIN
             double qtyValue;
             string descriptionValue;
             DateTime selectedReturDate;
+            MySqlException internalEX = null;
 
             returID = noReturTextBox.Text;
             supplierID = selectedSupplierID;
@@ -349,9 +368,11 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                         // SAVE HEADER TABLE
-                        sqlCommand = "INSERT INTO RETURN_PURCHASE_HEADER (RP_ID, SUPPLIER_ID, RP_DATETIME, RP_TOTAL, RP_PROCESSED) VALUES " +
+                        sqlCommand = "INSERT INTO RETURN_PURCHASE_HEADER (RP_ID, SUPPLIER_ID, RP_DATE, RP_TOTAL, RP_PROCESSED) VALUES " +
                                             "('" + returID + "', " + supplierID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), " + returTotal + ", 1)";
-                        DS.executeNonQueryCommand(sqlCommand);
+
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
 
                         // SAVE DETAIL TABLE
                         for (int i = 0; i < detailReturDataGridView.Rows.Count - 1; i++)
@@ -369,11 +390,14 @@ namespace RoyalPetz_ADMIN
                             sqlCommand = "INSERT INTO RETURN_PURCHASE_DETAIL (RP_ID, PRODUCT_ID, PRODUCT_BASEPRICE, PRODUCT_QTY, RP_DESCRIPTION, RP_SUBTOTAL) VALUES " +
                                                 "('" + returID + "', '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " +hppValue  + ", " + qtyValue + ", '" + descriptionValue + "', " + Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
 
-                            DS.executeNonQueryCommand(sqlCommand);
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
 
                             // UPDATE MASTER PRODUCT
                             sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY - " + qtyValue + " WHERE PRODUCT_ID = '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
-                            DS.executeNonQueryCommand(sqlCommand);
+
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
                         }
               
                 DS.commit();
@@ -381,7 +405,6 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
-                result = false;
                 try
                 {
                     DS.rollBack();
@@ -390,14 +413,12 @@ namespace RoyalPetz_ADMIN
                 {
                     if (DS.getMyTransConnection() != null)
                     {
-                        MessageBox.Show("An exception of type " + ex.GetType() +
-                                          " was encountered while attempting to roll back the transaction.");
+                        GUTIL.showDBOPError(ex, "ROLLBACK");
                     }
                 }
 
-                MessageBox.Show("An exception of type " + e.GetType() +
-                                  " was encountered while inserting the data.");
-                MessageBox.Show("Neither record was written to database.");
+                GUTIL.showDBOPError(e, "INSERT");
+                result = false;
             }
             finally
             {
@@ -423,6 +444,12 @@ namespace RoyalPetz_ADMIN
             {
                 GUTIL.showSuccess(GUTIL.INS);
             }
+        }
+
+        private void supplierCombo_Validated(object sender, EventArgs e)
+        {
+            if (!supplierCombo.Items.Contains(supplierCombo.Text))
+                supplierCombo.Focus();
         }
     }
 }
