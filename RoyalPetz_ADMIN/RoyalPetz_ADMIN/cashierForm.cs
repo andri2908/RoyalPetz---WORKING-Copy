@@ -20,6 +20,8 @@ namespace RoyalPetz_ADMIN
         public static int objCounter = 1;
         private DateTime localDate = DateTime.Now;
         private double globalTotalValue = 0;
+        private int selectedPelangganID = 0;
+        private int selectedPelangganIDCustomerType = 0;
 
         private Data_Access DS = new Data_Access();
         private globalUtilities gutil = new globalUtilities();
@@ -243,6 +245,28 @@ namespace RoyalPetz_ADMIN
         {
             for (int i = 1; i <= 150;i++ )
                 cashierDataGridView.Rows.Add(i, "", "", "","", "", "");
+        }
+
+        public void setCustomerID(int ID)
+        {
+            selectedPelangganID = ID;
+        }
+
+        public void saveAndPrintOutInvoice()
+        {
+            if (DialogResult.Yes == MessageBox.Show("SAVE AND PRINT OUT ?", "WARNING", MessageBoxButtons.YesNo,MessageBoxIcon.Warning))
+            {
+
+            }
+        }
+
+        public string getSalesInvoiceID()
+        {
+            string salesInvoice = "";
+
+
+
+            return salesInvoice;
         }
 
         private string getProductID(int selectedIndex)
