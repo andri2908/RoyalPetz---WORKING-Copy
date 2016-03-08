@@ -9,12 +9,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Hotkeys;
 
+using MySql.Data;
+using MySql.Data.MySqlClient;
+using System.Globalization;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class cashierForm : Form
     {
         public static int objCounter = 1;
+        private DateTime localDate = DateTime.Now;
+        private double globalTotalValue = 0;
+
+        private Data_Access DS = new Data_Access();
         private globalUtilities gutil = new globalUtilities();
+        private CultureInfo culture = new CultureInfo("id-ID");
+        private List<string> salesQty = new List<string>();
+        private List<string> disc1 = new List<string>();
+        private List<string> disc2 = new List<string>();
+        private List<string> discRP = new List<string>();
+        private string previousInput = "";
 
         private Hotkeys.GlobalHotkey ghk_F1;
         private Hotkeys.GlobalHotkey ghk_F2;
@@ -35,6 +49,37 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_ALT_F4;
 
         private adminForm parentForm;
+
+        private void updateLabel()
+        {
+            localDate = DateTime.Now;
+            dateTimeStampLabel.Text = String.Format(culture, "{0:dddd, dd-MM-yyyy - HH:mm}", localDate);
+        }
+
+        private void updateRowNumber()
+        {
+            for (int i = 0;i<cashierDataGridView.Rows.Count;i++)
+                cashierDataGridView.Rows[i].Cells["F8"].Value = i + 1;
+        }
+
+        private void addNewRow()
+        {
+            int prevValue = 0;
+                
+            if (cashierDataGridView.Rows.Count >0 )
+            {
+                prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["F8"].Value);
+            }
+
+            cashierDataGridView.Rows.Add();
+
+            salesQty.Add("0");
+            disc1.Add("0");
+            disc2.Add("0");
+            discRP.Add("0");
+
+            cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
+        }
 
         private void captureAll(Keys key)
         {
@@ -61,7 +106,8 @@ namespace RoyalPetz_ADMIN
                     MessageBox.Show("F7");
                     break;
                 case Keys.F8:
-                    MessageBox.Show("F8");
+                    addNewRow();
+                    //MessageBox.Show("F8");
                     break;
                 case Keys.F9:
                     MessageBox.Show("F9");
@@ -199,6 +245,187 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Rows.Add(i, "", "", "","", "", "");
         }
 
+        private string getProductID(int selectedIndex)
+        {
+            string productID = "";
+            productID = productComboHidden.Items[selectedIndex].ToString();
+            return productID;
+        }
+
+        private double getProductPriceValue(string productID, int customerType = 0)
+        {
+            double result = 0;
+            string priceType = "";
+
+            DS.mySqlConnect();
+
+            if (customerType == 0)
+                priceType = "PRODUCT_RETAIL_PRICE";
+            else if (customerType == 1)
+                priceType = "PRODUCT_BULK_PRICE";
+            else
+                priceType = "PRODUCT_WHOLESALE_PRICE";
+
+            result = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(" + priceType + ", 0) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+
+            return result;
+        }
+        
+        private void cashierDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (cashierDataGridView.CurrentCell.ColumnIndex == 1 && e.Control is ComboBox)
+            {
+                ComboBox comboBox = e.Control as ComboBox;
+                comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            }
+
+            if ((cashierDataGridView.CurrentCell.ColumnIndex == 3)
+                && e.Control is TextBox)
+            {
+                TextBox textBox = e.Control as TextBox;
+                textBox.TextChanged += TextBox_TextChanged;
+            }
+        }
+
+        private double calculateSubTotal(int rowSelectedIndex, double productPrice)
+        {
+            double subTotal = 0;
+            double productQty = 0;
+            double hppValue = 0;
+            double disc1Value = 0;
+            double disc2Value = 0;
+            double discRPValue = 0;
+
+            try
+            {
+                productQty = Convert.ToDouble(salesQty[rowSelectedIndex]);
+
+                hppValue = productPrice;
+
+                disc1Value = Convert.ToDouble(disc1[rowSelectedIndex]);
+                disc2Value = Convert.ToDouble(disc2[rowSelectedIndex]);
+                discRPValue = Convert.ToDouble(discRP[rowSelectedIndex]);
+
+                subTotal = Math.Round((hppValue * productQty), 2);
+
+                if (disc1Value > 0)
+                    subTotal = Math.Round(subTotal - (subTotal * disc1Value / 100), 2);
+
+                if (disc2Value > 0)
+                    subTotal = Math.Round(subTotal - (subTotal * disc2Value / 100), 2);
+
+                if (discRPValue > 0)
+                    subTotal = Math.Round(subTotal - discRPValue, 2);
+
+            }
+            catch (Exception ex)
+            {
+                subTotal = 0;
+            }
+
+            return subTotal;
+        }
+
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selectedIndex = 0;
+            int rowSelectedIndex = 0;
+            string selectedProductID = "";
+            double hpp = 0;
+            double productQty = 0;
+            double subTotal = 0;
+
+            DataGridViewComboBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewComboBoxEditingControl;
+
+            selectedIndex = dataGridViewComboBoxEditingControl.SelectedIndex;
+            selectedProductID = getProductID(selectedIndex);
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
+
+            rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
+            DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
+
+            selectedRow.Cells["productPrice"].Value = hpp;
+
+            if (null == selectedRow.Cells["qty"].Value)
+                selectedRow.Cells["qty"].Value = 0;
+
+            selectedRow.Cells["productId"].Value = selectedProductID;
+
+            subTotal = calculateSubTotal(rowSelectedIndex, hpp);
+
+            //if (null != selectedRow.Cells["qty"].Value)
+            //{
+            //    productQty = Convert.ToDouble(selectedRow.Cells["qty"].Value);
+            //    subTotal = Math.Round((hpp * productQty), 2);
+
+            //    selectedRow.Cells["jumlah"].Value = subTotal;
+            //}
+
+            calculateTotal();
+        }
+
+        private void TextBox_TextChanged(object sender, EventArgs e)
+        {
+            int rowSelectedIndex = 0;
+            double subTotal = 0;
+            double productPrice = 0;
+        
+            DataGridViewTextBoxEditingControl dataGridViewTextBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
+
+            rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
+            DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
+
+            previousInput = "";
+
+            if (cashierDataGridView.CurrentCell.ColumnIndex != 3 && cashierDataGridView.CurrentCell.ColumnIndex != 4 && cashierDataGridView.CurrentCell.ColumnIndex != 5 && cashierDataGridView.CurrentCell.ColumnIndex != 6)
+                return;
+
+                if (gutil.matchRegEx(dataGridViewTextBoxEditingControl.Text, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
+                    && (dataGridViewTextBoxEditingControl.Text.Length > 0))
+                {
+                    switch (cashierDataGridView.CurrentCell.ColumnIndex)
+                    {
+                        case 3:
+                            salesQty[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            break;
+                        case 4:
+                            disc1[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            break;
+                        case 5:
+                            disc2[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            break;
+                        case 6:
+                            discRP[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (cashierDataGridView.CurrentCell.ColumnIndex)
+                    {
+                        case 3:
+                            dataGridViewTextBoxEditingControl.Text = salesQty[rowSelectedIndex];
+                            break;
+                        case 4:
+                            dataGridViewTextBoxEditingControl.Text = disc1[rowSelectedIndex];
+                            break;
+                        case 5:
+                            dataGridViewTextBoxEditingControl.Text = disc2[rowSelectedIndex];
+                            break;
+                        case 6:
+                            dataGridViewTextBoxEditingControl.Text = discRP[rowSelectedIndex];
+                            break;
+                    }                    
+                }
+
+                productPrice = Convert.ToDouble(selectedRow.Cells["productPrice"].Value);
+
+                subTotal = calculateSubTotal(rowSelectedIndex, productPrice);
+                selectedRow.Cells["jumlah"].Value = subTotal;
+
+                calculateTotal();
+        }
+
         public cashierForm()
         {
             InitializeComponent();
@@ -212,17 +439,9 @@ namespace RoyalPetz_ADMIN
             objCounter = counter + 1;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void cashierForm_Shown(object sender, EventArgs e)
         {
             registerGlobalHotkey();
-
-            fillInDummyData();
-
         }
 
         private void cashierForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -239,24 +458,173 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private void paymentComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel9_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void cashierForm_Load(object sender, EventArgs e)
         {
+            addColumnToDataGrid();
+
+            cashierDataGridView.EditingControlShowing += cashierDataGridView_EditingControlShowing;
+
             gutil.reArrangeTabOrder(this);
         }
 
         private void cashierForm_Activated(object sender, EventArgs e)
         {
             //if need something
+            updateLabel();
+            timer1.Start();
         }
+
+        private void cashierForm_Deactivate(object sender, EventArgs e)
+        {
+            timer1.Stop();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            updateLabel();
+        }
+
+        private void addColumnToDataGrid()
+        {
+            MySqlDataReader rdr;
+            string sqlCommand = "";
+
+            DataGridViewTextBoxColumn F8Column = new DataGridViewTextBoxColumn();
+            DataGridViewComboBoxColumn productNameCmb = new DataGridViewComboBoxColumn();
+            DataGridViewTextBoxColumn productPriceColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn stockQtyColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn disc1Column = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn disc2Column = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn discRPColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn subTotalColumn = new DataGridViewTextBoxColumn();
+            DataGridViewTextBoxColumn productIdColumn = new DataGridViewTextBoxColumn();
+
+            sqlCommand = "SELECT PRODUCT_ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
+
+            productComboHidden.Items.Clear();
+
+            using (rdr = DS.getData(sqlCommand))
+            {
+                while (rdr.Read())
+                {
+                    productNameCmb.Items.Add(rdr.GetString("PRODUCT_NAME"));
+                    productComboHidden.Items.Add(rdr.GetString("PRODUCT_ID"));
+                }
+            }
+
+            rdr.Close();
+
+            // F8 COLUMN
+            F8Column.HeaderText = "F8";
+            F8Column.Name = "F8";
+            F8Column.Width = 44;
+            F8Column.ReadOnly = true;
+            cashierDataGridView.Columns.Add(F8Column);
+
+            // PRODUCT NAME COLUMN
+            productNameCmb.HeaderText = "NAMA PRODUK";
+            productNameCmb.Name = "productName";
+            productNameCmb.Width = 320;
+            cashierDataGridView.Columns.Add(productNameCmb);
+
+            productPriceColumn.HeaderText = "HARGA";
+            productPriceColumn.Name = "productPrice";
+            productPriceColumn.Width = 200;
+            productPriceColumn.ReadOnly = true;
+            cashierDataGridView.Columns.Add(productPriceColumn);
+
+            stockQtyColumn.HeaderText = "QTY";
+            stockQtyColumn.Name = "qty";
+            stockQtyColumn.Width = 100;
+            cashierDataGridView.Columns.Add(stockQtyColumn);
+
+            disc1Column.HeaderText = "DISC 1 (%)";
+            disc1Column.Name = "disc1";
+            disc1Column.Width = 150;
+            disc1Column.MaxInputLength = 5;
+            cashierDataGridView.Columns.Add(disc1Column);
+
+            disc2Column.HeaderText = "DISC 2 (%)";
+            disc2Column.Name = "disc2";
+            disc2Column.Width = 150;
+            disc2Column.MaxInputLength = 5;
+            cashierDataGridView.Columns.Add(disc2Column);
+
+            discRPColumn.HeaderText = "DISC RP";
+            discRPColumn.Name = "disc1";
+            discRPColumn.Width = 150;
+            cashierDataGridView.Columns.Add(discRPColumn);
+
+            subTotalColumn.HeaderText = "JUMLAH";
+            subTotalColumn.Name = "jumlah";
+            subTotalColumn.Width = 200;
+            subTotalColumn.ReadOnly = true;
+            cashierDataGridView.Columns.Add(subTotalColumn);
+
+            productIdColumn.HeaderText = "PRODUCT_ID";
+            productIdColumn.Name = "productID";
+            productIdColumn.Width = 200;
+            productIdColumn.Visible = false;
+            cashierDataGridView.Columns.Add(productIdColumn);
+        }
+
+        private void deleteCurrentRow()
+        {
+            if (cashierDataGridView.SelectedCells.Count > 0)
+            {
+                int rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
+
+                cashierDataGridView.Rows.Remove(selectedRow);
+            }
+        }
+
+        private void cashierDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
+                {
+                    deleteCurrentRow();
+                    updateRowNumber();
+                    calculateTotal();
+                }
+            }
+        }
+
+        private void calculateTotal()
+        {
+            double total = 0;
+
+            for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
+            {
+                if ( null != cashierDataGridView.Rows[i].Cells["jumlah"].Value )
+                    total = total + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value);
+            }
+
+            globalTotalValue = total;
+            totalLabel.Text = "Rp. " + total.ToString();
+
+            totalPenjualanTextBox.Text = total.ToString();
+        }
+
+        private void discPenjualanTextBox_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        {
+
+        }
+
+        private void discJualMaskedTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            double totalAfterDisc = 0;
+
+            totalAfterDisc = globalTotalValue - Convert.ToDouble(discJualMaskedTextBox.Text);
+
+            totalAfterDiscTextBox.Text = totalAfterDisc.ToString();
+        }
+
     }
 }

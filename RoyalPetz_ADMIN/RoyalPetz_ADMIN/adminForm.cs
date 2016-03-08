@@ -16,47 +16,6 @@ namespace RoyalPetz_ADMIN
 {
     public partial class adminForm : Form
     {
-        private const string BG_IMAGE = "bg.jpg";
-        private DateTime localDate = DateTime.Now;
-        private CultureInfo culture = new CultureInfo("id-ID");
-
-        private Data_Access DS = new Data_Access();
-
-        private int selectedUserID = 0;
-        private globalUtilities gutil = new globalUtilities();
-
-        public adminForm(int userID)
-        {
-            InitializeComponent();
-
-            selectedUserID = userID;
-            loadBGimage();
-        }
-
-        private void updateLabel()
-        {
-            localDate = DateTime.Now;
-            timeStampStatusLabel.Text = String.Format(culture, "{0:dddd, dd-MM-yyyy - HH:mm}", localDate);
-        }
-
-        private void loadBGimage()
-        {
-
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            this.SetStyle(ControlStyles.UserPaint, true);
-
-            this.BackgroundImageLayout = ImageLayout.Stretch;
-
-            try
-            {
-                this.BackgroundImage = Image.FromFile(BG_IMAGE);
-             }
-            catch(Exception ex)
-            {
-
-            }
-        }
         private class MyRenderer : ToolStripProfessionalRenderer
         {
             public MyRenderer() : base(new MyColors()) { }
@@ -99,6 +58,48 @@ namespace RoyalPetz_ADMIN
             public override Color MenuBorder
             {
                 get { return Color.Black; }
+            }
+        }
+       
+        private const string BG_IMAGE = "bg.jpg";
+        private DateTime localDate = DateTime.Now;
+        private CultureInfo culture = new CultureInfo("id-ID");
+
+        private Data_Access DS = new Data_Access();
+
+        private int selectedUserID = 0;
+        private globalUtilities gutil = new globalUtilities();
+
+        public adminForm(int userID)
+        {
+            InitializeComponent();
+
+            selectedUserID = userID;
+            loadBGimage();
+        }
+
+        private void updateLabel()
+        {
+            localDate = DateTime.Now;
+            timeStampStatusLabel.Text = String.Format(culture, "{0:dddd, dd-MM-yyyy - HH:mm}", localDate);
+        }
+
+        private void loadBGimage()
+        {
+
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SetStyle(ControlStyles.UserPaint, true);
+
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+
+            try
+            {
+                this.BackgroundImage = Image.FromFile(BG_IMAGE);
+             }
+            catch(Exception ex)
+            {
+
             }
         }
         
@@ -212,9 +213,7 @@ namespace RoyalPetz_ADMIN
             dataGroupForm displayedForm = new dataGroupForm(globalConstants.PENGATURAN_GRUP_AKSES);
             displayedForm.ShowDialog(this);
         }
-
-        
-
+       
         private void toolStripMenuItem55_Click(object sender, EventArgs e)
         {
             sinkronisasiInformasiForm displayedForm = new sinkronisasiInformasiForm();
@@ -613,6 +612,7 @@ namespace RoyalPetz_ADMIN
         {
             toolStripMenuItem25.ForeColor = Color.Black;
         }
+
         private void toolStripMenuItem74_DropDownClosed(object sender, EventArgs e)
         {
             toolStripMenuItem74.ForeColor = Color.FloralWhite;
