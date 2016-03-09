@@ -210,6 +210,10 @@ namespace RoyalPetz_ADMIN
             ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
             ghk_F8.Register();
 
+            ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
+            ghk_F9.Register();
+            
+            
             //ghk_F1 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F1, this);
             //ghk_F1.Register();
             
@@ -222,9 +226,7 @@ namespace RoyalPetz_ADMIN
             //ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
             //ghk_F7.Register();
             
-            //ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
-            //ghk_F9.Register();
-
+            
             //ghk_F10 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F10, this);
             //ghk_F10.Register();
 
@@ -254,12 +256,13 @@ namespace RoyalPetz_ADMIN
             ghk_F3.Unregister();
             ghk_F4.Unregister();
             ghk_F8.Unregister();
-            
+            ghk_F9.Unregister();
+
             //ghk_F1.Unregister();
             //ghk_F2.Unregister();
             //ghk_F5.Unregister();
             //ghk_F7.Unregister();
-            //ghk_F9.Unregister();
+            
             //ghk_F10.Unregister();
             //ghk_F11.Unregister();
             ////ghk_F12.Unregister();
@@ -328,6 +331,10 @@ namespace RoyalPetz_ADMIN
             string sqlCommand = "";
 
             string salesInvoice = "0";
+            bool newID = false;
+            string salesInvPrefix = "";
+            int currentCounter = 0;
+            
             string SODateTime = "";
             DateTime SODueDateTimeValue;
             string SODueDateTime = "";
@@ -336,9 +343,10 @@ namespace RoyalPetz_ADMIN
             int salesPaid = 0;
             MySqlException internalEX = null;
 
-            salesInvoice = getSalesInvoiceID();
             SODateTime = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now);
-            salesDiscountFinal = discJualMaskedTextBox.Text;
+
+            if (discJualMaskedTextBox.Text.Length > 0)
+                salesDiscountFinal = discJualMaskedTextBox.Text;
 
             if (cashRadioButton.Checked)
             {
@@ -360,15 +368,29 @@ namespace RoyalPetz_ADMIN
             {
                 DS.mySqlConnect();
 
+                // GENERATE NEW SALES INVOICE
+                if (!getSalesInvoiceID(ref salesInvoice, ref newID, ref salesInvPrefix, ref currentCounter))
+                    throw new Exception("CAN'T GENERATE SALES INVOICE");
+            
+                if (newID)
+                    sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
+                else
+                    sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
+
+                if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
+
+
+                // SAVE HEADER TABLE
                 sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID) " +
                                     "VALUES " +
-                                    "('" + salesInvoice + "', " + selectedPelangganID + ", '" + SODateTime + "', " + globalTotalValue + ", " + salesDiscountFinal + ", " + salesTop + ", '" + SODueDateTime + "', " + salesPaid + ")";
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + globalTotalValue + ", " + salesDiscountFinal + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ")";
                 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 
                 // SAVE DETAIL TABLE
-                for (int i = 0; i < cashierDataGridView.Rows.Count - 1; i++)
+                for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
                 {
                     if (null != cashierDataGridView.Rows[i].Cells["qty"].Value)
                     {
@@ -398,7 +420,7 @@ namespace RoyalPetz_ADMIN
             {
                 try
                 {
-                    DS.rollBack();
+                    DS.rollBack(ref internalEX);
                 }
                 catch (MySqlException ex)
                 {
@@ -441,40 +463,77 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private string getSalesInvoiceID()
+        private bool getSalesInvoiceID(ref string salesInvoice, ref bool newID, ref string salesInvPrefix, ref int currentCounter)
         {
-            string salesInvoice = "";
+            //string salesInvoice = "";
             DateTime localDate = DateTime.Now;
-            string salesInvPrefix = "";
-            int currentCounter = 0;
+            //string salesInvPrefix = "";
+            //int currentCounter = 0;
             string currentCounterStringValue;
             string sqlCommand = "";
+            MySqlException internalEX = null;
+            bool result = false;
 
             salesInvPrefix= String.Format(culture, "{0:yyyyMMdd}", localDate);
 
-            sqlCommand = "SELECT IFNULL(SALES_INVOICE_COUNTER, 0) AS COUNTER FROM SYS_SALESINV_AUTOGENERATE";
-            currentCounter = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
+            //DS.beginTransaction();
 
-            if (0 == currentCounter)
+            try
             {
-                currentCounter = 1;
-                sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
+                DS.mySqlConnect();
+
+                sqlCommand = "SELECT IFNULL(SALES_INVOICE_COUNTER, 0) AS COUNTER FROM SYS_SALESINV_AUTOGENERATE WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
+                currentCounter = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
+
+                if (0 == currentCounter)
+                {
+                    currentCounter = 1;
+                    newID = true;
+                    //sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
+                }
+                else
+                {
+                    currentCounter += 1;
+                    newID = false;
+                    //sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
+                }
+
+                currentCounterStringValue = currentCounter.ToString();
+                while (currentCounterStringValue.Length < 10)
+                    currentCounterStringValue = "0" + currentCounterStringValue;
+
+
+                //if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                //    throw internalEX;
+
+                salesInvoice = salesInvPrefix + currentCounterStringValue;
+
+                //DS.commit();
+                result = true;
             }
-            else
+            catch(Exception e)
             {
-                currentCounter += 1;
-                sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
+                //try
+                //{
+                //    DS.rollBack(ref internalEX);
+                //}
+                //catch (MySqlException ex)
+                //{
+                //    if (DS.getMyTransConnection() != null)
+                //    {
+                //        gutil.showDBOPError(ex, "ROLLBACK");
+                //    }
+                //}
+
+                //gutil.showDBOPError(e, "INSERT");
+                result = false;
+            }
+            finally
+            {
+                DS.mySqlClose();
             }
 
-            currentCounterStringValue = currentCounter.ToString();
-            while (currentCounterStringValue.Length < 10)
-                currentCounterStringValue = "0" + currentCounterStringValue;
-
-            DS.executeNonQueryCommand(sqlCommand);
-
-            salesInvoice = salesInvPrefix + currentCounterStringValue;
-
-            return salesInvoice;
+            return result;
         }
 
         private string getProductID(int selectedIndex)
