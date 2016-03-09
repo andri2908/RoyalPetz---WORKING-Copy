@@ -114,6 +114,7 @@ namespace RoyalPetz_ADMIN
             else
             {
                 parentForm.setCustomerID(selectedCustomerID);
+                this.Close();
             }
         }
 
@@ -131,6 +132,31 @@ namespace RoyalPetz_ADMIN
                 loadCustomerData();
             }
             
+        }
+
+        private void dataPelangganDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (dataPelangganDataGridView.Rows.Count <= 0)
+                    return;
+
+                int selectedrowindex = dataPelangganDataGridView.SelectedCells[0].RowIndex;
+
+                DataGridViewRow selectedRow = dataPelangganDataGridView.Rows[selectedrowindex];
+                selectedCustomerID = Convert.ToInt32(selectedRow.Cells["CUSTOMER_ID"].Value);
+
+                if (originModuleID != globalConstants.CASHIER_MODULE)
+                {
+                    dataPelangganDetailForm displayedForm = new dataPelangganDetailForm(globalConstants.EDIT_CUSTOMER, selectedCustomerID);
+                    displayedForm.ShowDialog(this);
+                }
+                else
+                {
+                    parentForm.setCustomerID(selectedCustomerID);
+                    this.Close();
+                }
+            }
         }
     }
 }

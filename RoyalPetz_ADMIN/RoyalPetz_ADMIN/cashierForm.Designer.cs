@@ -44,19 +44,19 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
             this.sizeComboBox = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.printoutCheckBox = new System.Windows.Forms.CheckBox();
             this.paymentComboBox = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.labelCaraBayar = new System.Windows.Forms.Label();
             this.creditRadioButton = new System.Windows.Forms.RadioButton();
             this.cashRadioButton = new System.Windows.Forms.RadioButton();
             this.label4 = new System.Windows.Forms.Label();
             this.customerComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.discJualMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.totalAfterDiscTextBox = new System.Windows.Forms.TextBox();
@@ -78,7 +78,8 @@
             this.dateTimeStampLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.productComboHidden = new System.Windows.Forms.ComboBox();
-            this.discJualMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
+            this.pelangganTextBox = new System.Windows.Forms.TextBox();
+            this.tempoMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cashierDataGridView)).BeginInit();
             this.panel5.SuspendLayout();
@@ -153,7 +154,7 @@
             this.cashierDataGridView.AllowUserToAddRows = false;
             this.cashierDataGridView.AllowUserToDeleteRows = false;
             this.cashierDataGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.LightCyan;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FloralWhite;
             this.cashierDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.cashierDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
             this.cashierDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -199,16 +200,17 @@
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel5.Controls.Add(this.tempoMaskedTextBox);
+            this.panel5.Controls.Add(this.pelangganTextBox);
             this.panel5.Controls.Add(this.button4);
             this.panel5.Controls.Add(this.button2);
             this.panel5.Controls.Add(this.button3);
-            this.panel5.Controls.Add(this.label8);
             this.panel5.Controls.Add(this.sizeComboBox);
             this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.button1);
             this.panel5.Controls.Add(this.printoutCheckBox);
             this.panel5.Controls.Add(this.paymentComboBox);
-            this.panel5.Controls.Add(this.label5);
+            this.panel5.Controls.Add(this.labelCaraBayar);
             this.panel5.Controls.Add(this.creditRadioButton);
             this.panel5.Controls.Add(this.cashRadioButton);
             this.panel5.Controls.Add(this.label4);
@@ -252,17 +254,6 @@
             this.button3.TabIndex = 14;
             this.button3.UseVisualStyleBackColor = true;
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label8.Location = new System.Drawing.Point(341, 14);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(176, 17);
-            this.label8.TabIndex = 12;
-            this.label8.Text = "Pelanggan Umum [Ecer]";
-            // 
             // sizeComboBox
             // 
             this.sizeComboBox.FormattingEnabled = true;
@@ -270,7 +261,7 @@
             "Kecil",
             "Sedang",
             "Kwarto"});
-            this.sizeComboBox.Location = new System.Drawing.Point(343, 93);
+            this.sizeComboBox.Location = new System.Drawing.Point(342, 70);
             this.sizeComboBox.Name = "sizeComboBox";
             this.sizeComboBox.Size = new System.Drawing.Size(126, 26);
             this.sizeComboBox.TabIndex = 11;
@@ -281,7 +272,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label7.Location = new System.Drawing.Point(341, 66);
+            this.label7.Location = new System.Drawing.Point(340, 43);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(101, 18);
             this.label7.TabIndex = 10;
@@ -315,25 +306,25 @@
             // 
             this.paymentComboBox.FormattingEnabled = true;
             this.paymentComboBox.Items.AddRange(new object[] {
-            "Kas",
+            "Cash",
             "Kartu Kredit",
             "Kartu Debit"});
             this.paymentComboBox.Location = new System.Drawing.Point(154, 69);
             this.paymentComboBox.Name = "paymentComboBox";
             this.paymentComboBox.Size = new System.Drawing.Size(142, 26);
             this.paymentComboBox.TabIndex = 7;
-            this.paymentComboBox.Text = "Kas";
+            this.paymentComboBox.Text = "Cash";
             // 
-            // label5
+            // labelCaraBayar
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label5.Location = new System.Drawing.Point(8, 71);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(146, 18);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Cara Bayar       :";
+            this.labelCaraBayar.AutoSize = true;
+            this.labelCaraBayar.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCaraBayar.ForeColor = System.Drawing.Color.FloralWhite;
+            this.labelCaraBayar.Location = new System.Drawing.Point(8, 71);
+            this.labelCaraBayar.Name = "labelCaraBayar";
+            this.labelCaraBayar.Size = new System.Drawing.Size(146, 18);
+            this.labelCaraBayar.TabIndex = 6;
+            this.labelCaraBayar.Text = "Cara Bayar       :";
             // 
             // creditRadioButton
             // 
@@ -359,6 +350,7 @@
             this.cashRadioButton.TabStop = true;
             this.cashRadioButton.Text = "Tuna&i";
             this.cashRadioButton.UseVisualStyleBackColor = true;
+            this.cashRadioButton.CheckedChanged += new System.EventHandler(this.cashRadioButton_CheckedChanged);
             // 
             // label4
             // 
@@ -375,14 +367,15 @@
             // 
             this.customerComboBox.FormattingEnabled = true;
             this.customerComboBox.Items.AddRange(new object[] {
-            "P-UMUM",
+            "P-UMUM [ECER]",
             "P-PARTAI",
             "P-GROSIR"});
-            this.customerComboBox.Location = new System.Drawing.Point(154, 9);
+            this.customerComboBox.Location = new System.Drawing.Point(343, 10);
             this.customerComboBox.Name = "customerComboBox";
             this.customerComboBox.Size = new System.Drawing.Size(183, 26);
             this.customerComboBox.TabIndex = 2;
             this.customerComboBox.Text = "P-UMUM";
+            this.customerComboBox.SelectedIndexChanged += new System.EventHandler(this.customerComboBox_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -393,7 +386,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(151, 18);
             this.label3.TabIndex = 1;
-            this.label3.Text = "&Pelanggan [F6] : ";
+            this.label3.Text = "&Pelanggan [F4] : ";
             // 
             // panel6
             // 
@@ -416,6 +409,18 @@
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(370, 161);
             this.panel6.TabIndex = 0;
+            // 
+            // discJualMaskedTextBox
+            // 
+            this.discJualMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.discJualMaskedTextBox.Location = new System.Drawing.Point(184, 33);
+            this.discJualMaskedTextBox.Mask = "000000000000000";
+            this.discJualMaskedTextBox.Name = "discJualMaskedTextBox";
+            this.discJualMaskedTextBox.Size = new System.Drawing.Size(181, 27);
+            this.discJualMaskedTextBox.TabIndex = 17;
+            this.discJualMaskedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.discJualMaskedTextBox.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
+            this.discJualMaskedTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.discJualMaskedTextBox_Validating);
             // 
             // textBox5
             // 
@@ -637,17 +642,26 @@
             this.productComboHidden.TabIndex = 13;
             this.productComboHidden.Visible = false;
             // 
-            // discJualMaskedTextBox
+            // pelangganTextBox
             // 
-            this.discJualMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discJualMaskedTextBox.Location = new System.Drawing.Point(184, 33);
-            this.discJualMaskedTextBox.Mask = "000000000000000";
-            this.discJualMaskedTextBox.Name = "discJualMaskedTextBox";
-            this.discJualMaskedTextBox.Size = new System.Drawing.Size(181, 27);
-            this.discJualMaskedTextBox.TabIndex = 17;
-            this.discJualMaskedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.discJualMaskedTextBox.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
-            this.discJualMaskedTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.discJualMaskedTextBox_Validating);
+            this.pelangganTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pelangganTextBox.Location = new System.Drawing.Point(154, 10);
+            this.pelangganTextBox.Name = "pelangganTextBox";
+            this.pelangganTextBox.ReadOnly = true;
+            this.pelangganTextBox.Size = new System.Drawing.Size(181, 27);
+            this.pelangganTextBox.TabIndex = 17;
+            // 
+            // tempoMaskedTextBox
+            // 
+            this.tempoMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tempoMaskedTextBox.Location = new System.Drawing.Point(154, 68);
+            this.tempoMaskedTextBox.Mask = "00000";
+            this.tempoMaskedTextBox.Name = "tempoMaskedTextBox";
+            this.tempoMaskedTextBox.Size = new System.Drawing.Size(71, 27);
+            this.tempoMaskedTextBox.TabIndex = 18;
+            this.tempoMaskedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tempoMaskedTextBox.ValidatingType = typeof(int);
+            this.tempoMaskedTextBox.Visible = false;
             // 
             // cashierForm
             // 
@@ -704,13 +718,12 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RadioButton creditRadioButton;
         private System.Windows.Forms.RadioButton cashRadioButton;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelCaraBayar;
         private System.Windows.Forms.ComboBox paymentComboBox;
         private System.Windows.Forms.CheckBox printoutCheckBox;
         private System.Windows.Forms.ComboBox sizeComboBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
@@ -736,6 +749,8 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ComboBox productComboHidden;
         private System.Windows.Forms.MaskedTextBox discJualMaskedTextBox;
+        private System.Windows.Forms.TextBox pelangganTextBox;
+        private System.Windows.Forms.MaskedTextBox tempoMaskedTextBox;
     }
 }
 

@@ -22,8 +22,10 @@ namespace RoyalPetz_ADMIN
         private double globalTotalValue = 0;
         private int selectedPelangganID = 0;
         private int selectedPelangganIDCustomerType = 0;
+        private bool isLoading = false;
 
         private Data_Access DS = new Data_Access();
+
         private globalUtilities gutil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
         private List<string> salesQty = new List<string>();
@@ -52,6 +54,27 @@ namespace RoyalPetz_ADMIN
 
         private adminForm parentForm;
 
+        public cashierForm()
+        {
+            InitializeComponent();
+        }
+
+        public cashierForm(int counter)
+        {
+            InitializeComponent();
+            label1.Text = "Struk # : " + counter;
+
+            objCounter = counter + 1;
+        }
+
+        public void setCustomerID(int ID)
+        {
+            selectedPelangganID = ID;
+            setCustomerProfile();
+
+            refreshProductPrice();
+        }
+        
         private void updateLabel()
         {
             localDate = DateTime.Now;
@@ -87,32 +110,38 @@ namespace RoyalPetz_ADMIN
         {
             switch (key)
             {
+                case Keys.F3:
+                    cashierForm displayForm = new cashierForm(objCounter);
+                    displayForm.Show();
+                    break;
+            
+                case Keys.F4:
+                    //MessageBox.Show("F4");
+                    dataPelangganForm pelangganForm = new dataPelangganForm(globalConstants.CASHIER_MODULE, this);
+                    pelangganForm.ShowDialog(this);
+                    break;
+            
+                case Keys.F8:
+                    addNewRow();
+                    break;
+
+                case Keys.F9:
+                    saveAndPrintOutInvoice();
+                    break;
+
+                
+                
                 case Keys.F1:
                     MessageBox.Show("F1");
                     break;
                 case Keys.F2:
                     MessageBox.Show("F2");
                     break;
-                case Keys.F3:
-                    //MessageBox.Show("F3");
-                    cashierForm displayForm = new cashierForm(objCounter);
-                    displayForm.Show();
-                    break;
-                case Keys.F4:
-                    MessageBox.Show("F4");
-                    break;
                 case Keys.F5:
                     MessageBox.Show("F5");
                     break;
                 case Keys.F7:
                     MessageBox.Show("F7");
-                    break;
-                case Keys.F8:
-                    addNewRow();
-                    //MessageBox.Show("F8");
-                    break;
-                case Keys.F9:
-                    MessageBox.Show("F9");
                     break;
                 case Keys.F10:
                     MessageBox.Show("F10");
@@ -172,73 +201,74 @@ namespace RoyalPetz_ADMIN
 
         private void registerGlobalHotkey()
         {
-            ghk_F1 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F1, this);
-            ghk_F1.Register();
-            
-            ghk_F2 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F2, this);
-            ghk_F2.Register();
-            
             ghk_F3 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F3, this);
             ghk_F3.Register();
-            
+
             ghk_F4 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F4, this);
             ghk_F4.Register();
-
-            ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
-            ghk_F5.Register();
-
-            ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
-            ghk_F7.Register();
-
+            
             ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
             ghk_F8.Register();
 
-            ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
-            ghk_F9.Register();
+            //ghk_F1 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F1, this);
+            //ghk_F1.Register();
+            
+            //ghk_F2 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F2, this);
+            //ghk_F2.Register();
+            
+            //ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
+            //ghk_F5.Register();
 
-            ghk_F10 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F10, this);
-            ghk_F10.Register();
+            //ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
+            //ghk_F7.Register();
+            
+            //ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
+            //ghk_F9.Register();
 
-            ghk_F11 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F11, this);
-            ghk_F11.Register();
+            //ghk_F10 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F10, this);
+            //ghk_F10.Register();
 
-            // ## F12 doesn't work yet ##
-            //ghk_F12 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F12, this);
-            //ghk_F12.Register();
+            //ghk_F11 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F11, this);
+            //ghk_F11.Register();
 
-            ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
-            ghk_CTRL_DEL.Register();
+            //// ## F12 doesn't work yet ##
+            ////ghk_F12 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F12, this);
+            ////ghk_F12.Register();
 
-            ghk_CTRL_C = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.C, this);
-            ghk_CTRL_C.Register();
+            //ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
+            //ghk_CTRL_DEL.Register();
 
-            ghk_CTRL_U = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.U, this);
-            ghk_CTRL_U.Register();
+            //ghk_CTRL_C = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.C, this);
+            //ghk_CTRL_C.Register();
 
-            ghk_ALT_F4 = new Hotkeys.GlobalHotkey(Constants.ALT, Keys.F4, this);
-            ghk_ALT_F4.Register();
+            //ghk_CTRL_U = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.U, this);
+            //ghk_CTRL_U.Register();
+
+            //ghk_ALT_F4 = new Hotkeys.GlobalHotkey(Constants.ALT, Keys.F4, this);
+            //ghk_ALT_F4.Register();
 
         }
 
         private void unregisterGlobalHotkey()
         {
-            ghk_F1.Unregister();
-            ghk_F2.Unregister();
             ghk_F3.Unregister();
             ghk_F4.Unregister();
-            ghk_F5.Unregister();
-            ghk_F7.Unregister();
             ghk_F8.Unregister();
-            ghk_F9.Unregister();
-            ghk_F10.Unregister();
-            ghk_F11.Unregister();
-            //ghk_F12.Unregister();
+            
+            //ghk_F1.Unregister();
+            //ghk_F2.Unregister();
+            //ghk_F5.Unregister();
+            //ghk_F7.Unregister();
+            //ghk_F9.Unregister();
+            //ghk_F10.Unregister();
+            //ghk_F11.Unregister();
+            ////ghk_F12.Unregister();
 
-            ghk_CTRL_DEL.Unregister();
-            ghk_CTRL_C.Unregister();
-            ghk_CTRL_U.Unregister();
+            //ghk_CTRL_DEL.Unregister();
+            //ghk_CTRL_C.Unregister();
+            //ghk_CTRL_U.Unregister();
 
-            ghk_ALT_F4.Unregister();
+            //ghk_ALT_F4.Unregister();
         }
 
         private void fillInDummyData()
@@ -247,24 +277,202 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Rows.Add(i, "", "", "","", "", "");
         }
 
-        public void setCustomerID(int ID)
+        private void setCustomerProfile()
         {
-            selectedPelangganID = ID;
+            MySqlDataReader rdr;
+            string sqlCommand = "";
+
+            //DS.mySqlConnect();
+            sqlCommand = "SELECT * FROM MASTER_CUSTOMER WHERE CUSTOMER_ID = " + selectedPelangganID;
+            using (rdr = DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    rdr.Read();
+
+                    pelangganTextBox.Text = rdr.GetString("CUSTOMER_FULL_NAME");
+                    isLoading = true;
+                    customerComboBox.SelectedIndex = rdr.GetInt32("CUSTOMER_GROUP") - 1;
+                    customerComboBox.Text = customerComboBox.Items[customerComboBox.SelectedIndex].ToString();
+                    isLoading = false;
+                }
+            }
+            rdr.Close();
         }
 
-        public void saveAndPrintOutInvoice()
+        private void refreshProductPrice()
+        {
+            double productPrice = 0;
+            for (int i =0;i<cashierDataGridView.Rows.Count;i++)
+            {
+                if (null != cashierDataGridView.Rows[i].Cells["productID"].Value)
+                {
+                    productPrice = getProductPriceValue(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString(), customerComboBox.SelectedIndex);
+
+                    cashierDataGridView.Rows[i].Cells["productPrice"].Value = productPrice;
+                    cashierDataGridView.Rows[i].Cells["jumlah"].Value = calculateSubTotal(i, productPrice);
+                }
+            }
+
+            calculateTotal();
+        }
+        
+        private bool dataValidated()
+        {
+            return true;
+        }
+
+        private bool saveDataTransaction()
+        {
+            bool result = false;
+            string sqlCommand = "";
+
+            string salesInvoice = "0";
+            string SODateTime = "";
+            DateTime SODueDateTimeValue;
+            string SODueDateTime = "";
+            string salesDiscountFinal = "0";
+            int salesTop = 1;
+            int salesPaid = 0;
+            MySqlException internalEX = null;
+
+            salesInvoice = getSalesInvoiceID();
+            SODateTime = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now);
+            salesDiscountFinal = discJualMaskedTextBox.Text;
+
+            if (cashRadioButton.Checked)
+            {
+                salesTop = 1;
+                salesPaid = 1;
+                SODueDateTime = SODateTime;
+            }
+            else
+            { 
+                salesTop = 0;
+                SODueDateTimeValue = DateTime.Now;
+                SODueDateTimeValue.AddDays(Convert.ToInt32(tempoMaskedTextBox.Text));
+                SODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", SODueDateTimeValue);
+            }
+
+            DS.beginTransaction();
+
+            try
+            {
+                DS.mySqlConnect();
+
+                sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID) " +
+                                    "VALUES " +
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", '" + SODateTime + "', " + globalTotalValue + ", " + salesDiscountFinal + ", " + salesTop + ", '" + SODueDateTime + "', " + salesPaid + ")";
+                
+                if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
+
+                // SAVE DETAIL TABLE
+                for (int i = 0; i < cashierDataGridView.Rows.Count - 1; i++)
+                {
+                    if (null != cashierDataGridView.Rows[i].Cells["qty"].Value)
+                    {
+                        sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
+                                            "VALUES " +
+                                            "('" + salesInvoice + "', '" + cashierDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
+                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc1"].Value) +
+                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc2"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["discRP"].Value) +
+                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value) + ")";
+
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+
+                        // REDUCE STOCK QTY AT MASTER PRODUCT
+                        sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY - " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) +
+                                            " WHERE PRODUCT_ID = '" + cashierDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
+
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+                    }
+                }
+
+                DS.commit();
+                result = true;
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    DS.rollBack();
+                }
+                catch (MySqlException ex)
+                {
+                    if (DS.getMyTransConnection() != null)
+                    {
+                        gutil.showDBOPError(ex, "ROLLBACK");
+                    }
+                }
+
+                gutil.showDBOPError(e, "INSERT");
+                result = false;
+            }
+            finally
+            {
+                DS.mySqlClose();
+            }
+
+            return result;
+        }
+
+        private bool saveData()
+        {
+            if (dataValidated())
+            {
+                return saveDataTransaction();
+            }
+
+            return false;
+        }
+
+        private void saveAndPrintOutInvoice()
         {
             if (DialogResult.Yes == MessageBox.Show("SAVE AND PRINT OUT ?", "WARNING", MessageBoxButtons.YesNo,MessageBoxIcon.Warning))
             {
-
+                if (saveData())
+                {
+                    gutil.showSuccess(gutil.INS);
+                    gutil.ResetAllControls(this);
+                }
             }
         }
 
-        public string getSalesInvoiceID()
+        private string getSalesInvoiceID()
         {
             string salesInvoice = "";
+            DateTime localDate = DateTime.Now;
+            string salesInvPrefix = "";
+            int currentCounter = 0;
+            string currentCounterStringValue;
+            string sqlCommand = "";
 
+            salesInvPrefix= String.Format(culture, "{0:yyyyMMdd}", localDate);
 
+            sqlCommand = "SELECT IFNULL(SALES_INVOICE_COUNTER, 0) AS COUNTER FROM SYS_SALESINV_AUTOGENERATE";
+            currentCounter = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
+
+            if (0 == currentCounter)
+            {
+                currentCounter = 1;
+                sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
+            }
+            else
+            {
+                currentCounter += 1;
+                sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
+            }
+
+            currentCounterStringValue = currentCounter.ToString();
+            while (currentCounterStringValue.Length < 10)
+                currentCounterStringValue = "0" + currentCounterStringValue;
+
+            DS.executeNonQueryCommand(sqlCommand);
+
+            salesInvoice = salesInvPrefix + currentCounterStringValue;
 
             return salesInvoice;
         }
@@ -450,19 +658,6 @@ namespace RoyalPetz_ADMIN
                 calculateTotal();
         }
 
-        public cashierForm()
-        {
-            InitializeComponent();
-        }
-
-        public cashierForm(int counter)
-        {
-            InitializeComponent();
-            label1.Text = "Struk # : " + counter;
-
-            objCounter = counter + 1;
-        }
-
         private void cashierForm_Shown(object sender, EventArgs e)
         {
             registerGlobalHotkey();
@@ -477,14 +672,19 @@ namespace RoyalPetz_ADMIN
         {
             if (creditRadioButton.Checked == true)
             {
-                paymentComboBox.Items.Clear();
-                paymentComboBox.Items.Add("KREDIT");
+                paymentComboBox.Visible = false;
+                tempoMaskedTextBox.Visible = true;
+                
+                labelCaraBayar.Text = "Tempo            :";
             }
         }
 
         private void cashierForm_Load(object sender, EventArgs e)
         {
             addColumnToDataGrid();
+
+            customerComboBox.SelectedIndex = 0;
+            customerComboBox.Text = customerComboBox.Items[0].ToString();
 
             cashierDataGridView.EditingControlShowing += cashierDataGridView_EditingControlShowing;
 
@@ -575,7 +775,7 @@ namespace RoyalPetz_ADMIN
             cashierDataGridView.Columns.Add(disc2Column);
 
             discRPColumn.HeaderText = "DISC RP";
-            discRPColumn.Name = "disc1";
+            discRPColumn.Name = "discRP";
             discRPColumn.Width = 150;
             cashierDataGridView.Columns.Add(discRPColumn);
 
@@ -632,10 +832,6 @@ namespace RoyalPetz_ADMIN
             totalPenjualanTextBox.Text = total.ToString();
         }
 
-        private void discPenjualanTextBox_TextChanged(object sender, EventArgs e)
-        {
-        }
-
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         {
 
@@ -648,6 +844,25 @@ namespace RoyalPetz_ADMIN
             totalAfterDisc = globalTotalValue - Convert.ToDouble(discJualMaskedTextBox.Text);
 
             totalAfterDiscTextBox.Text = totalAfterDisc.ToString();
+        }
+
+        private void customerComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (isLoading)
+                return;
+
+            refreshProductPrice();
+            
+        }
+
+        private void cashRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cashRadioButton.Checked)
+            {
+                tempoMaskedTextBox.Visible = false;
+                labelCaraBayar.Text = "Cara Bayar       :";
+                paymentComboBox.Visible = true;
+            }
         }
 
     }
