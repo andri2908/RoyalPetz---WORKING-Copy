@@ -21,7 +21,6 @@ namespace RoyalPetz_ADMIN
         private DateTime localDate = DateTime.Now;
         private double globalTotalValue = 0;
         private int selectedPelangganID = 0;
-        private int selectedPelangganIDCustomerType = 0;
         private bool isLoading = false;
 
         private Data_Access DS = new Data_Access();
@@ -32,8 +31,7 @@ namespace RoyalPetz_ADMIN
         private List<string> disc1 = new List<string>();
         private List<string> disc2 = new List<string>();
         private List<string> discRP = new List<string>();
-        private string previousInput = "";
-
+        
         private Hotkeys.GlobalHotkey ghk_F1;
         private Hotkeys.GlobalHotkey ghk_F2;
         private Hotkeys.GlobalHotkey ghk_F3;
@@ -90,20 +88,27 @@ namespace RoyalPetz_ADMIN
         private void addNewRow()
         {
             int prevValue = 0;
+            bool allowToAdd = true;
                 
-            if (cashierDataGridView.Rows.Count >0 )
+            if (cashierDataGridView.Rows.Count > 0 )
             {
                 prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["F8"].Value);
+
+                if (null == cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"].Value)
+                    allowToAdd = false;
             }
 
-            cashierDataGridView.Rows.Add();
+            if (allowToAdd)
+            {
+                cashierDataGridView.Rows.Add();
 
-            salesQty.Add("0");
-            disc1.Add("0");
-            disc2.Add("0");
-            discRP.Add("0");
+                salesQty.Add("0");
+                disc1.Add("0");
+                disc2.Add("0");
+                discRP.Add("0");
 
-            cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
+                cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
+            }
         }
 
         private void captureAll(Keys key)
@@ -322,6 +327,24 @@ namespace RoyalPetz_ADMIN
         
         private bool dataValidated()
         {
+            if (globalTotalValue <= 0)
+            {
+                errorLabel.Text = "NILAI TRANSAKSI 0";
+                return false;
+            }
+
+            for (int i = 0; i < cashierDataGridView.Rows.Count; i++ )
+            {
+                if (
+                    (null == cashierDataGridView.Rows[i].Cells["qty"].Value) || 
+                    (0 == Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value))
+                    )
+                {
+                    errorLabel.Text = "JUMLAH PRODUK 0";
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -368,18 +391,7 @@ namespace RoyalPetz_ADMIN
             {
                 DS.mySqlConnect();
 
-                // GENERATE NEW SALES INVOICE
-                if (!getSalesInvoiceID(ref salesInvoice, ref newID, ref salesInvPrefix, ref currentCounter))
-                    throw new Exception("CAN'T GENERATE SALES INVOICE");
-            
-                if (newID)
-                    sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
-                else
-                    sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
-
-                if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
-                    throw internalEX;
-
+                salesInvoice = getSalesInvoiceID();
 
                 // SAVE HEADER TABLE
                 sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID) " +
@@ -397,8 +409,8 @@ namespace RoyalPetz_ADMIN
                         sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
                                             "VALUES " +
                                             "('" + salesInvoice + "', '" + cashierDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
-                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc1"].Value) +
-                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc2"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["discRP"].Value) +
+                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc1"].Value) + ", " +
+                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc2"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["discRP"].Value) + ", " +
                                             Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value) + ")";
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
@@ -458,82 +470,57 @@ namespace RoyalPetz_ADMIN
                 if (saveData())
                 {
                     gutil.showSuccess(gutil.INS);
+
+                    isLoading = true;
+                    
+                    while (cashierDataGridView.Rows.Count > 0 )
+                        cashierDataGridView.Rows.Remove(cashierDataGridView.Rows[0]);
+
+                    isLoading = false;
+
+                    salesQty.Clear();
+                    disc1.Clear();
+                    disc2.Clear();
+                    discRP.Clear();
+
                     gutil.ResetAllControls(this);
                 }
             }
         }
 
-        private bool getSalesInvoiceID(ref string salesInvoice, ref bool newID, ref string salesInvPrefix, ref int currentCounter)
+        private string getSalesInvoiceID()
         {
-            //string salesInvoice = "";
+            string salesInvoice = "";
             DateTime localDate = DateTime.Now;
-            //string salesInvPrefix = "";
-            //int currentCounter = 0;
-            string currentCounterStringValue;
+            string maxSalesInvoice = "";
+            double maxSalesInvoiceValue = 0;
+            string salesInvPrefix;
             string sqlCommand = "";
-            MySqlException internalEX = null;
-            bool result = false;
-
+           
             salesInvPrefix= String.Format(culture, "{0:yyyyMMdd}", localDate);
 
-            //DS.beginTransaction();
+            sqlCommand = "SELECT IFNULL(MAX(SALES_INVOICE),'0') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
 
-            try
+            maxSalesInvoice = DS.getDataSingleValue(sqlCommand).ToString();
+            maxSalesInvoice = maxSalesInvoice.Substring(8);
+            maxSalesInvoiceValue = Convert.ToInt32(maxSalesInvoice);
+
+            if (maxSalesInvoiceValue > 0)
             {
-                DS.mySqlConnect();
-
-                sqlCommand = "SELECT IFNULL(SALES_INVOICE_COUNTER, 0) AS COUNTER FROM SYS_SALESINV_AUTOGENERATE WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
-                currentCounter = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
-
-                if (0 == currentCounter)
-                {
-                    currentCounter = 1;
-                    newID = true;
-                    //sqlCommand = "INSERT INTO SYS_SALESINV_AUTOGENERATE (SALES_INVOICE_PREFIX, SALES_INVOICE_COUNTER) VALUES ('" + salesInvPrefix + "', " + currentCounter + ")";
-                }
-                else
-                {
-                    currentCounter += 1;
-                    newID = false;
-                    //sqlCommand = "UPDATE SYS_SALESINV_AUTOGENERATE SET SALES_INVOICE_COUNTER = " + currentCounter + " WHERE SALES_INVOICE_PREFIX = '" + salesInvPrefix + "'";
-                }
-
-                currentCounterStringValue = currentCounter.ToString();
-                while (currentCounterStringValue.Length < 10)
-                    currentCounterStringValue = "0" + currentCounterStringValue;
-
-
-                //if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
-                //    throw internalEX;
-
-                salesInvoice = salesInvPrefix + currentCounterStringValue;
-
-                //DS.commit();
-                result = true;
+                maxSalesInvoiceValue += 1;
+                maxSalesInvoice = maxSalesInvoiceValue.ToString();
             }
-            catch(Exception e)
+            else
             {
-                //try
-                //{
-                //    DS.rollBack(ref internalEX);
-                //}
-                //catch (MySqlException ex)
-                //{
-                //    if (DS.getMyTransConnection() != null)
-                //    {
-                //        gutil.showDBOPError(ex, "ROLLBACK");
-                //    }
-                //}
-
-                //gutil.showDBOPError(e, "INSERT");
-                result = false;
-            }
-            finally
-            {
-                DS.mySqlClose();
+                maxSalesInvoice = "1";
             }
 
-            return result;
+            while (maxSalesInvoice.Length < 10)
+                maxSalesInvoice = "0" + maxSalesInvoice;
+
+            salesInvoice = salesInvPrefix + maxSalesInvoice;
+
+            return salesInvoice;
         }
 
         private string getProductID(int selectedIndex)
@@ -617,14 +604,35 @@ namespace RoyalPetz_ADMIN
             return subTotal;
         }
 
+        private bool stockIsEnough(string productID, double qtyRequested)
+        {
+            bool result = false;
+
+            if (productID.Length <= 0)
+                result = true; // NO PRODUCT SELECTED YET
+            else
+            {
+                double stockQty = 0;
+
+                stockQty = Convert.ToDouble(DS.getDataSingleValue("SELECT (PRODUCT_STOCK_QTY - PRODUCT_LIMIT_STOCK) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+
+                if (stockQty >= qtyRequested)
+                    result = true;
+            }
+
+            return result;
+        }
+
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = 0;
             int rowSelectedIndex = 0;
             string selectedProductID = "";
             double hpp = 0;
-            double productQty = 0;
             double subTotal = 0;
+
+            if (isLoading)
+                return;
 
             DataGridViewComboBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewComboBoxEditingControl;
 
@@ -644,14 +652,6 @@ namespace RoyalPetz_ADMIN
 
             subTotal = calculateSubTotal(rowSelectedIndex, hpp);
 
-            //if (null != selectedRow.Cells["qty"].Value)
-            //{
-            //    productQty = Convert.ToDouble(selectedRow.Cells["qty"].Value);
-            //    subTotal = Math.Round((hpp * productQty), 2);
-
-            //    selectedRow.Cells["jumlah"].Value = subTotal;
-            //}
-
             calculateTotal();
         }
 
@@ -660,24 +660,33 @@ namespace RoyalPetz_ADMIN
             int rowSelectedIndex = 0;
             double subTotal = 0;
             double productPrice = 0;
-        
+            string productID = "";
+
+            if (isLoading)
+                return;
+
             DataGridViewTextBoxEditingControl dataGridViewTextBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
 
             rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
             DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
 
-            previousInput = "";
-
             if (cashierDataGridView.CurrentCell.ColumnIndex != 3 && cashierDataGridView.CurrentCell.ColumnIndex != 4 && cashierDataGridView.CurrentCell.ColumnIndex != 5 && cashierDataGridView.CurrentCell.ColumnIndex != 6)
                 return;
 
+            if (null != selectedRow.Cells["productID"].Value)
+                productID = selectedRow.Cells["productID"].Value.ToString();
+
                 if (gutil.matchRegEx(dataGridViewTextBoxEditingControl.Text, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
-                    && (dataGridViewTextBoxEditingControl.Text.Length > 0))
+                    && (dataGridViewTextBoxEditingControl.Text.Length > 0)
+                    )
                 {
                     switch (cashierDataGridView.CurrentCell.ColumnIndex)
                     {
                         case 3:
-                            salesQty[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            if (stockIsEnough(productID, Convert.ToDouble(dataGridViewTextBoxEditingControl.Text)))
+                                salesQty[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                            else
+                                dataGridViewTextBoxEditingControl.Text = salesQty[rowSelectedIndex];
                             break;
                         case 4:
                             disc1[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
@@ -748,6 +757,7 @@ namespace RoyalPetz_ADMIN
             cashierDataGridView.EditingControlShowing += cashierDataGridView_EditingControlShowing;
 
             gutil.reArrangeTabOrder(this);
+            errorLabel.Text = "";
         }
 
         private void cashierForm_Activated(object sender, EventArgs e)

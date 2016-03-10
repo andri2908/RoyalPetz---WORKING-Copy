@@ -41,6 +41,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cashierDataGridView = new System.Windows.Forms.DataGridView();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.tempoMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
+            this.pelangganTextBox = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -78,8 +80,7 @@
             this.dateTimeStampLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.productComboHidden = new System.Windows.Forms.ComboBox();
-            this.pelangganTextBox = new System.Windows.Forms.TextBox();
-            this.tempoMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
+            this.errorLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cashierDataGridView)).BeginInit();
             this.panel5.SuspendLayout();
@@ -200,6 +201,7 @@
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel5.Controls.Add(this.errorLabel);
             this.panel5.Controls.Add(this.tempoMaskedTextBox);
             this.panel5.Controls.Add(this.pelangganTextBox);
             this.panel5.Controls.Add(this.button4);
@@ -223,6 +225,27 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(982, 162);
             this.panel5.TabIndex = 9;
+            // 
+            // tempoMaskedTextBox
+            // 
+            this.tempoMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tempoMaskedTextBox.Location = new System.Drawing.Point(154, 68);
+            this.tempoMaskedTextBox.Mask = "00000";
+            this.tempoMaskedTextBox.Name = "tempoMaskedTextBox";
+            this.tempoMaskedTextBox.Size = new System.Drawing.Size(71, 27);
+            this.tempoMaskedTextBox.TabIndex = 18;
+            this.tempoMaskedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tempoMaskedTextBox.ValidatingType = typeof(int);
+            this.tempoMaskedTextBox.Visible = false;
+            // 
+            // pelangganTextBox
+            // 
+            this.pelangganTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pelangganTextBox.Location = new System.Drawing.Point(154, 10);
+            this.pelangganTextBox.Name = "pelangganTextBox";
+            this.pelangganTextBox.ReadOnly = true;
+            this.pelangganTextBox.Size = new System.Drawing.Size(181, 27);
+            this.pelangganTextBox.TabIndex = 17;
             // 
             // button4
             // 
@@ -295,7 +318,7 @@
             this.printoutCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.printoutCheckBox.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.printoutCheckBox.ForeColor = System.Drawing.Color.FloralWhite;
-            this.printoutCheckBox.Location = new System.Drawing.Point(11, 119);
+            this.printoutCheckBox.Location = new System.Drawing.Point(11, 110);
             this.printoutCheckBox.Name = "printoutCheckBox";
             this.printoutCheckBox.Size = new System.Drawing.Size(236, 22);
             this.printoutCheckBox.TabIndex = 8;
@@ -642,26 +665,18 @@
             this.productComboHidden.TabIndex = 13;
             this.productComboHidden.Visible = false;
             // 
-            // pelangganTextBox
+            // errorLabel
             // 
-            this.pelangganTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pelangganTextBox.Location = new System.Drawing.Point(154, 10);
-            this.pelangganTextBox.Name = "pelangganTextBox";
-            this.pelangganTextBox.ReadOnly = true;
-            this.pelangganTextBox.Size = new System.Drawing.Size(181, 27);
-            this.pelangganTextBox.TabIndex = 17;
-            // 
-            // tempoMaskedTextBox
-            // 
-            this.tempoMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tempoMaskedTextBox.Location = new System.Drawing.Point(154, 68);
-            this.tempoMaskedTextBox.Mask = "00000";
-            this.tempoMaskedTextBox.Name = "tempoMaskedTextBox";
-            this.tempoMaskedTextBox.Size = new System.Drawing.Size(71, 27);
-            this.tempoMaskedTextBox.TabIndex = 18;
-            this.tempoMaskedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.tempoMaskedTextBox.ValidatingType = typeof(int);
-            this.tempoMaskedTextBox.Visible = false;
+            this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.errorLabel.AutoSize = true;
+            this.errorLabel.BackColor = System.Drawing.Color.White;
+            this.errorLabel.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.errorLabel.ForeColor = System.Drawing.Color.Red;
+            this.errorLabel.Location = new System.Drawing.Point(8, 137);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(23, 18);
+            this.errorLabel.TabIndex = 36;
+            this.errorLabel.Text = "   ";
             // 
             // cashierForm
             // 
@@ -751,6 +766,7 @@
         private System.Windows.Forms.MaskedTextBox discJualMaskedTextBox;
         private System.Windows.Forms.TextBox pelangganTextBox;
         private System.Windows.Forms.MaskedTextBox tempoMaskedTextBox;
+        private System.Windows.Forms.Label errorLabel;
     }
 }
 
