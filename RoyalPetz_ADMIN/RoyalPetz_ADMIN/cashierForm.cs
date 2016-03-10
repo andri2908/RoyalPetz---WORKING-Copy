@@ -380,8 +380,10 @@ namespace RoyalPetz_ADMIN
             else
             { 
                 salesTop = 0;
+                salesPaid = 0;
                 SODueDateTimeValue = DateTime.Now;
                 SODueDateTimeValue.AddDays(Convert.ToInt32(tempoMaskedTextBox.Text));
+                SODueDateTimeValue = SODueDateTimeValue.AddDays(Convert.ToInt32(tempoMaskedTextBox.Text));
                 SODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", SODueDateTimeValue);
             }
 
@@ -423,6 +425,16 @@ namespace RoyalPetz_ADMIN
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
                     }
+                }
+
+                if (salesPaid == 0)
+                {
+                    // SAVE TO CREDIT TABLE
+                    sqlCommand = "INSERT INTO CREDIT (SALES_INVOICE, CREDIT_DUE_DATE, CREDIT_NOMINAL, CREDIT_PAID) VALUES " +
+                                        "('" + salesInvoice + "', STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + globalTotalValue + ", 0)";
+
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
                 }
 
                 DS.commit();
@@ -747,8 +759,18 @@ namespace RoyalPetz_ADMIN
             }
         }
 
+        private void loadNoFaktur()
+        {
+            string noFakturValue;
+
+            noFakturValue = DS.getDataSingleValue("SELECT NO_FAKTUR FROM SYS_CONFIG").ToString();
+
+            noFakturLabel.Text = noFakturValue;
+        }
+
         private void cashierForm_Load(object sender, EventArgs e)
         {
+            loadNoFaktur();
             addColumnToDataGrid();
 
             customerComboBox.SelectedIndex = 0;
