@@ -694,7 +694,7 @@ namespace RoyalPetz_ADMIN
                 {
                     switch (cashierDataGridView.CurrentCell.ColumnIndex)
                     {
-                        case 3:
+                        case 3:                            
                             if (stockIsEnough(productID, Convert.ToDouble(dataGridViewTextBoxEditingControl.Text)))
                                 salesQty[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
                             else

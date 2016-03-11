@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.namaSupplierTextbox = new System.Windows.Forms.TextBox();
             this.dataInvoiceDataGridView = new System.Windows.Forms.DataGridView();
@@ -36,7 +36,7 @@
             this.pelanggan = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.displayButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.pelangganCombo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataInvoiceDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,14 +64,14 @@
             this.dataInvoiceDataGridView.AllowUserToAddRows = false;
             this.dataInvoiceDataGridView.AllowUserToDeleteRows = false;
             this.dataInvoiceDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataInvoiceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataInvoiceDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataInvoiceDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataInvoiceDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.noInvoice,
@@ -119,13 +119,15 @@
             this.label2.TabIndex = 37;
             this.label2.Text = "PELANGGAN";
             // 
-            // textBox1
+            // pelangganCombo
             // 
-            this.textBox1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(147, 53);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(260, 27);
-            this.textBox1.TabIndex = 38;
+            this.pelangganCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.pelangganCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pelangganCombo.FormattingEnabled = true;
+            this.pelangganCombo.Location = new System.Drawing.Point(147, 53);
+            this.pelangganCombo.Name = "pelangganCombo";
+            this.pelangganCombo.Size = new System.Drawing.Size(260, 26);
+            this.pelangganCombo.TabIndex = 46;
             // 
             // dataInvoiceForm
             // 
@@ -133,8 +135,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(602, 586);
+            this.Controls.Add(this.pelangganCombo);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.namaSupplierTextbox);
             this.Controls.Add(this.dataInvoiceDataGridView);
@@ -159,8 +161,8 @@
         private System.Windows.Forms.DataGridView dataInvoiceDataGridView;
         private System.Windows.Forms.Button displayButton;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.DataGridViewTextBoxColumn noInvoice;
         private System.Windows.Forms.DataGridViewTextBoxColumn pelanggan;
+        private System.Windows.Forms.ComboBox pelangganCombo;
     }
 }
