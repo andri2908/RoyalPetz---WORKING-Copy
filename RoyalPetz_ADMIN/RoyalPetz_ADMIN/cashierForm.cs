@@ -511,7 +511,7 @@ namespace RoyalPetz_ADMIN
            
             salesInvPrefix= String.Format(culture, "{0:yyyyMMdd}", localDate);
 
-            sqlCommand = "SELECT IFNULL(MAX(SALES_INVOICE),'0') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
+            sqlCommand = "SELECT IFNULL(MAX(SALES_INVOICE),'123456780') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
 
             maxSalesInvoice = DS.getDataSingleValue(sqlCommand).ToString();
             maxSalesInvoice = maxSalesInvoice.Substring(8);
@@ -907,6 +907,13 @@ namespace RoyalPetz_ADMIN
             }
         }
 
+        private string reformatToCurrency()
+        {
+            string result = "";
+
+            return result;
+        }
+
         private void calculateTotal()
         {
             double total = 0;
@@ -918,7 +925,7 @@ namespace RoyalPetz_ADMIN
             }
 
             globalTotalValue = total;
-            totalLabel.Text = "Rp. " + total.ToString();
+            totalLabel.Text = total.ToString("C", culture);
 
             totalPenjualanTextBox.Text = total.ToString();
         }

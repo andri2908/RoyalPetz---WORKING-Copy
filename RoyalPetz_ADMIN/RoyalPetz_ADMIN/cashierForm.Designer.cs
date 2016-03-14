@@ -601,11 +601,11 @@
             this.totalLabel.AutoSize = true;
             this.totalLabel.BackColor = System.Drawing.Color.Transparent;
             this.totalLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.totalLabel.Font = new System.Drawing.Font("Verdana", 40F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalLabel.Font = new System.Drawing.Font("Verdana", 35.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalLabel.ForeColor = System.Drawing.Color.Black;
-            this.totalLabel.Location = new System.Drawing.Point(294, 64);
+            this.totalLabel.Location = new System.Drawing.Point(238, 67);
             this.totalLabel.Name = "totalLabel";
-            this.totalLabel.Size = new System.Drawing.Size(184, 65);
+            this.totalLabel.Size = new System.Drawing.Size(161, 57);
             this.totalLabel.TabIndex = 11;
             this.totalLabel.Text = "Rp. 0";
             this.totalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
