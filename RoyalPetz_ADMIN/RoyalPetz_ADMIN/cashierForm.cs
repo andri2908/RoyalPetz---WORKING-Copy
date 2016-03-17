@@ -907,12 +907,7 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private string reformatToCurrency()
-        {
-            string result = "";
 
-            return result;
-        }
 
         private void calculateTotal()
         {
