@@ -36,13 +36,14 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label11 = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.supplierNameTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.label11 = new System.Windows.Forms.Label();
+            this.paymentDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.poInvoiceTextBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -50,16 +51,15 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.descriptionTextBox = new System.Windows.Forms.TextBox();
-            this.totalPaymentMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.totalLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
+            this.totalPaymentMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.errorLabel = new System.Windows.Forms.Label();
             this.detailPurchaseOrderDataGridView = new System.Windows.Forms.DataGridView();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.detailPaymentDataGridView = new System.Windows.Forms.DataGridView();
-            this.paymentDateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.errorLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
@@ -167,12 +167,24 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(888, 248);
             this.tableLayoutPanel1.TabIndex = 53;
             // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label11.Location = new System.Drawing.Point(3, 12);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(183, 18);
+            this.label11.TabIndex = 20;
+            this.label11.Text = "TGL PEMBAYARAN :";
+            // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.61244F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 197F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
             this.tableLayoutPanel3.Controls.Add(this.supplierNameTextBox, 0, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(261, 89);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -241,17 +253,15 @@
             this.tableLayoutPanel6.Size = new System.Drawing.Size(624, 32);
             this.tableLayoutPanel6.TabIndex = 28;
             // 
-            // label11
+            // paymentDateTimePicker
             // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label11.Location = new System.Drawing.Point(3, 12);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(183, 18);
-            this.label11.TabIndex = 20;
-            this.label11.Text = "TGL PEMBAYARAN :";
+            this.paymentDateTimePicker.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.paymentDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.paymentDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.paymentDateTimePicker.Location = new System.Drawing.Point(3, 3);
+            this.paymentDateTimePicker.Name = "paymentDateTimePicker";
+            this.paymentDateTimePicker.Size = new System.Drawing.Size(173, 27);
+            this.paymentDateTimePicker.TabIndex = 58;
             // 
             // tableLayoutPanel2
             // 
@@ -334,18 +344,6 @@
             this.descriptionTextBox.Size = new System.Drawing.Size(624, 27);
             this.descriptionTextBox.TabIndex = 58;
             // 
-            // totalPaymentMaskedTextBox
-            // 
-            this.totalPaymentMaskedTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.totalPaymentMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalPaymentMaskedTextBox.Location = new System.Drawing.Point(261, 183);
-            this.totalPaymentMaskedTextBox.Mask = "0000000000";
-            this.totalPaymentMaskedTextBox.Name = "totalPaymentMaskedTextBox";
-            this.totalPaymentMaskedTextBox.Size = new System.Drawing.Size(120, 27);
-            this.totalPaymentMaskedTextBox.TabIndex = 57;
-            this.totalPaymentMaskedTextBox.Text = "0";
-            this.totalPaymentMaskedTextBox.TextChanged += new System.EventHandler(this.totalPaymentMaskedTextBox_TextChanged);
-            // 
             // totalLabel
             // 
             this.totalLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -382,6 +380,18 @@
             this.label15.TabIndex = 60;
             this.label15.Text = ":";
             // 
+            // totalPaymentMaskedTextBox
+            // 
+            this.totalPaymentMaskedTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.totalPaymentMaskedTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalPaymentMaskedTextBox.Location = new System.Drawing.Point(261, 183);
+            this.totalPaymentMaskedTextBox.Mask = "0000000000";
+            this.totalPaymentMaskedTextBox.Name = "totalPaymentMaskedTextBox";
+            this.totalPaymentMaskedTextBox.Size = new System.Drawing.Size(120, 27);
+            this.totalPaymentMaskedTextBox.TabIndex = 57;
+            this.totalPaymentMaskedTextBox.Text = "0";
+            this.totalPaymentMaskedTextBox.TextChanged += new System.EventHandler(this.totalPaymentMaskedTextBox_TextChanged);
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.SteelBlue;
@@ -390,6 +400,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(889, 29);
             this.panel1.TabIndex = 54;
+            // 
+            // errorLabel
+            // 
+            this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.errorLabel.AutoSize = true;
+            this.errorLabel.BackColor = System.Drawing.Color.White;
+            this.errorLabel.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.errorLabel.ForeColor = System.Drawing.Color.Red;
+            this.errorLabel.Location = new System.Drawing.Point(5, 6);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(23, 18);
+            this.errorLabel.TabIndex = 58;
+            this.errorLabel.Text = "   ";
             // 
             // detailPurchaseOrderDataGridView
             // 
@@ -430,29 +453,6 @@
             this.detailPaymentDataGridView.RowHeadersVisible = false;
             this.detailPaymentDataGridView.Size = new System.Drawing.Size(889, 163);
             this.detailPaymentDataGridView.TabIndex = 57;
-            // 
-            // paymentDateTimePicker
-            // 
-            this.paymentDateTimePicker.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.paymentDateTimePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.paymentDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.paymentDateTimePicker.Location = new System.Drawing.Point(3, 3);
-            this.paymentDateTimePicker.Name = "paymentDateTimePicker";
-            this.paymentDateTimePicker.Size = new System.Drawing.Size(173, 27);
-            this.paymentDateTimePicker.TabIndex = 58;
-            // 
-            // errorLabel
-            // 
-            this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.errorLabel.AutoSize = true;
-            this.errorLabel.BackColor = System.Drawing.Color.White;
-            this.errorLabel.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.errorLabel.ForeColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(5, 6);
-            this.errorLabel.Name = "errorLabel";
-            this.errorLabel.Size = new System.Drawing.Size(23, 18);
-            this.errorLabel.TabIndex = 58;
-            this.errorLabel.Text = "   ";
             // 
             // pembayaranHutangForm
             // 
