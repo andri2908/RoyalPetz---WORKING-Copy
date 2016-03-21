@@ -367,38 +367,38 @@ namespace RoyalPetz_ADMIN
             {
                 DS.mySqlConnect();
 
-                        // SAVE HEADER TABLE
-                        sqlCommand = "INSERT INTO RETURN_PURCHASE_HEADER (RP_ID, SUPPLIER_ID, RP_DATE, RP_TOTAL, RP_PROCESSED) VALUES " +
-                                            "('" + returID + "', " + supplierID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), " + returTotal + ", 1)";
+                // SAVE HEADER TABLE
+                sqlCommand = "INSERT INTO RETURN_PURCHASE_HEADER (RP_ID, SUPPLIER_ID, RP_DATE, RP_TOTAL, RP_PROCESSED) VALUES " +
+                                    "('" + returID + "', " + supplierID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), " + returTotal + ", 1)";
+
+                if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                      throw internalEX;
+
+                // SAVE DETAIL TABLE
+                for (int i = 0; i < detailReturDataGridView.Rows.Count - 1; i++)
+                {
+                       hppValue = Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["HPP"].Value);
+                       qtyValue = Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["qty"].Value);
+                       try
+                       {
+                            descriptionValue = detailReturDataGridView.Rows[i].Cells["description"].Value.ToString();
+                       }
+                       catch(Exception ex)
+                       {
+                            descriptionValue = " ";
+                        }
+                        sqlCommand = "INSERT INTO RETURN_PURCHASE_DETAIL (RP_ID, PRODUCT_ID, PRODUCT_BASEPRICE, PRODUCT_QTY, RP_DESCRIPTION, RP_SUBTOTAL) VALUES " +
+                                            "('" + returID + "', '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " +hppValue  + ", " + qtyValue + ", '" + descriptionValue + "', " + Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
 
-                        // SAVE DETAIL TABLE
-                        for (int i = 0; i < detailReturDataGridView.Rows.Count - 1; i++)
-                        {
-                            hppValue = Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["HPP"].Value);
-                            qtyValue = Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["qty"].Value);
-                            try
-                            {
-                                descriptionValue = detailReturDataGridView.Rows[i].Cells["description"].Value.ToString();
-                            }
-                            catch(Exception ex)
-                            {
-                                descriptionValue = " ";
-                            }
-                            sqlCommand = "INSERT INTO RETURN_PURCHASE_DETAIL (RP_ID, PRODUCT_ID, PRODUCT_BASEPRICE, PRODUCT_QTY, RP_DESCRIPTION, RP_SUBTOTAL) VALUES " +
-                                                "('" + returID + "', '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " +hppValue  + ", " + qtyValue + ", '" + descriptionValue + "', " + Convert.ToDouble(detailReturDataGridView.Rows[i].Cells["subTotal"].Value) + ")";
+                        // UPDATE MASTER PRODUCT
+                        sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY - " + qtyValue + " WHERE PRODUCT_ID = '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
 
-                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
-                                throw internalEX;
-
-                            // UPDATE MASTER PRODUCT
-                            sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY - " + qtyValue + " WHERE PRODUCT_ID = '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
-
-                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
-                                throw internalEX;
-                        }
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                           throw internalEX;
+                }
               
                 DS.commit();
                 result = true;
