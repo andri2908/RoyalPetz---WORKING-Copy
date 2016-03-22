@@ -8,11 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MySql.Data;
+using MySql.Data.MySqlClient;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class setDatabaseLocationForm : Form
     {
         private globalUtilities gutil = new globalUtilities();
+        private Data_Access DS = new Data_Access();
+
         public setDatabaseLocationForm()
         {
             InitializeComponent();
@@ -58,6 +63,18 @@ namespace RoyalPetz_ADMIN
                 localhostRadioButton.Checked = false;
                 serverIPRadioButton.Checked = true;
             }
+        }
+
+        private bool saveData()
+        {
+            bool result = true;
+
+            return result;
+        }
+
+        private void loadData()
+        {
+
         }
 
         private void setDatabaseLocationForm_Load(object sender, EventArgs e)
