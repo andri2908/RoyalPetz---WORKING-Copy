@@ -16,10 +16,24 @@ namespace RoyalPetz_ADMIN
         private MySqlTransaction myTrans;
         private MySqlCommand myTransCommand;
         public bool connectToLive = true;
-
+        private string defaultConnectionString = "server=127.0.0.1;uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
         private string myConnectionString = "server=127.0.0.1;uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
 
         private MySqlConnection transConnection;
+
+        public void setMyConnectionString(string ipAddress, string userID, string password)
+        {
+            string tempConnectionString = "";
+
+            tempConnectionString = "server=" + ipAddress + ";uid=" + userID + ";pwd=" + password + ";database=SYS_POS;";
+        }
+
+        private string getConnectionString()
+        {
+            string result = "";
+
+            return result;
+        }
 
         public MySqlConnection getDSConn()
         {
