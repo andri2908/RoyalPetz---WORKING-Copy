@@ -54,7 +54,10 @@ namespace RoyalPetz_ADMIN
                 {
                     ComboBox comboBox = (ComboBox)control;
                     if (comboBox.Items.Count > 0)
+                    { 
                         comboBox.SelectedIndex = 0;
+                        comboBox.Text = "";
+                    }
                 }
 
                 if (control is CheckBox)
@@ -68,6 +71,7 @@ namespace RoyalPetz_ADMIN
                     ListBox listBox = (ListBox)control;
                     listBox.ClearSelected();
                 }
+
             }
         }
 
