@@ -18,7 +18,7 @@ namespace RoyalPetz_ADMIN
     {
         private Data_Access DS = new Data_Access();
         private globalUtilities gUtil = new globalUtilities();
-        //private string appPath = Appplication.s
+        private string appPath = Application.StartupPath;
 
         private string ipAddress = "";
 
@@ -50,7 +50,7 @@ namespace RoyalPetz_ADMIN
 
         private void saveConfigFile()
         {
-            string fileName = "pos.cfg";
+            string fileName = appPath + "\\pos.cfg";
             string line = ipAddress;
             StreamWriter sw = null;
 
@@ -64,24 +64,6 @@ namespace RoyalPetz_ADMIN
 
             sw.WriteLine(line);
             sw.Close();
-        }
-
-        private void IPMasked_1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.OemPeriod)
-                IPMasked_2.Focus();
-        }
-
-        private void IPMasked_2_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.OemPeriod)
-                IPMasked_3.Focus();
-        }
-
-        private void IPMasked_3_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.OemPeriod)
-                IPMasked_4.Focus();
         }
 
         private void createConfigFileForm_Load(object sender, EventArgs e)
@@ -103,6 +85,24 @@ namespace RoyalPetz_ADMIN
             }
 
             this.Close();
+        }
+
+        private void IPMasked_1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '.')
+                IPMasked_2.Focus();
+        }
+
+        private void IPMasked_2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '.')
+                IPMasked_3.Focus();
+        }
+
+        private void IPMasked_3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '.')
+                IPMasked_4.Focus();
         }
     }
 }

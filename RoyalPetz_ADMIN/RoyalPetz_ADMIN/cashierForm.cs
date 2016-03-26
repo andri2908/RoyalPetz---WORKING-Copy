@@ -384,10 +384,7 @@ namespace RoyalPetz_ADMIN
             if (cashRadioButton.Checked)
             {
                 salesTop = 1;
-                if (selectedPaymentMethod == 0)
-                    salesPaid = 1;
-                else
-                    salesPaid = 0;
+                salesPaid = 1;
                 SODueDateTime = SODateTime;
             }
             else
@@ -519,7 +516,7 @@ namespace RoyalPetz_ADMIN
         {
             string rsult = "";
 
-            rsult = DS.getDataSingleValue("SELECT IFNULL(NO_FAKTUR, '') FROM SYS_CONFIG LIMIT 1").ToString();
+            rsult = DS.getDataSingleValue("SELECT IFNULL(NO_FAKTUR, '') FROM SYS_CONFIG WHERE ID = 1").ToString();
 
             return rsult;
         }

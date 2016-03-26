@@ -181,7 +181,7 @@ namespace RoyalPetz_ADMIN
 
         private void infoFolderDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDatabaseLocationForm displayedForm = new setDatabaseLocationForm(); 
+            SetApplicationForm displayedForm = new SetApplicationForm(); 
             displayedForm.ShowDialog(this);
         }
 
@@ -368,10 +368,15 @@ namespace RoyalPetz_ADMIN
                 try
                 {
                     fileName = openFileDialog1.FileName;
-                    this.BackgroundImageLayout = ImageLayout.Stretch;
-                    this.BackgroundImage = Image.FromFile(fileName);
 
+                    this.BackgroundImage.Dispose();
+                    
+                    System.IO.File.Delete(appPath + "\\bg.jpg");
                     System.IO.File.Copy(openFileDialog1.FileName, appPath + "\\bg.jpg");
+
+                    this.BackgroundImage = Image.FromFile(BG_IMAGE);
+                    this.BackgroundImageLayout = ImageLayout.Stretch;
+
                 }
                 catch (Exception ex)
                 {

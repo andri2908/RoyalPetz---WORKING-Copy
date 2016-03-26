@@ -28,34 +28,6 @@ namespace RoyalPetz_ADMIN
             InitializeComponent();
         }
 
-        private void exportToCSV_Click(object sender, EventArgs e)
-        {
-            //if (exportToCSV.Checked)
-            //{
-            //    exportToCSV.Checked = false;
-            //    //exportToExcel.Checked = true;
-            //}
-            //else
-            //{
-            //    exportToCSV.Checked = true;
-            // //   exportToExcel.Checked = false;
-            //}
-        }
-
-        private void exportToExcel_Click(object sender, EventArgs e)
-        {
-            //if (exportToExcel.Checked)
-            //{
-            //    exportToCSV.Checked = true;
-            //    exportToExcel.Checked = false;
-            //}
-            //else
-            //{
-            //    exportToCSV.Checked = false;
-            //    exportToExcel.Checked = true;
-            //}
-        }
-
         private bool saveToCSV()
         {
             string fileName = "";
@@ -105,16 +77,15 @@ namespace RoyalPetz_ADMIN
 
         private void newButton_Click(object sender, EventArgs e)
         {
-            //saveFileDialog1.ShowDialog();
             if (saveToCSV())
             {
-                //gutil.showSuccess(gutil.INS);
                 MessageBox.Show("SUCCESS");
             }        
         }
 
         private void exportStockOpnameForm_Load(object sender, EventArgs e)
         {
+            newButton.Focus();
             gutil.reArrangeTabOrder(this);
         }
     }
