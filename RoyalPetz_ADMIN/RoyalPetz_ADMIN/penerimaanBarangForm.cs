@@ -165,7 +165,8 @@ namespace RoyalPetz_ADMIN
         {
             string result = "";
 
-            result = DS.getDataSingleValue("SELECT BRANCH_NAME FROM MASTER_BRANCH WHERE BRANCH_ID = " + branchID).ToString();
+            if (branchID != 0)
+                result = DS.getDataSingleValue("SELECT BRANCH_NAME FROM MASTER_BRANCH WHERE BRANCH_ID = " + branchID).ToString();
 
             return result;
         }
@@ -174,7 +175,8 @@ namespace RoyalPetz_ADMIN
         {
             string result = "";
 
-            result = DS.getDataSingleValue("SELECT SUPPLIER_FULL_NAME FROM MASTER_SUPPLIER WHERE SUPPLIER_ID = " + suppID).ToString();
+            if (suppID != 0)
+                result = DS.getDataSingleValue("SELECT SUPPLIER_FULL_NAME FROM MASTER_SUPPLIER WHERE SUPPLIER_ID = " + suppID).ToString();
 
             return result;
         }
@@ -211,7 +213,8 @@ namespace RoyalPetz_ADMIN
 
         private void detailGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if ((detailGridView.CurrentCell.ColumnIndex == 2 || detailGridView.CurrentCell.ColumnIndex == 3) && e.Control is TextBox)
+            //if ((detailGridView.CurrentCell.ColumnIndex == 2 || detailGridView.CurrentCell.ColumnIndex == 3) && e.Control is TextBox)
+            if ((detailGridView.CurrentCell.OwningColumn.Name == "hpp" || detailGridView.CurrentCell.OwningColumn.Name == "qtyReceived") && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
                 textBox.TextChanged += TextBox_TextChanged;
