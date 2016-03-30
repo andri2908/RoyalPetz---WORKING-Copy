@@ -16,6 +16,17 @@ namespace RoyalPetz_ADMIN
 {
     public partial class adminForm : Form
     {
+        private const string BG_IMAGE = "bg.jpg";
+        private DateTime localDate = DateTime.Now;
+        private CultureInfo culture = new CultureInfo("id-ID");
+        string appPath = Application.StartupPath;
+
+        private Data_Access DS = new Data_Access();
+
+        private int selectedUserID = 0;
+        private int selectedUserGroupID = 0;
+        private globalUtilities gutil = new globalUtilities();
+
         private class MyRenderer : ToolStripProfessionalRenderer
         {
             public MyRenderer() : base(new MyColors()) { }
@@ -61,16 +72,6 @@ namespace RoyalPetz_ADMIN
             }
         }
        
-        private const string BG_IMAGE = "bg.jpg";
-        private DateTime localDate = DateTime.Now;
-        private CultureInfo culture = new CultureInfo("id-ID");
-        string appPath = Application.StartupPath;
-
-        private Data_Access DS = new Data_Access();
-
-        private int selectedUserID = 0;
-        private globalUtilities gutil = new globalUtilities();
-
         public adminForm(int userID)
         {
             InitializeComponent();
@@ -103,6 +104,15 @@ namespace RoyalPetz_ADMIN
 
             }
         }
+
+        private int getUserGroupID()
+        {
+            int result;
+
+            result = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(GROUP_ID, 0) FROM MASTER_USER WHERE ID = " + selectedUserID));
+
+            return result;
+        }
         
         private void adminForm_Load(object sender, EventArgs e)
         {
@@ -114,10 +124,14 @@ namespace RoyalPetz_ADMIN
             updateLabel();
             timer1.Start();
 
-            welcomeLabel.Text = "WELCOME " + DS.getDataSingleValue("SELECT USER_FULL_NAME FROM MASTER_USER WHERE ID = " + selectedUserID).ToString();
+            welcomeLabel.Text = "WELCOME " + DS.getDataSingleValue("SELECT IFNULL(USER_FULL_NAME, 0) FROM MASTER_USER WHERE ID = " + selectedUserID).ToString();
             menuStrip1.Renderer = new MyRenderer();
             gutil.reArrangeTabOrder(this);
 
+            selectedUserGroupID = getUserGroupID();
+
+
+            activateUserAccessRight();
             //loadBGimage();
         }
 
@@ -469,13 +483,13 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem24_Click(object sender, EventArgs e)
         {
             //dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm();
-	    dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm(globalConstants.NEW_DJ,selectedUserID);
+	        dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm(globalConstants.NEW_DJ,selectedUserID);
             displayedForm.ShowDialog(this);
         }
 
         private void toolStripButton9_Click(object sender, EventArgs e)
         {
-            dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm();
+            dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm(globalConstants.NEW_DJ, selectedUserID);
             displayedForm.ShowDialog(this);
         }
 
@@ -680,6 +694,51 @@ namespace RoyalPetz_ADMIN
         {
             dataPOForm displayedForm = new dataPOForm(globalConstants.PENERIMAAN_BARANG_DARI_PO);
             displayedForm.ShowDialog(this);
+        }
+
+        private void setAccessibility(int moduleID, ToolStripMenuItem  menuItem)
+        {
+            int userAccessRight = 0;
+
+            userAccessRight = getUserAccessRight(moduleID);
+
+            if (userAccessRight <= 0)
+                menuItem.Visible = false;
+        }
+
+        private int getUserAccessRight(int moduleID)
+        {
+            int result = 0;
+
+            result = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(USER_ACCESS_OPTION, 0) FROM USER_ACCESS_MANAGEMENT WHERE MODULE_ID = " + moduleID + " AND GROUP_ID = " + selectedUserGroupID));
+
+            return result;
+        }
+
+        private void activateUserAccessRight()
+        {
+            if (selectedUserGroupID == 0)
+                return;
+
+            // SET ACCESSIBILITY FOR MANAJEMEN SISTEM MAIN MENU
+            setAccessibility(globalConstants.MENU_MANAJEMEN_SISTEM, MAINMENU_manajemenSistem);
+            setAccessibility(globalConstants.MENU_DATABASE, MENU_database);
+            setAccessibility(globalConstants.MENU_MANAJEMEN_USER, MENU_manajemenUser);
+            setAccessibility(globalConstants.MENU_MANAJEMEN_CABANG, MENU_manajemenCabang);
+            setAccessibility(globalConstants.MENU_SINKRONISASI_INFORMASI, MENU_sinkronisasiInformasi);
+            setAccessibility(globalConstants.MENU_PENGATURAN_PRINTER, MENU_pengaturanPrinter);
+            setAccessibility(globalConstants.MENU_PENGATURAN_GAMBAR_LATAR, MENU_pengaturanGambarLatar);
+
+            // SET ACCESSIBILITY FOR GUDANG MAIN MENU
+            setAccessibility(globalConstants.MENU_GUDANG, MAINMENU_gudang);
+            setAccessibility(globalConstants.MENU_PRODUK, MENU_produk);
+            setAccessibility(globalConstants.MENU_TAMBAH_PRODUK, MENU_tambahProduk);
+            setAccessibility(globalConstants.MENU_PENGATURAN_HARGA, MENU_pengaturanHarga);
+            setAccessibility(globalConstants.MENU_PENGATURAN_LIMIT_STOK, MENU_pengaturanLimitStok);
+            setAccessibility(globalConstants.MENU_PENGATURAN_KATEGORI_PRODUK, MENU_pengaturanKategoriProduk);
+            setAccessibility(globalConstants.MENU_PECAH_SATUAN_PRODUK, MENU_pecahSatuanProduk);
+            setAccessibility(globalConstants.MENU_PENGATURAN_NOMOR_RAK, MENU_pengaturanNomorRak);
+            
         }
     }
 }

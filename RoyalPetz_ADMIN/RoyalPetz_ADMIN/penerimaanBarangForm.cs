@@ -86,10 +86,10 @@ namespace RoyalPetz_ADMIN
                                 invoiceDtPicker.Value = rdr.GetDateTime("PM_DATETIME");
                                 selectedFromID = rdr.GetInt32("BRANCH_ID_FROM");
                                 selectedToID = rdr.GetInt32("BRANCH_ID_TO");
-                                labelTotalValue.Text = "Rp. " + rdr.GetString("PM_TOTAL");
-                                labelAcceptValue.Text = "Rp. " + rdr.GetString("PM_TOTAL");
 
-                                globalTotalValue = rdr.GetDouble("PM_TOTAL");
+                                globalTotalValue = rdr.GetDouble("PURCHASE_TOTAL");
+                                labelTotalValue.Text = globalTotalValue.ToString("C", culture);
+                                labelAcceptValue.Text = globalTotalValue.ToString("C", culture);
                             }
                         }
                     }
@@ -107,10 +107,11 @@ namespace RoyalPetz_ADMIN
                                 invoiceDtPicker.Value = rdr.GetDateTime("PURCHASE_DATETIME");
                                 selectedFromID = rdr.GetInt32("SUPPLIER_ID");
                                 //selectedToID = rdr.GetInt32("BRANCH_ID_TO");
-                                labelTotalValue.Text = "Rp. " + rdr.GetString("PURCHASE_TOTAL");
-                                labelAcceptValue.Text = "Rp. " + rdr.GetString("PURCHASE_TOTAL");
-
+ 
                                 globalTotalValue = rdr.GetDouble("PURCHASE_TOTAL");
+                                labelTotalValue.Text = globalTotalValue.ToString("C", culture);
+                                labelAcceptValue.Text = globalTotalValue.ToString("C", culture);
+
                             }
                         }
                     }

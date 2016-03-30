@@ -136,12 +136,6 @@ namespace RoyalPetz_ADMIN
             subTotalColumn.Visible = false;
             detailPODataGridView.Columns.Add(subTotalColumn);
             
-            displaySubTotalColumn.HeaderText = "SUBTOTAL";
-            displaySubTotalColumn.Name = "displaySubTotal";
-            displaySubTotalColumn.Width = 200;
-            displaySubTotalColumn.ReadOnly = true;
-            detailPODataGridView.Columns.Add(displaySubTotalColumn);
-
             productIdColumn.HeaderText = "PRODUCT_ID";
             productIdColumn.Name = "productID";
             productIdColumn.Width = 200;
@@ -157,7 +151,7 @@ namespace RoyalPetz_ADMIN
                 comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             }
 
-            if ((detailPODataGridView.CurrentCell.OwningColumn.Name == "hpp" || detailPODataGridView.CurrentCell.OwningColumn.Name == "qty")
+            if ((detailPODataGridView.CurrentCell.OwningColumn.Name == "HPP" || detailPODataGridView.CurrentCell.OwningColumn.Name == "qty")
                 && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
@@ -217,7 +211,8 @@ namespace RoyalPetz_ADMIN
             rowSelectedIndex = detailPODataGridView.SelectedCells[0].RowIndex;
             DataGridViewRow selectedRow = detailPODataGridView.Rows[rowSelectedIndex];
 
-            selectedRow.Cells["hpp"].Value = hpp.ToString("C", culture);
+            //selectedRow.Cells["hpp"].Value = hpp.ToString("C", culture);
+            selectedRow.Cells["hpp"].Value = hpp.ToString();
             detailHpp[rowSelectedIndex] = hpp.ToString();
 
             if (null == selectedRow.Cells["qty"].Value)
@@ -231,7 +226,6 @@ namespace RoyalPetz_ADMIN
                 subTotal = Math.Round((hpp * productQty), 2);
 
                 selectedRow.Cells["subTotal"].Value = subTotal;
-                selectedRow.Cells["displaySubTotal"].Value = subTotal.ToString("C", culture);
             }
 
             calculateTotal();
@@ -279,7 +273,6 @@ namespace RoyalPetz_ADMIN
             subTotal = Math.Round((hppValue * productQty), 2);
 
             selectedRow.Cells["subtotal"].Value = subTotal;
-            selectedRow.Cells["displaySubTotal"].Value = subTotal.ToString("C", culture);
 
             calculateTotal();
 
@@ -466,7 +459,7 @@ namespace RoyalPetz_ADMIN
             DateTime PODueDate;
             MySqlException internalEX = null;
 
-            roInvoice = ROInvoiceTextBox.Text;
+            roInvoice = selectedROInvoice; //ROInvoiceTextBox.Text;
             POInvoice = POinvoiceTextBox.Text;
             supplierID = selectedSupplierID;
 
@@ -493,8 +486,8 @@ namespace RoyalPetz_ADMIN
                 {
                     case globalConstants.PURCHASE_ORDER_DARI_RO:
                         // SAVE HEADER TABLE
-                        sqlCommand = "INSERT INTO PURCHASE_HEADER (PURCHASE_INVOICE, SUPPLIER_ID, PURCHASE_DATETIME, PURCHASE_TOTAL, PURCHASE_TERM_OF_PAYMENT, PURCHASE_TERM_OF_PAYMENT_DATE, RO_INVOICE, PURCHASE_PAID) VALUES " +
-                                            "('" + POInvoice + "', " + supplierID + ", STR_TO_DATE('" + PODateTime + "', '%d-%m-%Y'), " + POTotal + ", " + termOfPayment + ", STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y'), '" + roInvoice + "', " + purchasePaid + ")";
+                        sqlCommand = "INSERT INTO PURCHASE_HEADER (PURCHASE_INVOICE, SUPPLIER_ID, PURCHASE_DATETIME, PURCHASE_TOTAL, PURCHASE_TERM_OF_PAYMENT, PURCHASE_TERM_OF_PAYMENT_DATE, PURCHASE_PAID) VALUES " +
+                                            "('" + POInvoice + "', " + supplierID + ", STR_TO_DATE('" + PODateTime + "', '%d-%m-%Y'), " + POTotal + ", " + termOfPayment + ", STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y'), '" + purchasePaid + ")";
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
@@ -683,7 +676,7 @@ namespace RoyalPetz_ADMIN
             sqlCommand = "SELECT ID, PURCHASE_INVOICE, PURCHASE_DATETIME, " +
                                 "PURCHASE_TERM_OF_PAYMENT, " +
                                 "PURCHASE_TERM_OF_PAYMENT_DATE, " +
-                                "M.SUPPLIER_FULL_NAME, PURCHASE_TOTAL, IFNULL(RO_INVOICE,'') AS RO_INVOICE " +
+                                "M.SUPPLIER_FULL_NAME, PURCHASE_TOTAL " + //IFNULL(RO_INVOICE,'') AS RO_INVOICE " +
                                 "FROM PURCHASE_HEADER P, MASTER_SUPPLIER M " +
                                 "WHERE P.SUPPLIER_ID = M.SUPPLIER_ID AND P.ID = " + selectedPOID;
 
@@ -696,7 +689,7 @@ namespace RoyalPetz_ADMIN
                         POinvoiceTextBox.Text = rdr.GetString("PURCHASE_INVOICE");
                         PODateTimePicker.Value = rdr.GetDateTime("PURCHASE_DATETIME");
 
-                        ROInvoiceTextBox.Text = rdr.GetString("RO_INVOICE");
+                        //ROInvoiceTextBox.Text = rdr.GetString("RO_INVOICE");
                         
                         supplierCombo.Text = rdr.GetString("SUPPLIER_FULL_NAME");
                         termOfPaymentCombo.SelectedIndex = rdr.GetInt32("PURCHASE_TERM_OF_PAYMENT");
@@ -713,7 +706,7 @@ namespace RoyalPetz_ADMIN
             switch (originModuleID)
             {
                 case globalConstants.PURCHASE_ORDER_DARI_RO:
-                    ROInvoiceTextBox.Text = selectedROInvoice;
+        //            ROInvoiceTextBox.Text = selectedROInvoice;
                     break;
 
                 case globalConstants.EDIT_PURCHASE_ORDER:

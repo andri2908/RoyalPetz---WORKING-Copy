@@ -113,6 +113,8 @@ namespace RoyalPetz_ADMIN
                     detailPaymentDataGridView.DataSource = dt;
 
                     detailPaymentDataGridView.Columns["PAYMENT_ID"].Visible = false;
+                    detailPaymentDataGridView.Columns["TIPE"].Visible = false;
+                    detailPaymentDataGridView.Columns["STATUS"].Visible = false;
                     detailPaymentDataGridView.Columns["TANGGAL"].Width = 200;
                     detailPaymentDataGridView.Columns["NOMINAL"].Width = 200;
                     detailPaymentDataGridView.Columns["DESKRIPSI"].Width = 300;
