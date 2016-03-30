@@ -268,7 +268,6 @@ namespace RoyalPetz_ADMIN
             {
                 //MessageBox.Show("SUCCESS");
                 gutil.showSuccess(gutil.UPD);
-                gutil.ResetAllControls(this);
             }
         }
 
@@ -277,6 +276,12 @@ namespace RoyalPetz_ADMIN
             //if need something
             loadGroupUserInformation();
             loadUserAccessInformation();
+        }
+
+        private void checkAll_CheckedChanged(object sender, EventArgs e)
+        {
+            for (int i=0;i<groupAccessDataGridView.Rows.Count;i++)
+                groupAccessDataGridView.Rows[i].Cells["hakAkses"].Value = checkAll.Checked;
         }
     }
 }

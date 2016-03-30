@@ -730,6 +730,7 @@ namespace RoyalPetz_ADMIN
             setAccessibility(globalConstants.MENU_PENGATURAN_GAMBAR_LATAR, MENU_pengaturanGambarLatar);
 
             // SET ACCESSIBILITY FOR GUDANG MAIN MENU
+            // SUB CATEGORY PRODUK
             setAccessibility(globalConstants.MENU_GUDANG, MAINMENU_gudang);
             setAccessibility(globalConstants.MENU_PRODUK, MENU_produk);
             setAccessibility(globalConstants.MENU_TAMBAH_PRODUK, MENU_tambahProduk);
@@ -738,7 +739,21 @@ namespace RoyalPetz_ADMIN
             setAccessibility(globalConstants.MENU_PENGATURAN_KATEGORI_PRODUK, MENU_pengaturanKategoriProduk);
             setAccessibility(globalConstants.MENU_PECAH_SATUAN_PRODUK, MENU_pecahSatuanProduk);
             setAccessibility(globalConstants.MENU_PENGATURAN_NOMOR_RAK, MENU_pengaturanNomorRak);
-            
+            // SUB CATEGORY KATEGORI
+            setAccessibility(globalConstants.MENU_KATEGORI, MENU_kategori);
+            setAccessibility(globalConstants.MENU_SATUAN, MENU_satuan);
+            setAccessibility(globalConstants.MENU_TAMBAH_SATUAN, MENU_tambahSatuan);
+            setAccessibility(globalConstants.MENU_PENGATURAN_KONVERSI, MENU_pengaturanKonversiSatuan);           
+            setAccessibility(globalConstants.MENU_STOK_OPNAME, MENU_exportDataCSV);
+            setAccessibility(globalConstants.MENU_STOK_OPNAME, MENU_importDataCSV);
+            setAccessibility(globalConstants.MENU_PENYESUAIAN_STOK, MENU_penyesuaianStok);
+            setAccessibility(globalConstants.MENU_MUTASI_BARANG, MENU_mutasiBarang);
+            setAccessibility(globalConstants.MENU_TAMBAH_MUTASI_BARANG, MENU_tambahMutasiBarang);
+            setAccessibility(globalConstants.MENU_CEK_PERMINTAAN_BARANG, MENU_cekPermintaanBarang);
+            setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG, MENU_penerimaanBarang);
+            setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_MUTASI, MENU_dariMutasiBarang);
+            setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_PO, MENU_dariPO);
+
         }
     }
 }

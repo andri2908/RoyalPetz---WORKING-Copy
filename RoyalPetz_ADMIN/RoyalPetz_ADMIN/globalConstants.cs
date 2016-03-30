@@ -99,9 +99,18 @@ namespace RoyalPetz_ADMIN
         public const int MENU_PENGATURAN_KATEGORI_PRODUK = 13;
         public const int MENU_PECAH_SATUAN_PRODUK= 14;
         public const int MENU_PENGATURAN_NOMOR_RAK = 15;
-
-        
-
+        public const int MENU_KATEGORI = 16;
+        public const int MENU_SATUAN = 17;
+        public const int MENU_TAMBAH_SATUAN = 18;
+        public const int MENU_PENGATURAN_KONVERSI = 19;
+        public const int MENU_STOK_OPNAME = 20;
+        public const int MENU_PENYESUAIAN_STOK = 21;
+        public const int MENU_MUTASI_BARANG = 22;
+        public const int MENU_TAMBAH_MUTASI_BARANG= 23;
+        public const int MENU_CEK_PERMINTAAN_BARANG = 24;
+        public const int MENU_PENERIMAAN_BARANG = 25;
+        public const int MENU_PENERIMAAN_BARANG_DARI_MUTASI = 26;
+        public const int MENU_PENERIMAAN_BARANG_DARI_PO = 27;
 
 
 
