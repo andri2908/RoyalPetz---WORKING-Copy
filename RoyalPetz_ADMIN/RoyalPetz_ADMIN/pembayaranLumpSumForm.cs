@@ -23,6 +23,7 @@ namespace RoyalPetz_ADMIN
         private double globalTotalValue = 0;
         private int originModuleID = 0;
         private bool isLoading = false;
+        private double changeAmount = 0;
 
         private Data_Access DS = new Data_Access();
         private globalUtilities gutil = new globalUtilities();
@@ -81,7 +82,7 @@ namespace RoyalPetz_ADMIN
 
             if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
                 sqlCommand = "SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) FROM PAYMENT_CREDIT PC, PRODUCTS_MUTATION_HEADER PM, CREDIT C " +
-                                    "WHERE PC.CREDIT_ID = C.CREDIT_ID AND C.PM_INVOICE = PM.PM_INVOICE AND PC.PAYMENT_INVALID = 0";
+                                    "WHERE PC.CREDIT_ID = C.CREDIT_ID AND C.PM_INVOICE = PM.PM_INVOICE AND PC.PAYMENT_INVALID = 0 AND PM.BRANCH_ID_TO = " + selectedBranchID;
             else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
                 sqlCommand = "SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) FROM PAYMENT_CREDIT PC, SALES_HEADER SH, CREDIT C " +
                                     "WHERE PC.CREDIT_ID = C.CREDIT_ID AND C.SALES_INVOICE = SH.SALES_INVOICE AND PC.PAYMENT_INVALID = 0 AND SH.CUSTOMER_ID = " + selectedCustomerID;
@@ -119,16 +120,17 @@ namespace RoyalPetz_ADMIN
 
             //sqlCommand = "SELECT C.CREDIT_ID, PM.PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM.PM_DATETIME, '%d-%M-%Y') AS 'TGL MUTASI', CREDIT_NOMINAL AS TOTAL FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND PM.PM_INVOICE = C.PM_INVOICE";
             sqlCommand = "SELECT C.CREDIT_ID, PM.PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM.PM_DATETIME, '%d-%M-%Y') AS 'TGL MUTASI', CREDIT_NOMINAL AS 'TOTAL PIUTANG', (CREDIT_NOMINAL - IFNULL(PC.PAYMENT, 0)) AS 'SISA PIUTANG' " +
-                                "FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
+                                "FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
                                 "WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND PM.PM_INVOICE = C.PM_INVOICE";
 
             using (rdr = DS.getData(sqlCommand))
             {
+                isLoading = true;
+
                 detailPMDataGridView.DataSource = null;
                 if (rdr.HasRows)
                 {
-                    isLoading = true;
-
+                    
                     dt.Load(rdr);
                     detailPMDataGridView.DataSource = dt;
 
@@ -138,8 +140,8 @@ namespace RoyalPetz_ADMIN
                     detailPMDataGridView.Columns["TOTAL PIUTANG"].Width = 200;
                     detailPMDataGridView.Columns["SISA PIUTANG"].Width = 200;
 
-                    isLoading = false;
                 }
+                isLoading = false;
             }
         }
 
@@ -151,15 +153,16 @@ namespace RoyalPetz_ADMIN
 
             //sqlCommand = "SELECT C.CREDIT_ID, PM.PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM.PM_DATETIME, '%d-%M-%Y') AS 'TGL MUTASI', CREDIT_NOMINAL AS TOTAL FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND PM.PM_INVOICE = C.PM_INVOICE";
             sqlCommand = "SELECT C.CREDIT_ID, SH.SALES_INVOICE AS 'SALES INVOICE', DATE_FORMAT(SH.SALES_DATE, '%d-%M-%Y') AS 'TGL SALES', CREDIT_NOMINAL AS 'TOTAL PIUTANG', (CREDIT_NOMINAL - IFNULL(PC.PAYMENT, 0)) AS 'SISA PIUTANG' " +
-                                "FROM SALES_HEADER SH, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
+                                "FROM SALES_HEADER SH, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
                                 "WHERE SH.CUSTOMER_ID = " + selectedCustomerID+ " AND SH.SALES_INVOICE = C.SALES_INVOICE";
 
             using (rdr = DS.getData(sqlCommand))
             {
+                isLoading = true;
                 detailPMDataGridView.DataSource = null;
                 if (rdr.HasRows)
                 {
-                    isLoading = true;
+                    
 
                     dt.Load(rdr);
                     detailPMDataGridView.DataSource = dt;
@@ -170,8 +173,8 @@ namespace RoyalPetz_ADMIN
                     detailPMDataGridView.Columns["TOTAL PIUTANG"].Width = 200;
                     detailPMDataGridView.Columns["SISA PIUTANG"].Width = 200;
 
-                    isLoading = false;
                 }
+                isLoading = false;
             }
         }
 
@@ -182,11 +185,11 @@ namespace RoyalPetz_ADMIN
             string sqlCommand = "";
 
             if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
-                sqlCommand = "SELECT PC.PAYMENT_ID, PM.PM_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
+                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, PM.PM_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
                                     "FROM PAYMENT_CREDIT PC, PRODUCTS_MUTATION_HEADER PM, CREDIT C " +
                                     "WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND PC.CREDIT_ID = C.CREDIT_ID AND PM.PM_INVOICE = C.PM_INVOICE AND C.CREDIT_ID = " + creditID;
             else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
-                sqlCommand = "SELECT PC.PAYMENT_ID, SH.SALES_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
+                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, SH.SALES_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
                                     "FROM PAYMENT_CREDIT PC, SALES_HEADER SH, CREDIT C " +
                                     "WHERE SH.CUSTOMER_ID = " + selectedCustomerID + " AND PC.CREDIT_ID = C.CREDIT_ID AND SH.SALES_INVOICE = C.SALES_INVOICE AND C.CREDIT_ID = " + creditID;
 
@@ -199,10 +202,17 @@ namespace RoyalPetz_ADMIN
                     detailPaymentInfoDataGrid.DataSource = dt;
 
                     detailPaymentInfoDataGrid.Columns["PAYMENT_ID"].Visible= false;
+                    detailPaymentInfoDataGrid.Columns["PAYMENT_INVALID"].Visible = false;
                     detailPaymentInfoDataGrid.Columns["NO INVOICE"].Width = 200;
                     detailPaymentInfoDataGrid.Columns["TGL PEMBAYARAN"].Width = 200;
                     detailPaymentInfoDataGrid.Columns["JUMLAH"].Width = 200;
                     detailPaymentInfoDataGrid.Columns["DESKRIPSI"].Width = 300;
+
+                    for (int i =0;i<detailPaymentInfoDataGrid.Rows.Count;i++)
+                    {
+                        if (detailPaymentInfoDataGrid.Rows[i].Cells["STATUS"].Value.ToString().Equals("N") && detailPaymentInfoDataGrid.Rows[i].Cells["PAYMENT_INVALID"].Value.ToString().Equals("0"))
+                            detailPaymentInfoDataGrid.Rows[i].DefaultCellStyle.BackColor = Color.LightBlue;
+                    }
                 }
             }
         }
@@ -262,8 +272,13 @@ namespace RoyalPetz_ADMIN
             paymentNominal = Convert.ToDouble(paymentMaskedTextBox.Text);
             paymentDescription = descriptionTextBox.Text;
 
+            changeAmount = 0;
+            
             if (paymentNominal > globalTotalValue)
+            {
+                changeAmount = paymentNominal - globalTotalValue;
                 paymentNominal = globalTotalValue;
+            }
 
             if (paymentCombo.SelectedIndex == 0)
                 paymentConfirmed = 1;
@@ -275,10 +290,16 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                 // GET A LIST OF OUTSTANDING MUTATION CREDIT
-                sqlCommand = "SELECT C.CREDIT_ID, C.PM_INVOICE, C.SALES_INVOICE, (CREDIT_NOMINAL - IFNULL(PC.PAYMENT, 0)) AS 'SISA PIUTANG' " +
-                                    "FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
-                                    "WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND C.CREDIT_PAID = 0 " +
-                                    "AND PM.PM_INVOICE = C.PM_INVOICE ORDER BY C.CREDIT_ID ASC";
+                if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+                    sqlCommand = "SELECT C.CREDIT_ID, C.PM_INVOICE, C.SALES_INVOICE, (CREDIT_NOMINAL - IFNULL(PC.PAYMENT, 0)) AS 'SISA PIUTANG' " +
+                                        "FROM PRODUCTS_MUTATION_HEADER PM, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
+                                        "WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND C.CREDIT_PAID = 0 " +
+                                        "AND PM.PM_INVOICE = C.PM_INVOICE ORDER BY C.CREDIT_ID ASC";
+                else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                    sqlCommand = "SELECT C.CREDIT_ID, C.PM_INVOICE, C.SALES_INVOICE, (CREDIT_NOMINAL - IFNULL(PC.PAYMENT, 0)) AS 'SISA PIUTANG' " +
+                                        "FROM SALES_HEADER SH, CREDIT C LEFT OUTER JOIN (SELECT CREDIT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 GROUP BY CREDIT_ID) PC ON PC.CREDIT_ID = C.CREDIT_ID  " +
+                                        "WHERE SH.CUSTOMER_ID = " + selectedCustomerID + " AND C.CREDIT_PAID = 0 " +
+                                        "AND SH.SALES_INVOICE = C.SALES_INVOICE ORDER BY C.CREDIT_ID ASC";
                 
                 using (rdr = DS.getData(sqlCommand))
                 {
@@ -295,6 +316,9 @@ namespace RoyalPetz_ADMIN
 
                         currentCreditID = Convert.ToInt32(dt.Rows[rowCounter]["CREDIT_ID"].ToString());
                         outstandingCreditAmount = Convert.ToDouble(dt.Rows[rowCounter]["SISA PIUTANG"].ToString());
+
+                        if (outstandingCreditAmount <= 0)
+                            continue;
 
                         if (outstandingCreditAmount <= paymentNominal && outstandingCreditAmount > 0)
                         {
@@ -380,6 +404,9 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                if (changeAmount > 0)
+                    MessageBox.Show("UANG KEMBALI SEBESAR " + changeAmount.ToString("C", culture));
+
                 gutil.showSuccess(gutil.INS);
 
                 if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
@@ -404,6 +431,8 @@ namespace RoyalPetz_ADMIN
 
             if (globalTotalValue <= 0)
                 saveButton.Enabled = false;
+            else
+                saveButton.Enabled = true;
 
         }
 
@@ -530,14 +559,14 @@ namespace RoyalPetz_ADMIN
             string salesInvoice = "";
             MySqlException internalEX = null;
 
-            sqlCommand = "SELECT COUNT(1) FROM PAYMENT_CREDIT WHERE CREDIT_ID = " + selectedCreditID + " AND PAYMENT_CONFIRMED = 0";
+            sqlCommand = "SELECT COUNT(1) FROM PAYMENT_CREDIT WHERE CREDIT_ID = " + selectedCreditID + " AND PAYMENT_CONFIRMED = 0 AND PAYMENT_INVALID = 0";
             numOfUnconfirmedPayment = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
 
             if (numOfUnconfirmedPayment <= 0)
             {
                 // CHECK IS THERE ANY OUTSTANDING AMOUNT FOR THAT PARTICULAR CREDIT
                 totalCreditAmount = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(CREDIT_NOMINAL, 0) FROM CREDIT WHERE CREDIT_ID = " + selectedCreditID));
-                totalCreditPayment = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) FROM PAYMENT_CREDIT WHERE CREDIT_ID = " + selectedCreditID));
+                totalCreditPayment = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) FROM PAYMENT_CREDIT WHERE PAYMENT_CONFIRMED = 1 AND PAYMENT_INVALID = 0 AND CREDIT_ID = " + selectedCreditID));
 
                 if (totalCreditAmount <= totalCreditPayment)
                 {
@@ -617,12 +646,18 @@ namespace RoyalPetz_ADMIN
                     if (confirmPembayaran(selectedPaymentID))
                     {
                         calculateGlobalOutstandingCredit();
-                        //if (checkCreditStatus())
-                        //{
-                        //    gutil.showSuccess(gutil.INS);
-                        //}
+                        if (checkCreditStatus())
+                        {
+                            gutil.showSuccess(gutil.INS);
+                        }
 
-                        //loadDataPayment(selectedCreditID);
+                        loadDataPayment(selectedCreditID);
+
+                        if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+                            loadDataPM();
+                        else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                            loadDataSO();
+
                     }
                 }
                 selectedRow.DefaultCellStyle.BackColor = Color.White;
@@ -702,6 +737,11 @@ namespace RoyalPetz_ADMIN
                     }
 
                     loadDataPayment(selectedCreditID);
+
+                    if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+                        loadDataPM();
+                    else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                        loadDataSO();
                 }
             }
 
