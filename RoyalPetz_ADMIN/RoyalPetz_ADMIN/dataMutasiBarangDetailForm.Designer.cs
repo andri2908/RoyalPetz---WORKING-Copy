@@ -113,6 +113,7 @@
             this.label2.Size = new System.Drawing.Size(179, 18);
             this.label2.TabIndex = 7;
             this.label2.Text = "ASAL PERMINTAAN";
+            this.label2.Visible = false;
             // 
             // label6
             // 
@@ -212,6 +213,7 @@
             this.label8.Size = new System.Drawing.Size(11, 18);
             this.label8.TabIndex = 26;
             this.label8.Text = ":";
+            this.label8.Visible = false;
             // 
             // label1
             // 
@@ -303,9 +305,9 @@
             this.label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label3.Location = new System.Drawing.Point(3, 162);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(206, 18);
+            this.label3.Size = new System.Drawing.Size(179, 18);
             this.label3.TabIndex = 8;
-            this.label3.Text = "TUJUAN PERMINTAAN";
+            this.label3.Text = "ASAL PERMINTAAN";
             // 
             // tableLayoutPanel1
             // 
@@ -370,6 +372,7 @@
             // noMutasiTextBox
             // 
             this.noMutasiTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.noMutasiTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.noMutasiTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.noMutasiTextBox.Location = new System.Drawing.Point(3, 3);
             this.noMutasiTextBox.MaxLength = 30;
@@ -525,6 +528,7 @@
             this.branchFromCombo.Name = "branchFromCombo";
             this.branchFromCombo.Size = new System.Drawing.Size(321, 26);
             this.branchFromCombo.TabIndex = 0;
+            this.branchFromCombo.Visible = false;
             this.branchFromCombo.SelectedIndexChanged += new System.EventHandler(this.branchFromCombo_SelectedIndexChanged);
             // 
             // totalLabel

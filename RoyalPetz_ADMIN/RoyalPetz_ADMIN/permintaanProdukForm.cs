@@ -115,6 +115,7 @@ namespace RoyalPetz_ADMIN
 
             using (rdr = DS.getData(sqlCommand))
             {
+                detailRequestOrderDataGridView.Rows.Clear();
                 while (rdr.Read())
                 {
                     productName = rdr.GetString("PRODUCT_NAME");
@@ -458,8 +459,12 @@ namespace RoyalPetz_ADMIN
         {
             RODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             
-            fillInBranchFromCombo();
+            //fillInBranchFromCombo();
             fillInProductNameCombo();
+
+            // ALL REQUEST WILL GO TO PUSAT 
+            selectedBranchFromID = 0; // SET BRANCH_FROM TO PUSAT 
+            selectedBranchToID = getCurrentBranchID(); // SET BRANCH_TO TO CURRENT BRANCH
 
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
             
@@ -568,6 +573,12 @@ namespace RoyalPetz_ADMIN
             int i = 0;
             bool dataExist = false;
 
+            if (selectedBranchToID == 0)
+            {
+                errorLabel.Text = "INFORMASI CABANG BELUM DI ISI";
+                return false;
+            }
+
             if (ROinvoiceTextBox.Text.Equals(""))
             {
                 errorLabel.Text = "NO PERMINTAAN TIDAK BOLEH KOSONG";
@@ -594,6 +605,15 @@ namespace RoyalPetz_ADMIN
             }
 
             return true;
+        }
+
+        private int getCurrentBranchID()
+        {
+            int result = 0;
+
+            result = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(BRANCH_ID, 0) FROM SYS_CONFIG WHERE ID = 2"));
+
+            return result;
         }
 
         private bool saveDataTransaction()
@@ -734,8 +754,8 @@ namespace RoyalPetz_ADMIN
                 detailRequestOrderDataGridView.Rows.Clear();
                 totalLabel.Text = "Rp. 0";
 
-                selectedBranchFromID = 0;
-                selectedBranchToID = 0;
+                //selectedBranchFromID = 0;
+                //selectedBranchToID = 0;
 
                 if (originModuleID == globalConstants.NEW_REQUEST_ORDER)
                     gUtil.showSuccess(gUtil.INS);
@@ -814,8 +834,8 @@ namespace RoyalPetz_ADMIN
                 selectedROInvoice = ROinvoiceTextBox.Text;
                 ROinvoiceTextBox.ReadOnly = true;
 
-                branchFromCombo.Text = getBranchName(selectedBranchFromID);
-                branchToCombo.Text = getBranchName(selectedBranchToID);
+                //branchFromCombo.Text = getBranchName(selectedBranchFromID);
+                //branchToCombo.Text = getBranchName(selectedBranchToID);
 
                 loadDataDetailRO();
 

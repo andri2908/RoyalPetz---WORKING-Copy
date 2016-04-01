@@ -89,9 +89,12 @@ namespace RoyalPetz_ADMIN
 
             DS.mySqlConnect();
 
-            sqlCommand = "SELECT ID, PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM_DATETIME,'%d-%M-%Y') AS 'TGL MUTASI', M1.BRANCH_NAME AS 'ASAL MUTASI', M2.BRANCH_NAME AS 'TUJUAN MUTASI', PM_TOTAL AS 'TOTAL', RO_INVOICE AS 'NO PERMINTAAN' " +
-                                "FROM PRODUCTS_MUTATION_HEADER LEFT OUTER JOIN MASTER_BRANCH M1 ON (BRANCH_ID_FROM = M1.BRANCH_ID) " +
-                                "LEFT OUTER JOIN MASTER_BRANCH M2 ON (BRANCH_ID_TO = M2.BRANCH_ID) " +
+            //sqlCommand = "SELECT ID, PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM_DATETIME,'%d-%M-%Y') AS 'TGL MUTASI', M1.BRANCH_NAME AS 'ASAL MUTASI', M2.BRANCH_NAME AS 'TUJUAN MUTASI', PM_TOTAL AS 'TOTAL', RO_INVOICE AS 'NO PERMINTAAN' " +
+            //                    "FROM PRODUCTS_MUTATION_HEADER LEFT OUTER JOIN MASTER_BRANCH M1 ON (BRANCH_ID_FROM = M1.BRANCH_ID) " +
+            //                    "LEFT OUTER JOIN MASTER_BRANCH M2 ON (BRANCH_ID_TO = M2.BRANCH_ID) " +
+            //                    "WHERE 1 = 1 AND PM_RECEIVED = 0";
+            sqlCommand = "SELECT ID, PM_INVOICE AS 'NO MUTASI', DATE_FORMAT(PM_DATETIME,'%d-%M-%Y') AS 'TGL MUTASI', M2.BRANCH_NAME AS 'TUJUAN MUTASI', PM_TOTAL AS 'TOTAL', RO_INVOICE AS 'NO PERMINTAAN' " +
+                                "FROM PRODUCTS_MUTATION_HEADER LEFT OUTER JOIN MASTER_BRANCH M2 ON (BRANCH_ID_TO = M2.BRANCH_ID) " +
                                 "WHERE 1 = 1 AND PM_RECEIVED = 0";
 
             if (!showAllCheckBox.Checked)
@@ -105,10 +108,10 @@ namespace RoyalPetz_ADMIN
                 dateTo = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(PMDtPicker_2.Value));
                 sqlCommand = sqlCommand + " AND DATE_FORMAT(PM_DATETIME, '%Y%m%d')  >= '" + dateFrom + "' AND DATE_FORMAT(PM_DATETIME, '%Y%m%d')  <= '" + dateTo + "'";
 
-                if (branchFromCombo.Text.Length > 0)
-                {
-                    sqlCommand = sqlCommand + " AND BRANCH_ID_FROM = " + selectedBranchFromID;
-                }
+                //if (branchFromCombo.Text.Length > 0)
+                //{
+                //    sqlCommand = sqlCommand + " AND BRANCH_ID_FROM = " + selectedBranchFromID;
+                //}
 
                 if (branchToCombo.Text.Length > 0)
                 {
@@ -130,7 +133,7 @@ namespace RoyalPetz_ADMIN
 
                     dataRequestOrderGridView.Columns["NO MUTASI"].Width = 200;
                     dataRequestOrderGridView.Columns["TGL MUTASI"].Width = 200;
-                    dataRequestOrderGridView.Columns["ASAL MUTASI"].Width = 200;
+                    //dataRequestOrderGridView.Columns["ASAL MUTASI"].Width = 200;
                     dataRequestOrderGridView.Columns["TUJUAN MUTASI"].Width = 200;
                     dataRequestOrderGridView.Columns["TOTAL"].Width = 200;
                     dataRequestOrderGridView.Columns["NO PERMINTAAN"].Width = 200;

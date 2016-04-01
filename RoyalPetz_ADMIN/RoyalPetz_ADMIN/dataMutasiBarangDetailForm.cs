@@ -64,6 +64,7 @@ namespace RoyalPetz_ADMIN
                 case globalConstants.VIEW_PRODUCT_MUTATION:
                     approveButton.Visible = false;
                     createPOButton.Visible = false;
+                    rejectButton.Visible = false;
                     //reprintButton.Text = "REPRINT DATA MUTASI";
                     detailRequestOrderDataGridView.ReadOnly = true;
                     break;
@@ -584,6 +585,7 @@ namespace RoyalPetz_ADMIN
             ROExpiredDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             isLoading = true;
+            selectedBranchFromID = 0;
 
             addColumnToDetailDataGrid();
 
@@ -623,24 +625,24 @@ namespace RoyalPetz_ADMIN
                     createPOButton.Visible = false;
                     //reprintButton.Visible = true;
 
-                    label1.Visible = false;
-                    label14.Visible = false;
-                    ROInvoiceTextBox.Visible = false;
+                    //label1.Visible = false;
+                    //label14.Visible = false;
+                    //ROInvoiceTextBox.Visible = false;
 
-                    label9.Visible = false;
-                    label6.Visible = false;
-                    RODateTimePicker.Visible = false;
+                    //label9.Visible = false;
+                    //label6.Visible = false;
+                    //RODateTimePicker.Visible = false;
 
-                    label7.Visible = false;
-                    label5.Visible = false;
-                    ROExpiredDateTimePicker.Visible = false;
+                    //label7.Visible = false;
+                    //label5.Visible = false;
+                    //ROExpiredDateTimePicker.Visible = false;
 
-                    totalApproved.Visible = false;
-                    totalApprovedLabel.Visible = false;
-                    label13.Visible = false;
+                    //totalApproved.Visible = false;
+                    //totalApprovedLabel.Visible = false;
+                    //label13.Visible = false;
                 }
 
-                branchFromCombo.Text = getBranchName(selectedBranchFromID);
+                //branchFromCombo.Text = getBranchName(selectedBranchFromID);
                 branchToCombo.Text = getBranchName(selectedBranchToID);
                 branchFromCombo.Enabled = false;
                 branchToCombo.Enabled = false;
@@ -651,10 +653,10 @@ namespace RoyalPetz_ADMIN
             {
                 subModuleID = globalConstants.NEW_PRODUCT_MUTATION;
 
-                branchFromCombo.Enabled = true;
+                //branchFromCombo.Enabled = true;
                 branchToCombo.Enabled = true;
 
-                fillInBranchCombo(branchFromCombo, branchFromComboHidden);
+                //fillInBranchCombo(branchFromCombo, branchFromComboHidden);
                 fillInBranchCombo(branchToCombo, branchToComboHidden);
 
 
@@ -831,7 +833,7 @@ namespace RoyalPetz_ADMIN
                 PMDateTimePicker.Enabled = false;
                 approveButton.Visible = false;
                 createPOButton.Visible = false;
-
+                rejectButton.Visible = false;
                 //reprintButton.Visible = true;
             }
         }
@@ -875,6 +877,7 @@ namespace RoyalPetz_ADMIN
                 PMDateTimePicker.Enabled = false;
                 detailRequestOrderDataGridView.ReadOnly = true;
                 approveButton.Visible = false;
+                createPOButton.Visible = false;
                 rejectButton.Visible = false;
                 //reprintButton.Visible = false;
             }
