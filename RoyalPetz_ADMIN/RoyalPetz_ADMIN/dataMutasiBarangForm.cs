@@ -160,9 +160,9 @@ namespace RoyalPetz_ADMIN
 
         private void dataMutasiBarangForm_Activated(object sender, EventArgs e)
         {
-            //loadROdata();
-            fillInBranchCombo(branchFromCombo, branchFromComboHidden);
-            fillInBranchCombo(branchToCombo, branchToComboHidden);
+            loadROdata();
+            //fillInBranchCombo(branchFromCombo, branchFromComboHidden);
+            //fillInBranchCombo(branchToCombo, branchToComboHidden);
         }
 
         private void dataRequestOrderGridView_KeyPress(object sender, KeyPressEventArgs e)

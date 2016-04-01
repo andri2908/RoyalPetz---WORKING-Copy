@@ -711,7 +711,7 @@ namespace RoyalPetz_ADMIN
                         DS.executeNonQueryCommand(sqlCommand);
 
                         // SAVE DETAIL TABLE
-                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count - 1; i++)
+                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
                         {
                             if (null == detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
                                 continue;
