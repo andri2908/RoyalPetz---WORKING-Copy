@@ -20,6 +20,7 @@ namespace RoyalPetz_ADMIN
         private string selectedROID;
         private int selectedBranchFromID = 0;
         private int selectedBranchToID = 0;
+        private string selectedPMID;
         private CultureInfo culture = new CultureInfo("id-ID");
         private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
@@ -219,6 +220,116 @@ namespace RoyalPetz_ADMIN
         private void branchToCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedBranchToID = Convert.ToInt32(branchToComboHidden.Items[branchToCombo.SelectedIndex]);
+        }
+
+        private bool noPMExist(string roInvoiceValue)
+        {
+            bool result = false;
+
+            if (0 < Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM PRODUCTS_MUTATION_HEADER WHERE PM_INVOICE = '" + roInvoiceValue + "'")))
+                result = true;
+
+            return result;
+        }
+
+        private bool loadImportedDataPM(string fileName)
+        {
+            bool result = false;
+            string sqlCommand = "";
+            string pmInvoice = "";
+            bool checkForRO = true;
+            int lastPos = 0;
+            int prevPos = 0;
+            string roInvoice = "";
+
+            DS.beginTransaction();
+            
+            try
+            {
+                DS.mySqlConnect();
+
+                System.IO.StreamReader file = new System.IO.StreamReader(fileName);
+
+                pmInvoice = file.ReadLine();
+
+                if (!noPMExist(pmInvoice))
+                {
+                    while ((sqlCommand = file.ReadLine()) != null)
+                    {
+                        if (checkForRO)
+                        {
+                            if (sqlCommand.LastIndexOf("RO_INVOICE") > 0)
+                            {
+                                lastPos = sqlCommand.LastIndexOf("',");
+                                prevPos = sqlCommand.LastIndexOf(", '", lastPos - 1);
+                                roInvoice = sqlCommand.Substring(prevPos+3, lastPos - prevPos-3);
+                            }
+                        }
+                        checkForRO = false;
+                        DS.executeNonQueryCommand(sqlCommand);
+                    }
+
+                    file.Close();
+
+                    if (roInvoice.Length > 0)
+                    {
+                        sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                        DS.executeNonQueryCommand(sqlCommand);
+                    }
+
+                    DS.commit();
+                }
+                else
+                    MessageBox.Show("NOMOR MUTASI SUDAH ADA");
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    //myTrans.Rollback();
+                }
+                catch (MySqlException ex)
+                {
+                    if (DS.getMyTransConnection() != null)
+                    {
+                        MessageBox.Show("An exception of type " + ex.GetType() +
+                                          " was encountered while attempting to roll back the transaction.");
+                    }
+                }
+
+                MessageBox.Show("An exception of type " + e.GetType() +
+                                  " was encountered while inserting the data.");
+                MessageBox.Show("Neither record was written to database.");
+            }
+            finally
+            {
+                DS.mySqlClose();
+                result = true;
+            }
+
+            return result;
+        }
+
+        private void importButton_Click(object sender, EventArgs e)
+        {
+            string importFileName = "";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    importFileName = openFileDialog1.FileName;
+                    if (loadImportedDataPM(importFileName))
+                    {
+                        loadROdata();
+                    }
+                    else
+                        MessageBox.Show("ERROR CAN'T LOAD FILE");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
         }
 
 
