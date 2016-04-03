@@ -130,8 +130,11 @@ namespace RoyalPetz_ADMIN
 
             selectedUserGroupID = getUserGroupID();
 
+            gutil.setUserID(selectedUserID);
+            gutil.setUserGroupID(selectedUserGroupID);
 
             activateUserAccessRight();
+            
             //loadBGimage();
         }
 
@@ -708,21 +711,13 @@ namespace RoyalPetz_ADMIN
         {
             int userAccessRight = 0;
 
-            userAccessRight = getUserAccessRight(moduleID);
+            userAccessRight = DS.getUserAccessRight(moduleID, selectedUserGroupID);
 
             if (userAccessRight <= 0)
                 menuItem.Visible = false;
         }
 
-        private int getUserAccessRight(int moduleID)
-        {
-            int result = 0;
-
-            result = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(USER_ACCESS_OPTION, 0) FROM USER_ACCESS_MANAGEMENT WHERE MODULE_ID = " + moduleID + " AND GROUP_ID = " + selectedUserGroupID));
-
-            return result;
-        }
-
+        
         private void activateUserAccessRight()
         {
             if (selectedUserGroupID == 0)

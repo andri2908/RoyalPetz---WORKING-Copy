@@ -581,6 +581,8 @@ namespace RoyalPetz_ADMIN
 
         private void dataMutasiBarangDetailForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
+
             PMDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             RODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             ROExpiredDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
@@ -661,7 +663,7 @@ namespace RoyalPetz_ADMIN
                 //fillInBranchCombo(branchFromCombo, branchFromComboHidden);
                 fillInBranchCombo(branchToCombo, branchToComboHidden);
 
-
+                label3.Text = "TUJUAN MUTASI";
                 detailRequestOrderDataGridView.AllowUserToAddRows = true;
 
             }
@@ -669,6 +671,16 @@ namespace RoyalPetz_ADMIN
             isLoading = false;
 
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MUTASI_BARANG, gUtil.getUserGroupID());
+
+            if (originModuleID == globalConstants.NEW_PRODUCT_MUTATION)
+            {
+                if (userAccessOption != 2 && userAccessOption != 6)
+                {
+                    gUtil.setReadOnlyAllControls(this);
+                }
+            }
 
             gUtil.reArrangeTabOrder(this);
         }

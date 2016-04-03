@@ -148,10 +148,24 @@ namespace RoyalPetz_ADMIN
 
         private void dataMutasiBarangForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
             PMDtPicker_1.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             PMDtPicker_2.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             gutil.reArrangeTabOrder(this);
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_TAMBAH_MUTASI_BARANG, gutil.getUserGroupID());
+
+            if (userAccessOption == 2 || userAccessOption == 6)
+            { 
+                newButton.Visible = true;
+                importButton.Visible = true;
+            }
+            else
+            {
+                newButton.Visible = false;
+                importButton.Visible = false;
+            }
         }
 
         private void dataMutasiBarangForm_Deactivate(object sender, EventArgs e)

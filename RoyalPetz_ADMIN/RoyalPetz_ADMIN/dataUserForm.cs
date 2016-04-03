@@ -17,7 +17,7 @@ namespace RoyalPetz_ADMIN
     {
         private int originModuleID = 0;
         private int selectedUserID = 0;
-
+        
         Data_Access DS = new Data_Access();
         private globalUtilities gutil = new globalUtilities();
 
@@ -120,7 +120,6 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-
         private void newButton_Click(object sender, EventArgs e)
         {
             dataUserDetailForm displayForm = new dataUserDetailForm(globalConstants.NEW_USER);
@@ -181,7 +180,15 @@ namespace RoyalPetz_ADMIN
 
         private void dataUserForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
             gutil.reArrangeTabOrder(this);
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MANAJEMEN_USER, gutil.getUserGroupID());
+
+            if (userAccessOption == 2 || userAccessOption == 6)
+                newButton.Visible = true;
+            else
+                newButton.Visible = false;
         }
     }
 }

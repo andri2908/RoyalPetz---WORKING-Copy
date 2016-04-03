@@ -115,7 +115,15 @@ namespace RoyalPetz_ADMIN
 
         private void dataCabangForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
             gutil.reArrangeTabOrder(this);
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MANAJEMEN_CABANG, gutil.getUserGroupID());
+
+            if (userAccessOption == 2 || userAccessOption == 6)
+                newButton.Visible = true;
+            else
+                newButton.Visible = false;
         }
 
         private void dataCabangGridView_KeyDown(object sender, KeyEventArgs e)
