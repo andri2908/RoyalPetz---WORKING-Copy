@@ -316,6 +316,7 @@ namespace RoyalPetz_ADMIN
             bool fullyPaid = false;
             int paymentConfirmed = 0;
             string noInvoice = "";
+            int branchID = 0;
 
             string paymentDescription = "";
 
@@ -334,7 +335,7 @@ namespace RoyalPetz_ADMIN
                 paymentNominal = globalTotalValue;
             }
 
-            if (paymentCombo.SelectedIndex == 0)
+            if (paymentCombo.SelectedIndex <= 2)
                 paymentConfirmed = 1;
 
             DS.beginTransaction();
@@ -437,9 +438,31 @@ namespace RoyalPetz_ADMIN
                             }
                         }
 
+                        if(paymentCombo.SelectedIndex == 0 && originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                        {
+                            // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
+                            // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
+                            noInvoice = DS.getDataSingleValue("SELECT IFNULL(SALES_INVOICE, '') FROM CREDIT WHERE CREDIT_ID = " + currentCreditID).ToString();
+                            sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
+                                                               "VALUES (1, STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')" + ", " + actualPaymentAmount + ", 'PEMBAYARAN PIUTANG " + noInvoice + "', '" + gutil.getUserID() + "', 1)";
+                            
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
+                        }
+
                         paymentNominal = paymentNominal - actualPaymentAmount;
                         rowCounter += 1;
                     }
+                }
+
+                if (paymentCombo.SelectedIndex == 0 && changeAmount > 0 && originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+                {
+                    // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
+                    // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
+                    sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, BRANCH_ID, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
+                                        "VALUES (1, STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')" + ", " + changeAmount + ", " + selectedBranchID + ", 'SISA PIUTANG MUTASI" + noInvoice + "', '" + gutil.getUserID() + "', 1)";
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
                 }
 
                 DS.commit();
@@ -485,7 +508,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
-                if (changeAmount > 0)
+                if (changeAmount > 0 && originModuleID != globalConstants.DATA_PIUTANG_MUTASI)
                     MessageBox.Show("UANG KEMBALI SEBESAR " + changeAmount.ToString("C", culture));
 
                 gutil.showSuccess(gutil.INS);
@@ -596,6 +619,11 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand;
             MySqlException internalEX = null;
+            DateTime selectedPaymentDate;
+            string paymentDateTime;
+
+            selectedPaymentDate = paymentDateTimePicker.Value;
+            paymentDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPaymentDate);
 
             DS.beginTransaction();
 
@@ -605,10 +633,14 @@ namespace RoyalPetz_ADMIN
 
                 // SAVE HEADER TABLE
                 if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                    sqlCommand = "UPDATE PAYMENT_DEBT SET PAYMENT_CONFIRMED = 1 WHERE PAYMENT_ID = " + paymentID;
+                { 
+                    sqlCommand = "UPDATE PAYMENT_DEBT SET PAYMENT_CONFIRMED = 1, PAYMENT_CONFIRMED_DATE = STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')  WHERE PAYMENT_ID = " + paymentID;
+                }
                 else
-                    sqlCommand = "UPDATE PAYMENT_CREDIT SET PAYMENT_CONFIRMED = 1 WHERE PAYMENT_ID = " + paymentID;
-            
+                { 
+                    sqlCommand = "UPDATE PAYMENT_CREDIT SET PAYMENT_CONFIRMED = 1, PAYMENT_CONFIRMED_DATE = STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')  WHERE PAYMENT_ID = " + paymentID;
+                }
+
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 

@@ -82,6 +82,16 @@ namespace RoyalPetz_ADMIN
             return result;
         }
 
+        private int getBranchID()
+        {
+            int result;
+
+            result = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(BRANCH_ID, 0) FROM SYS_CONFIG WHERE ID = 2"));
+
+            return result;
+        }
+
+
         private void loadDataDetailSO()
         {
             MySqlDataReader rdr;
@@ -178,6 +188,12 @@ namespace RoyalPetz_ADMIN
         {
             double nominalPayment;
 
+            if ( 0 == getBranchID())
+            {
+                errorLabel.Text = "BRANCH ID BELUM DISET";
+                return false;
+            }
+
             nominalPayment = Convert.ToDouble(paymentMaskedTextBox.Text);
             if (nominalPayment > globalTotalValue)
             {
@@ -200,6 +216,7 @@ namespace RoyalPetz_ADMIN
             string paymentDateTime = "";
             DateTime selectedPaymentDate;
             double paymentNominal = 0;
+            int branchID = 0;
 
             string paymentDescription = "";
             int paymentConfirmed = 0;
@@ -215,8 +232,10 @@ namespace RoyalPetz_ADMIN
             if (paymentNominal > globalTotalValue)
                 paymentNominal = globalTotalValue;
 
-            if (paymentMethod == 1)
+            if (paymentMethod <= 3)
                 paymentConfirmed = 1;
+
+            branchID = getBranchID();
 
             DS.beginTransaction();
 
@@ -231,7 +250,7 @@ namespace RoyalPetz_ADMIN
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 
-                if (paymentMethod == 1 && paymentNominal == globalTotalValue)
+                if (paymentMethod <= 3 && paymentNominal == globalTotalValue)
                 {
                     //  PAYMENT BY CASH AND FULLY PAID
 
@@ -243,6 +262,17 @@ namespace RoyalPetz_ADMIN
 
                     // UPDATE SALES HEADER TABLE
                     sqlCommand = "UPDATE SALES_HEADER SET SALES_PAID = 1 WHERE SALES_INVOICE = '" + selectedSOInvoice + "'";
+
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
+                }
+
+                if (paymentMethod == 1)
+                {
+                    // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
+                    // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
+                    sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
+                                                   "VALUES (1, STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')" + ", " + paymentNominal + ", 'PEMBAYARAN PIUTANG " + selectedSOInvoice + "', '" + gutil.getUserID() + "', 1)";
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
@@ -312,6 +342,11 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand;
             MySqlException internalEX = null;
+            DateTime selectedPaymentDate;
+            string paymentDateTime;
+
+            selectedPaymentDate = paymentDateTimePicker.Value;
+            paymentDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPaymentDate);
 
             DS.beginTransaction();
 
@@ -320,7 +355,7 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                 // SAVE HEADER TABLE
-                sqlCommand = "UPDATE PAYMENT_CREDIT SET PAYMENT_CONFIRMED = 1 WHERE PAYMENT_ID = " + paymentID;
+                sqlCommand = "UPDATE PAYMENT_CREDIT SET PAYMENT_CONFIRMED = 1, PAYMENT_CONFIRMED_DATE = STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y') WHERE PAYMENT_ID = " + paymentID;
             
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
