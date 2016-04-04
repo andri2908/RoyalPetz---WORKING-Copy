@@ -356,6 +356,7 @@ namespace RoyalPetz_ADMIN
 
         private void purchaseOrderDetailForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
             errorLabel.Text = "";
             fillInSupplierCombo();
             PODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
@@ -394,6 +395,23 @@ namespace RoyalPetz_ADMIN
 
             detailPODataGridView.EditingControlShowing += detailPODataGridView_EditingControlShowing;
             durationTextBox.Enabled = false;
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_PURCHASE_ORDER, gUtil.getUserGroupID());
+
+            if (originModuleID == globalConstants.NEW_PURCHASE_ORDER || originModuleID == globalConstants.PURCHASE_ORDER_DARI_RO)
+            {
+                if (userAccessOption != 2 && userAccessOption != 6)
+                {
+                    gUtil.setReadOnlyAllControls(this);
+                }
+            }
+            else if (originModuleID == globalConstants.EDIT_PURCHASE_ORDER)
+            {
+                if (userAccessOption != 4 && userAccessOption != 6)
+                {
+                    gUtil.setReadOnlyAllControls(this);
+                }
+            }
 
             gUtil.reArrangeTabOrder(this);
         }

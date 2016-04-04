@@ -184,7 +184,7 @@ namespace RoyalPetz_ADMIN
             int userAccessOption = 0;
             gUtil.reArrangeTabOrder(this);
 
-            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MANAJEMEN_USER, gUtil.getUserGroupID());
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MANAJEMEN_CABANG, gUtil.getUserGroupID());
 
             if (originModuleID == globalConstants.NEW_BRANCH)
             {

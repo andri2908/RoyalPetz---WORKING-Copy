@@ -673,7 +673,6 @@ namespace RoyalPetz_ADMIN
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
 
             userAccessOption = DS.getUserAccessRight(globalConstants.MENU_MUTASI_BARANG, gUtil.getUserGroupID());
-
             if (originModuleID == globalConstants.NEW_PRODUCT_MUTATION)
             {
                 if (userAccessOption != 2 && userAccessOption != 6)
@@ -681,6 +680,10 @@ namespace RoyalPetz_ADMIN
                     gUtil.setReadOnlyAllControls(this);
                 }
             }
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_PURCHASE_ORDER, gUtil.getUserGroupID());
+            if (userAccessOption != 2 && userAccessOption != 6)
+                createPOButton.Visible = false;
 
             gUtil.reArrangeTabOrder(this);
         }

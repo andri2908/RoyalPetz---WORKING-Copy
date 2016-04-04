@@ -457,6 +457,7 @@ namespace RoyalPetz_ADMIN
 
         private void permintaanProdukForm_Load(object sender, EventArgs e)
         {
+            int userAccessOption = 0;
             RODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             
             //fillInBranchFromCombo();
@@ -467,7 +468,24 @@ namespace RoyalPetz_ADMIN
             selectedBranchToID = getCurrentBranchID(); // SET BRANCH_TO TO CURRENT BRANCH
 
             detailRequestOrderDataGridView.EditingControlShowing += detailRequestOrderDataGridView_EditingControlShowing;
-            
+
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_REQUEST_ORDER, gUtil.getUserGroupID());
+
+            if (originModuleID == globalConstants.NEW_REQUEST_ORDER)
+            {
+                if (userAccessOption != 2 && userAccessOption != 6)
+                {
+                    gUtil.setReadOnlyAllControls(this);
+                }
+            }
+            else if (originModuleID == globalConstants.EDIT_REQUEST_ORDER)
+            {
+                if (userAccessOption != 4 && userAccessOption != 6)
+                {
+                    gUtil.setReadOnlyAllControls(this);
+                }
+            }
+
             gUtil.reArrangeTabOrder(this);            
         }
 

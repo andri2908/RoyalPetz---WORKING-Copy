@@ -78,6 +78,13 @@ namespace RoyalPetz_ADMIN
 
             selectedUserID = userID;
             loadBGimage();
+
+            selectedUserGroupID = getUserGroupID();
+
+            gutil.setUserID(selectedUserID);
+            gutil.setUserGroupID(selectedUserGroupID);
+
+            activateUserAccessRight();
         }
 
         private void updateLabel()
@@ -128,12 +135,8 @@ namespace RoyalPetz_ADMIN
             menuStrip1.Renderer = new MyRenderer();
             gutil.reArrangeTabOrder(this);
 
-            selectedUserGroupID = getUserGroupID();
 
-            gutil.setUserID(selectedUserID);
-            gutil.setUserGroupID(selectedUserGroupID);
-
-            activateUserAccessRight();
+            //activateUserAccessRight();
             
             //loadBGimage();
         }
@@ -701,7 +704,7 @@ namespace RoyalPetz_ADMIN
         {
             int userAccessRight = 0;
 
-            userAccessRight = getUserAccessRight(moduleID);
+            userAccessRight = DS.getUserAccessRight(moduleID, selectedUserGroupID);
 
             if (userAccessRight <= 0)
                 menuItem.Visible = false;
