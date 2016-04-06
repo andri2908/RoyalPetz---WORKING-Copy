@@ -86,7 +86,7 @@ namespace RoyalPetz_ADMIN
             }
             else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
             {
-                sqlCommand = sqlCommand + "  AND P.PURCHASE_PAID = 0 AND PURCHASE_SENT = 1 AND PURCHASE_RECEIVED = 1";
+                sqlCommand = sqlCommand + "  AND P.PURCHASE_PAID = 0 AND PURCHASE_SENT = 1";// AND PURCHASE_RECEIVED = 1";
             }
 
             if (!showAllCheckBox.Checked)
