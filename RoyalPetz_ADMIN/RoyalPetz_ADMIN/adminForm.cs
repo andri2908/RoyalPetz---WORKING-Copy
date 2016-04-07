@@ -341,7 +341,7 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem63_Click(object sender, EventArgs e)
         {
             //dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.CEK_DATA_MUTASI);
-            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.CEK_DATA_MUTASI);
+            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.PERMINTAAN_BARANG);
             displayedForm.ShowDialog(this);
         }
 
@@ -439,12 +439,6 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem68_Click(object sender, EventArgs e)
         {
             
-        }
-
-        private void toolStripMenuItem69_Click(object sender, EventArgs e)
-        {
-            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.PEMBAYARAN_HUTANG);
-            displayedForm.ShowDialog(this);
         }
 
         private void toolStripMenuItem70_Click(object sender, EventArgs e)
@@ -844,6 +838,11 @@ namespace RoyalPetz_ADMIN
         {
             dataPelangganForm displayedForm = new dataPelangganForm(globalConstants.PEMBAYARAN_PIUTANG);
             displayedForm.ShowDialog(this);
+        }
+
+        private void toolStripMenuItem30_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

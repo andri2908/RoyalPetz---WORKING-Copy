@@ -488,5 +488,28 @@ namespace RoyalPetz_ADMIN
                 gUtil.showSuccess(gUtil.INS);
             }
         }
+
+        private void deleteCurrentRow()
+        {
+            if (detailGridView.SelectedCells.Count > 0)
+            {
+                int rowSelectedIndex = detailGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
+
+                detailGridView.Rows.Remove(selectedRow);
+            }
+        }
+
+        private void detailGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
+                {
+                    deleteCurrentRow();
+                    calculateTotal();
+                }
+            }
+        }
     }
 }

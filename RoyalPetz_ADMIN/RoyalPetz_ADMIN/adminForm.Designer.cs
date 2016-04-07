@@ -971,6 +971,7 @@
             this.toolStripMenuItem30.Name = "toolStripMenuItem30";
             this.toolStripMenuItem30.Size = new System.Drawing.Size(322, 22);
             this.toolStripMenuItem30.Text = "Pembayaran Hutang";
+            this.toolStripMenuItem30.Click += new System.EventHandler(this.toolStripMenuItem30_Click);
             // 
             // toolStripMenuItem31
             // 
@@ -1109,7 +1110,7 @@
             this.SHORTCUT_piutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.SHORTCUT_piutang.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SHORTCUT_piutang.Name = "SHORTCUT_piutang";
-            this.SHORTCUT_piutang.Size = new System.Drawing.Size(66, 66);
+            this.SHORTCUT_piutang.Size = new System.Drawing.Size(65, 66);
             this.SHORTCUT_piutang.Text = "PIUTANG";
             this.SHORTCUT_piutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.SHORTCUT_piutang.Click += new System.EventHandler(this.toolStripButton2_Click);
@@ -1121,7 +1122,7 @@
             this.SHORTCUT_hutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.SHORTCUT_hutang.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SHORTCUT_hutang.Name = "SHORTCUT_hutang";
-            this.SHORTCUT_hutang.Size = new System.Drawing.Size(62, 66);
+            this.SHORTCUT_hutang.Size = new System.Drawing.Size(61, 66);
             this.SHORTCUT_hutang.Text = "HUTANG";
             this.SHORTCUT_hutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.SHORTCUT_hutang.Click += new System.EventHandler(this.toolStripButton5_Click);
@@ -1145,7 +1146,7 @@
             this.SHORTCUT_returBeli.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.SHORTCUT_returBeli.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SHORTCUT_returBeli.Name = "SHORTCUT_returBeli";
-            this.SHORTCUT_returBeli.Size = new System.Drawing.Size(70, 66);
+            this.SHORTCUT_returBeli.Size = new System.Drawing.Size(68, 66);
             this.SHORTCUT_returBeli.Text = "RET. BELI";
             this.SHORTCUT_returBeli.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.SHORTCUT_returBeli.Click += new System.EventHandler(this.toolStripButton7_Click);
@@ -1157,7 +1158,7 @@
             this.SHORTCUT_returJual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.SHORTCUT_returJual.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SHORTCUT_returJual.Name = "SHORTCUT_returJual";
-            this.SHORTCUT_returJual.Size = new System.Drawing.Size(71, 66);
+            this.SHORTCUT_returJual.Size = new System.Drawing.Size(69, 66);
             this.SHORTCUT_returJual.Text = "RET. JUAL";
             this.SHORTCUT_returJual.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.SHORTCUT_returJual.Click += new System.EventHandler(this.toolStripButton6_Click);
