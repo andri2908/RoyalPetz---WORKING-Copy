@@ -65,7 +65,7 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
             DateTime poDate;
 
-            sqlCommand = "SELECT H.*, M.SUPPLIER_FULL_NAME FROM PURCHASE_HEADER H, MASTER_SUPPLIER M WHERE PURCHASE_INVOICE = '" + selectedPOInvoice + "' AND H.SUPPLIER_ID = M.SUPPLIER_ID";
+            sqlCommand = "SELECT H.*, PR.*, M.SUPPLIER_FULL_NAME FROM PURCHASE_HEADER H, MASTER_SUPPLIER M, PRODUCTS_RECEIVED_HEADER PR WHERE H.PURCHASE_INVOICE = '" + selectedPOInvoice + "' AND H.SUPPLIER_ID = M.SUPPLIER_ID AND PR.PURCHASE_INVOICE = H.PURCHASE_INVOICE";
 
             using (rdr = DS.getData(sqlCommand))
             {
@@ -76,9 +76,9 @@ namespace RoyalPetz_ADMIN
                         poInvoiceTextBox.Text = rdr.GetString("PURCHASE_INVOICE");
                         selectedSupplierID = rdr.GetInt32("SUPPLIER_ID");
                         supplierNameTextBox.Text = rdr.GetString("SUPPLIER_FULL_NAME");
-                        poDate = rdr.GetDateTime("PURCHASE_DATETIME");
+                        poDate = rdr.GetDateTime("PURCHASE_DATE_RECEIVED");
                         poDateTextBox.Text = String.Format(culture, "{0:dd MMM yyyy}", poDate);
-                        globalTotalValue = rdr.GetDouble("PURCHASE_TOTAL");
+                        globalTotalValue = rdr.GetDouble("PR_TOTAL");
                         purchasePaid = rdr.GetInt32("PURCHASE_PAID");
                     }
                 }
@@ -100,7 +100,8 @@ namespace RoyalPetz_ADMIN
             DataTable dt = new DataTable();
             string sqlCommand = "";
 
-            sqlCommand = "SELECT D.PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_PRICE AS 'HARGA BELI', PRODUCT_QTY AS 'QTY', PURCHASE_SUBTOTAL AS 'SUBTOTAL' FROM PURCHASE_DETAIL S, MASTER_PRODUCT D WHERE S.PRODUCT_ID = D.PRODUCT_ID AND S.PURCHASE_INVOICE = '" + selectedPOInvoice + "'";
+            //sqlCommand = "SELECT D.PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_PRICE AS 'HARGA BELI', PRODUCT_QTY AS 'QTY', PURCHASE_SUBTOTAL AS 'SUBTOTAL' FROM PURCHASE_DETAIL S, MASTER_PRODUCT D WHERE S.PRODUCT_ID = D.PRODUCT_ID AND S.PURCHASE_INVOICE = '" + selectedPOInvoice + "'";
+            sqlCommand = "SELECT M.PRODUCT_NAME AS 'NAMA PRODUK', D.PRODUCT_BASE_PRICE AS 'HARGA BELI', PRODUCT_ACTUAL_QTY AS 'QTY', PR_SUBTOTAL AS 'SUBTOTAL' FROM PRODUCTS_RECEIVED_HEADER H, PRODUCTS_RECEIVED_DETAIL D, MASTER_PRODUCT M WHERE D.PRODUCT_ID = M.PRODUCT_ID AND H.PURCHASE_INVOICE = '" + selectedPOInvoice + "' AND H.PR_INVOICE = D.PR_INVOICE";
             using (rdr = DS.getData(sqlCommand))
             {
                 if (rdr.HasRows)
@@ -155,7 +156,7 @@ namespace RoyalPetz_ADMIN
 
             if (globalCalculation)
             {
-                globalTotalValue = Convert.ToDouble(DS.getDataSingleValue("SELECT PURCHASE_TOTAL FROM PURCHASE_HEADER WHERE PURCHASE_INVOICE = '" + selectedPOInvoice + "'"));
+                globalTotalValue = Convert.ToDouble(DS.getDataSingleValue("SELECT PR_TOTAL FROM PRODUCTS_RECEIVED_HEADER WHERE PURCHASE_INVOICE = '" + selectedPOInvoice + "'"));
             }
 
             totalPayment = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) AS PAYMENT FROM PAYMENT_DEBT WHERE DEBT_ID = " + selectedDebtID + " AND PAYMENT_INVALID = 0"));

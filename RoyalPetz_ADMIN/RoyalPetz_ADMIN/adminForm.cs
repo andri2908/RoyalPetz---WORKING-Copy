@@ -408,7 +408,7 @@ namespace RoyalPetz_ADMIN
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MENU_logOut.PerformClick();
-            Application.Exit();
+            //Application.Exit();
         }
 
         private void toolStripMenuItem23_Click(object sender, EventArgs e)
@@ -520,8 +520,10 @@ namespace RoyalPetz_ADMIN
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            logoutForm displayedForm = new logoutForm();
-            displayedForm.ShowDialog(this);
+            //logoutForm displayedForm = new logoutForm();
+            //displayedForm.ShowDialog(this);
+
+            this.Close();
         }
 
         private void toolStripMenuItem18_Click(object sender, EventArgs e)

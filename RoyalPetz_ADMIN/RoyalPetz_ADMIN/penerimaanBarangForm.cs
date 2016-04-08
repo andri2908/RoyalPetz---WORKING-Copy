@@ -371,6 +371,11 @@ namespace RoyalPetz_ADMIN
             double newHPP = 0;
             int priceChange = 0;
 
+            DateTime PODueDate;
+            string PODueDateTime;
+            double termOfPaymentDuration;
+            int termOfPayment;
+
             string selectedDate = PRDtPicker.Value.ToShortDateString();
             PRDateTime = String.Format(culture, "{0:dd-MM-yyyy}", Convert.ToDateTime(selectedDate));
             
@@ -378,7 +383,7 @@ namespace RoyalPetz_ADMIN
             branchIDFrom = selectedFromID;
             branchIDTo = selectedToID;
             PRTotal = globalTotalValue;
-            
+
             DS.beginTransaction();
 
             try
@@ -439,6 +444,29 @@ namespace RoyalPetz_ADMIN
                         throw internalEX;
                 }
 
+                //INSERT INTO DEBT TABLE and UPDATE DUE DATE FOR PO
+                if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_PO)
+                {
+                    termOfPayment = Convert.ToInt32(DS.getDataSingleValue("SELECT PURCHASE_TERM_OF_PAYMENT FROM PURCHASE_HEADER WHERE PURCHASE_INVOICE = '" + noInvoiceTextBox.Text + "'"));
+
+                    if (termOfPayment == 1)
+                    {
+                        // UPDATE PURCHASE HEADER
+                        termOfPaymentDuration = Convert.ToInt32(DS.getDataSingleValue("SELECT PURCHASE_TERM_OF_PAYMENT_DURATION FROM PURCHASE_HEADER WHERE PURCHASE_INVOICE = '" + noInvoiceTextBox.Text + "'"));
+                        PODueDate = PRDtPicker.Value.AddDays(termOfPaymentDuration);
+                        PODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", PODueDate);
+
+                        sqlCommand = "UPDATE PURCHASE_HEADER SET PURCHASE_DATE_RECEIVED = STR_TO_DATE('" + PRDateTime + "', '%d-%m-%Y'), PURCHASE_TERM_OF_PAYMENT_DATE = STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y') WHERE PURCHASE_INVOICE = '" + noInvoiceTextBox.Text + "'";
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+
+                        // INSERT INTO DEBT TABLE
+                        sqlCommand = "INSERT INTO DEBT (PURCHASE_INVOICE, DEBT_DUE_DATE, DEBT_NOMINAL, DEBT_PAID) VALUES ('" + noInvoiceTextBox.Text + "', STR_TO_DATE('" + PODueDateTime + "', '%d-%m-%Y'), " + PRTotal + ", 0)";
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+                    }
+                }
+
                 DS.commit();
                 result = true;
             }
@@ -484,7 +512,7 @@ namespace RoyalPetz_ADMIN
                 saveButton.Visible = false;
                 prInvoiceTextBox.Enabled = false;
                 PRDtPicker.Enabled = false;
-
+                detailGridView.ReadOnly = true;
                 gUtil.showSuccess(gUtil.INS);
             }
         }
