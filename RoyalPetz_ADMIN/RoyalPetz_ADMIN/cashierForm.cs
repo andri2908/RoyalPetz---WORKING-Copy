@@ -344,9 +344,9 @@ namespace RoyalPetz_ADMIN
             for (int i = 0; i < cashierDataGridView.Rows.Count; i++ )
             {
                 if (
-                    (null == cashierDataGridView.Rows[i].Cells["qty"].Value) || 
+                    ((null == cashierDataGridView.Rows[i].Cells["qty"].Value) || 
                     (0 == Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value))
-                    )
+                    ) && null != cashierDataGridView.Rows[i].Cells["productID"].Value)
                 {
                     errorLabel.Text = "JUMLAH PRODUK 0";
                     return false;
@@ -416,7 +416,7 @@ namespace RoyalPetz_ADMIN
                 // SAVE DETAIL TABLE
                 for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
                 {
-                    if (null != cashierDataGridView.Rows[i].Cells["qty"].Value)
+                    if (null != cashierDataGridView.Rows[i].Cells["productID"].Value)
                     {
                         sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
                                             "VALUES " +
