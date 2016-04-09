@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -201,14 +201,10 @@ namespace RoyalPetz_ADMIN
 
         private void infoFolderDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetApplicationForm displayedForm = new SetApplicationForm(); 
-            displayedForm.ShowDialog(this);
         }
 
         private void backupRestoreToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            backupRestoreDatabaseForm displayedForm = new backupRestoreDatabaseForm();
-            displayedForm.ShowDialog(this);
         }
 
         private void toolStripMenuItem15_Click(object sender, EventArgs e)
@@ -376,13 +372,17 @@ namespace RoyalPetz_ADMIN
 
         private void pengaturanPrinterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var cplPath = System.IO.Path.Combine(Environment.SystemDirectory, "control.exe");
-            System.Diagnostics.Process.Start(cplPath, "/name Microsoft.DevicesAndPrinters");
+            //var cplPath = System.IO.Path.Combine(Environment.SystemDirectory, "control.exe");
+            //System.Diagnostics.Process.Start(cplPath, "/name Microsoft.DevicesAndPrinters");
+            SetPrinterForm displayedForm = new SetPrinterForm();
+            displayedForm.ShowDialog(this);
         }
 
         private void pengaturanGambarLatarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string fileName = "";
+            openFileDialog1.FileName = "";
+            openFileDialog1.Filter = "(*.jpg)|*.jpg|(*.bmp)|*.bmp";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -482,7 +482,7 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem24_Click(object sender, EventArgs e)
         {
             //dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm();
-	        dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm(globalConstants.NEW_DJ,selectedUserID);
+            dataTransaksiJurnalHarianDetailForm displayedForm = new dataTransaksiJurnalHarianDetailForm(globalConstants.NEW_DJ,selectedUserID);
             displayedForm.ShowDialog(this);
         }
 
@@ -725,7 +725,8 @@ namespace RoyalPetz_ADMIN
             // SET ACCESSIBILITY FOR MANAJEMEN SISTEM MAIN MENU
             setAccessibility(globalConstants.MENU_MANAJEMEN_SISTEM, MAINMENU_manajemenSistem);
             // SUB MENU DATABASE
-            setAccessibility(globalConstants.MENU_DATABASE, MENU_database);
+            setAccessibility(globalConstants.MENU_DATABASE, MENU_backUpRestoreDatabaseToolStripMenuItem);
+            setAccessibility(globalConstants.MENU_DATABASE, MENU_pengaturanSistemAplikasiToolStripMenuItem);
             // SUB MENU USER
             setAccessibility(globalConstants.MENU_MANAJEMEN_USER, MENU_manajemenUser);
             // SUB MENU CABANG
@@ -810,13 +811,14 @@ namespace RoyalPetz_ADMIN
             setAccessibility(globalConstants.MENU_TRANSAKSI, MENU_transaksi);
             setAccessibility(globalConstants.MENU_TRANSAKSI_HARIAN, MENU_tambahTransaksiHarian);
             setAccessibility(globalConstants.MENU_TRANSAKSI_HARIAN, SHORTCUT_jurnal);
+            setAccessibility(globalConstants.MENU_TRANSAKSI_HARIAN, MENU_pengaturanLimitPajak);
             setAccessibility(globalConstants.MENU_PEMBAYARAN_PIUTANG, MENU_pembayaranPiutang);
             setAccessibility(globalConstants.MENU_PEMBAYARAN_PIUTANG, SHORTCUT_piutang);
             setAccessibility(globalConstants.MENU_PEMBAYARAN_PIUTANG_MUTASI, MENU_pembayaranPiutangMutasi);
             setAccessibility(globalConstants.MENU_PEMBAYARAN_HUTANG_SUPPLIER, MENU_pembayaranHutangKeSupplier);
             setAccessibility(globalConstants.MENU_PEMBAYARAN_HUTANG_SUPPLIER, SHORTCUT_hutang);
-
         }
+
 
         private void toolStripMenuItem1_Click_1(object sender, EventArgs e)
         {
@@ -845,6 +847,85 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem30_Click(object sender, EventArgs e)
         {
 
+        }
+        private void generatorXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            XMLGeneratorForm displayedform = new XMLGeneratorForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterUserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportUserForm displayedform = new ReportUserForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterProdukToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportProductForm displayedform = new ReportProductForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterCabangToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportBranchForm displayedform = new ReportBranchForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterAkunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportAccountForm displayedform = new ReportAccountForm();
+            displayedform.ShowDialog(this);
+
+        }
+
+        private void masterKategoriToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportCategoryForm displayedform = new ReportCategoryForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterPelangganToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportCustomerForm displayedform = new ReportCustomerForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterGroupUserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportGroupUserForm displayedform = new ReportGroupUserForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterSupplierToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportSupplierForm displayedform = new ReportSupplierForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void masterSatuanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportUnitForm displayedform = new ReportUnitForm();
+            displayedform.ShowDialog(this);
+        }
+
+        private void laporanDaftarProdukDalamKategoriTertentuToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportProductCategoryForm displayedform = new ReportProductCategoryForm();
+            displayedform.ShowDialog(this);
+
+        }
+
+        private void pengaturanSistemAplikasiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetApplicationForm displayedForm = new SetApplicationForm();
+            displayedForm.ShowDialog(this);
+        }
+
+        private void backUpRestoreDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            backupRestoreDatabaseForm displayedForm = new backupRestoreDatabaseForm();
+            displayedForm.ShowDialog(this);
         }
     }
 }

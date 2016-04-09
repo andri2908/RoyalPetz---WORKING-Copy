@@ -140,6 +140,22 @@ namespace RoyalPetz_ADMIN
         public const int MENU_PEMBAYARAN_HUTANG_SUPPLIER = 48;
 
 
+        //mode laporan
+        public const int MENU_REPORT_USER = 601;
+
+        //XML file
+        public const string AccountXML = "MasterAccount.xml";
+        public const string BranchXML = "MasterBranch.xml";
+        public const string CategoryXML = "MasterCategory.xml";
+        public const string CustomerXML = "MasterCustomer.xml";
+        public const string GroupXML = "MasterGroup.xml";
+        public const string ProductXML = "MasterProduct.xml";
+        public const string SupplierXML = "MasterSupplier.xml";
+        public const string UnitXML = "MasterUnit.xml";
+        public const string UserXML = "MasterUser.xml";
+        public const string ProductCategoryXML = "ProductCategory.xml";
+
+
 
 
 

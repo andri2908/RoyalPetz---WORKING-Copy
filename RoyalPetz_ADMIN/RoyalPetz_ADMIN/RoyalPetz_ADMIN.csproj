@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,9 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Windows.Forms, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="FlashControlV71, Version=1.0.3187.32366, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -362,6 +370,126 @@
     <Compile Include="purchaseOrderDetailForm.Designer.cs">
       <DependentUpon>purchaseOrderDetailForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReportAccount.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportAccount.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportAccountForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportAccountForm.Designer.cs">
+      <DependentUpon>ReportAccountForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportBranch.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportBranch.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportBranchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportBranchForm.Designer.cs">
+      <DependentUpon>ReportBranchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportCategory.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportCategory.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportCategoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportCategoryForm.Designer.cs">
+      <DependentUpon>ReportCategoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportCustomer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportCustomer.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportCustomerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportCustomerForm.Designer.cs">
+      <DependentUpon>ReportCustomerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportGroupUser.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportGroupUser.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportGroupUserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportGroupUserForm.Designer.cs">
+      <DependentUpon>ReportGroupUserForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportProduct.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportProduct.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportProductCategory.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportProductCategory.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportProductCategoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportProductCategoryForm.Designer.cs">
+      <DependentUpon>ReportProductCategoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportProductForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportProductForm.Designer.cs">
+      <DependentUpon>ReportProductForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportSupplier.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportSupplier.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportSupplierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportSupplierForm.Designer.cs">
+      <DependentUpon>ReportSupplierForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportUnit.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportUnit.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportUnitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportUnitForm.Designer.cs">
+      <DependentUpon>ReportUnitForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportUser.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportUser.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportUserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportUserForm.Designer.cs">
+      <DependentUpon>ReportUserForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SetApplicationForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -373,6 +501,12 @@
     </Compile>
     <Compile Include="setNoFakturForm.Designer.cs">
       <DependentUpon>setNoFakturForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetPrinterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetPrinterForm.Designer.cs">
+      <DependentUpon>SetPrinterForm.cs</DependentUpon>
     </Compile>
     <Compile Include="sinkronisasiInformasiForm.cs">
       <SubType>Form</SubType>
@@ -409,6 +543,12 @@
     </Compile>
     <Compile Include="TabSchemeProvider.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="XMLGeneratorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="XMLGeneratorForm.Designer.cs">
+      <DependentUpon>XMLGeneratorForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="aboutusform.resx">
       <DependentUpon>aboutusform.cs</DependentUpon>
@@ -572,11 +712,84 @@
     <EmbeddedResource Include="purchaseOrderDetailForm.resx">
       <DependentUpon>purchaseOrderDetailForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ReportAccount.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportAccount.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportAccountForm.resx">
+      <DependentUpon>ReportAccountForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportBranch.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportBranch.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportBranchForm.resx">
+      <DependentUpon>ReportBranchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportCategory.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportCategory.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportCategoryForm.resx">
+      <DependentUpon>ReportCategoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportCustomer.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportCustomer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportCustomerForm.resx">
+      <DependentUpon>ReportCustomerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportGroupUser.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportGroupUser.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportGroupUserForm.resx">
+      <DependentUpon>ReportGroupUserForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportProduct.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportProduct.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportProductCategory.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportProductCategory.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportProductCategoryForm.resx">
+      <DependentUpon>ReportProductCategoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportProductForm.resx">
+      <DependentUpon>ReportProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSupplier.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportSupplier.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSupplierForm.resx">
+      <DependentUpon>ReportSupplierForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportUnit.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportUnit.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportUnitForm.resx">
+      <DependentUpon>ReportUnitForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportUser.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportUser.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportUserForm.resx">
+      <DependentUpon>ReportUserForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SetApplicationForm.resx">
       <DependentUpon>SetApplicationForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="setNoFakturForm.resx">
       <DependentUpon>setNoFakturForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetPrinterForm.resx">
+      <DependentUpon>SetPrinterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="sinkronisasiInformasiForm.resx">
       <DependentUpon>sinkronisasiInformasiForm.cs</DependentUpon>
@@ -594,6 +807,9 @@
       <DependentUpon>dataKategoriProdukForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabSchemeProvider.resx" />
+    <EmbeddedResource Include="XMLGeneratorForm.resx">
+      <DependentUpon>XMLGeneratorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -606,6 +822,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

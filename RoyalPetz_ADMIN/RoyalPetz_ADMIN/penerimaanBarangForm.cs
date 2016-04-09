@@ -112,11 +112,10 @@ namespace RoyalPetz_ADMIN
                                 invoiceDtPicker.Value = rdr.GetDateTime("PURCHASE_DATETIME");
                                 selectedFromID = rdr.GetInt32("SUPPLIER_ID");
                                 //selectedToID = rdr.GetInt32("BRANCH_ID_TO");
- 
                                 globalTotalValue = rdr.GetDouble("PURCHASE_TOTAL");
+
                                 labelTotalValue.Text = globalTotalValue.ToString("C", culture);
                                 labelAcceptValue.Text = globalTotalValue.ToString("C", culture);
-
                             }
                         }
                     }
@@ -338,9 +337,28 @@ namespace RoyalPetz_ADMIN
 
         private bool dataValidated()
         {
+            bool dataExist = false;
+
             if (prInvoiceTextBox.Text.Length <=0)
             {
                 errorLabel.Text = "NO PENERIMAAN TIDAK BOLEH KOSONG";
+                return false;
+            }
+
+            for (int i = 0; i < detailGridView.Rows.Count && !dataExist; i ++)
+            {
+                if (null != detailGridView.Rows[i].Cells["productID"].Value)
+                    dataExist = true;
+            }
+            if (!dataExist)
+            {
+                errorLabel.Text = "TIDAK ADA PRODUCT YANG DITERIMA";
+                return false;
+            }
+
+            if (globalTotalValue <= 0)
+            {
+                errorLabel.Text = "NILAI BARANG YANG DITERIMA TIDAK BOLEH NOL";
                 return false;
             }
 
@@ -383,7 +401,7 @@ namespace RoyalPetz_ADMIN
             branchIDFrom = selectedFromID;
             branchIDTo = selectedToID;
             PRTotal = globalTotalValue;
-
+            
             DS.beginTransaction();
 
             try
