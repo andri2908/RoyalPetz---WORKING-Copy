@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.saveButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -65,6 +65,9 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.confirmBayar = new System.Windows.Forms.ToolStripMenuItem();
             this.invalidPayment = new System.Windows.Forms.ToolStripMenuItem();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.labelCair = new System.Windows.Forms.Label();
+            this.cairDTPicker = new System.Windows.Forms.DateTimePicker();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
@@ -73,6 +76,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.detailPurchaseOrderDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.detailPaymentDataGridView)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // saveButton
@@ -93,7 +97,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label3.Location = new System.Drawing.Point(3, 131);
+            this.label3.Location = new System.Drawing.Point(3, 128);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(99, 29);
             this.label3.TabIndex = 51;
@@ -117,7 +121,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label8.Location = new System.Drawing.Point(239, 180);
+            this.label8.Location = new System.Drawing.Point(239, 177);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(14, 18);
             this.label8.TabIndex = 54;
@@ -143,7 +147,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.47287F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.527132F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 630F));
-            this.tableLayoutPanel1.Controls.Add(this.paymentCombo, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel4, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.label11, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label10, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 2, 2);
@@ -181,10 +185,11 @@
             this.paymentCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.paymentCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.paymentCombo.FormattingEnabled = true;
-            this.paymentCombo.Location = new System.Drawing.Point(261, 176);
+            this.paymentCombo.Location = new System.Drawing.Point(3, 3);
             this.paymentCombo.Name = "paymentCombo";
             this.paymentCombo.Size = new System.Drawing.Size(229, 26);
             this.paymentCombo.TabIndex = 66;
+            this.paymentCombo.SelectedIndexChanged += new System.EventHandler(this.paymentCombo_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -204,7 +209,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label10.Location = new System.Drawing.Point(3, 180);
+            this.label10.Location = new System.Drawing.Point(3, 177);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(213, 18);
             this.label10.TabIndex = 67;
@@ -213,9 +218,9 @@
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.61244F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 205F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70.74341F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.2566F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 207F));
             this.tableLayoutPanel3.Controls.Add(this.supplierNameTextBox, 0, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(261, 84);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -231,7 +236,7 @@
             this.supplierNameTextBox.Location = new System.Drawing.Point(3, 3);
             this.supplierNameTextBox.Name = "supplierNameTextBox";
             this.supplierNameTextBox.ReadOnly = true;
-            this.supplierNameTextBox.Size = new System.Drawing.Size(319, 27);
+            this.supplierNameTextBox.Size = new System.Drawing.Size(278, 27);
             this.supplierNameTextBox.TabIndex = 16;
             // 
             // label4
@@ -298,8 +303,8 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 194F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 197F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 204F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 187F));
             this.tableLayoutPanel2.Controls.Add(this.poInvoiceTextBox, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.label9, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.poDateTextBox, 2, 0);
@@ -330,13 +335,13 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(187, 18);
             this.label9.TabIndex = 20;
-            this.label9.Text = "TANGGAL INVOICE :";
+            this.label9.Text = "TGL JATUH TEMPO :";
             // 
             // poDateTextBox
             // 
             this.poDateTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.poDateTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.poDateTextBox.Location = new System.Drawing.Point(430, 5);
+            this.poDateTextBox.Location = new System.Drawing.Point(440, 5);
             this.poDateTextBox.Name = "poDateTextBox";
             this.poDateTextBox.ReadOnly = true;
             this.poDateTextBox.Size = new System.Drawing.Size(178, 27);
@@ -360,7 +365,7 @@
             this.totalLabel.AutoSize = true;
             this.totalLabel.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.totalLabel.Location = new System.Drawing.Point(261, 131);
+            this.totalLabel.Location = new System.Drawing.Point(261, 128);
             this.totalLabel.Name = "totalLabel";
             this.totalLabel.Size = new System.Drawing.Size(83, 29);
             this.totalLabel.TabIndex = 49;
@@ -384,7 +389,7 @@
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label15.Location = new System.Drawing.Point(239, 136);
+            this.label15.Location = new System.Drawing.Point(239, 134);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(14, 18);
             this.label15.TabIndex = 60;
@@ -449,14 +454,14 @@
             // 
             this.detailPurchaseOrderDataGridView.AllowUserToAddRows = false;
             this.detailPurchaseOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailPurchaseOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailPurchaseOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.detailPurchaseOrderDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailPurchaseOrderDataGridView.Location = new System.Drawing.Point(4, 306);
             this.detailPurchaseOrderDataGridView.Name = "detailPurchaseOrderDataGridView";
@@ -469,14 +474,14 @@
             // 
             this.detailPaymentDataGridView.AllowUserToAddRows = false;
             this.detailPaymentDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailPaymentDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailPaymentDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.detailPaymentDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailPaymentDataGridView.ContextMenuStrip = this.contextMenuStrip1;
             this.detailPaymentDataGridView.Location = new System.Drawing.Point(3, 460);
@@ -509,6 +514,46 @@
             this.invalidPayment.Text = "Pembayaran Invalid";
             this.invalidPayment.Click += new System.EventHandler(this.invalidPayment_Click);
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.93733F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.06267F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 256F));
+            this.tableLayoutPanel4.Controls.Add(this.cairDTPicker, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.labelCair, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.paymentCombo, 0, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(261, 171);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 31);
+            this.tableLayoutPanel4.TabIndex = 67;
+            // 
+            // labelCair
+            // 
+            this.labelCair.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelCair.AutoSize = true;
+            this.labelCair.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCair.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelCair.Location = new System.Drawing.Point(256, 6);
+            this.labelCair.Name = "labelCair";
+            this.labelCair.Size = new System.Drawing.Size(104, 18);
+            this.labelCair.TabIndex = 58;
+            this.labelCair.Text = "TGL CAIR :";
+            this.labelCair.Visible = false;
+            // 
+            // cairDTPicker
+            // 
+            this.cairDTPicker.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cairDTPicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cairDTPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.cairDTPicker.Location = new System.Drawing.Point(370, 3);
+            this.cairDTPicker.Name = "cairDTPicker";
+            this.cairDTPicker.Size = new System.Drawing.Size(173, 27);
+            this.cairDTPicker.TabIndex = 59;
+            this.cairDTPicker.Visible = false;
+            // 
             // pembayaranHutangForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -540,6 +585,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.detailPurchaseOrderDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.detailPaymentDataGridView)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -580,5 +627,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem confirmBayar;
         private System.Windows.Forms.ToolStripMenuItem invalidPayment;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.DateTimePicker cairDTPicker;
+        private System.Windows.Forms.Label labelCair;
     }
 }

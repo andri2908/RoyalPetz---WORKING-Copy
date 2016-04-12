@@ -262,7 +262,7 @@ namespace RoyalPetz_ADMIN
             bool result = false;
 
             string sqlCommand = "";
-
+            MySqlException internalEX = null;
             string roInvoice = "";
             int branchIDFrom = 0;
             int branchIDTo = 0;
@@ -323,7 +323,8 @@ namespace RoyalPetz_ADMIN
                 }
 
                 sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_EXPORTED = 1 WHERE RO_INVOICE = '" + roInvoice + "'";
-                DS.executeNonQueryCommand(sqlCommand);
+                if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
 
                 DS.commit();
 
@@ -374,22 +375,24 @@ namespace RoyalPetz_ADMIN
 
                 saveFileDialog1.FileName = exportedFileName;
                 saveFileDialog1.Filter = "Export File (.exp)|*.exp";
-                saveFileDialog1.ShowDialog();
 
-                if (exportDataRO(saveFileDialog1.FileName))
-                { 
-                    gUtil.ResetAllControls(this);
-                    originModuleID = globalConstants.NEW_REQUEST_ORDER;
-                    detailRequestOrderDataGridView.Rows.Clear();
-                    totalLabel.Text = "Rp. 0";
+                //saveFileDialog1.ShowDialog();
 
-                    selectedBranchFromID = 0;
-                    selectedBranchToID = 0;
+                if (DialogResult.OK == saveFileDialog1.ShowDialog())
+                    if (exportDataRO(saveFileDialog1.FileName))
+                    { 
+                        gUtil.ResetAllControls(this);
+                        originModuleID = globalConstants.NEW_REQUEST_ORDER;
+                        detailRequestOrderDataGridView.Rows.Clear();
+                        totalLabel.Text = "Rp. 0";
 
-                    gUtil.showSuccess(gUtil.UPD);
+                        selectedBranchFromID = 0;
+                        selectedBranchToID = 0;
 
-                    ROinvoiceTextBox.Focus();
-                }
+                        gUtil.showSuccess(gUtil.UPD);
+
+                        ROinvoiceTextBox.Focus();
+                    }
             }
         }
 
@@ -881,7 +884,7 @@ namespace RoyalPetz_ADMIN
 
                     saveButton.Visible = false;
                     generateButton.Visible = false;
-                    exportButton.Visible = false;
+                    //exportButton.Visible = false;
                     deactivateButton.Visible = true;
                 }
                 

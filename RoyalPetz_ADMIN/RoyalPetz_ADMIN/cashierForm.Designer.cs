@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.titleLabel = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -43,8 +43,6 @@
             this.errorLabel = new System.Windows.Forms.Label();
             this.tempoMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.pelangganTextBox = new System.Windows.Forms.TextBox();
-            this.sizeComboBox = new System.Windows.Forms.ComboBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.printoutCheckBox = new System.Windows.Forms.CheckBox();
             this.paymentComboBox = new System.Windows.Forms.ComboBox();
             this.labelCaraBayar = new System.Windows.Forms.Label();
@@ -54,6 +52,7 @@
             this.customerComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.bayarTextBox = new System.Windows.Forms.MaskedTextBox();
             this.discJualMaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.uangKembaliTextBox = new System.Windows.Forms.TextBox();
             this.totalAfterDiscTextBox = new System.Windows.Forms.TextBox();
@@ -75,7 +74,7 @@
             this.dateTimeStampLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.productComboHidden = new System.Windows.Forms.ComboBox();
-            this.bayarTextBox = new System.Windows.Forms.MaskedTextBox();
+            this.ChangePrinterButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cashierDataGridView)).BeginInit();
             this.panel5.SuspendLayout();
@@ -150,41 +149,41 @@
             this.cashierDataGridView.AllowUserToAddRows = false;
             this.cashierDataGridView.AllowUserToDeleteRows = false;
             this.cashierDataGridView.AllowUserToResizeRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FloralWhite;
-            this.cashierDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FloralWhite;
+            this.cashierDataGridView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle9;
             this.cashierDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
             this.cashierDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.SteelBlue;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Verdana", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.cashierDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.SteelBlue;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Verdana", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FloralWhite;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.cashierDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.cashierDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.cashierDataGridView.Cursor = System.Windows.Forms.Cursors.Default;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.cashierDataGridView.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FloralWhite;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.cashierDataGridView.DefaultCellStyle = dataGridViewCellStyle11;
             this.cashierDataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.cashierDataGridView.EnableHeadersVisualStyles = false;
             this.cashierDataGridView.GridColor = System.Drawing.Color.Black;
             this.cashierDataGridView.Location = new System.Drawing.Point(2, 130);
             this.cashierDataGridView.MultiSelect = false;
             this.cashierDataGridView.Name = "cashierDataGridView";
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.cashierDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.cashierDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.cashierDataGridView.RowHeadersVisible = false;
             this.cashierDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.cashierDataGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -196,11 +195,10 @@
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel5.Controls.Add(this.ChangePrinterButton);
             this.panel5.Controls.Add(this.errorLabel);
             this.panel5.Controls.Add(this.tempoMaskedTextBox);
             this.panel5.Controls.Add(this.pelangganTextBox);
-            this.panel5.Controls.Add(this.sizeComboBox);
-            this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.printoutCheckBox);
             this.panel5.Controls.Add(this.paymentComboBox);
             this.panel5.Controls.Add(this.labelCaraBayar);
@@ -251,30 +249,6 @@
             this.pelangganTextBox.Size = new System.Drawing.Size(181, 27);
             this.pelangganTextBox.TabIndex = 17;
             // 
-            // sizeComboBox
-            // 
-            this.sizeComboBox.FormattingEnabled = true;
-            this.sizeComboBox.Items.AddRange(new object[] {
-            "Kecil",
-            "Sedang",
-            "Kwarto"});
-            this.sizeComboBox.Location = new System.Drawing.Point(342, 70);
-            this.sizeComboBox.Name = "sizeComboBox";
-            this.sizeComboBox.Size = new System.Drawing.Size(126, 26);
-            this.sizeComboBox.TabIndex = 11;
-            this.sizeComboBox.Text = "Kecil";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label7.Location = new System.Drawing.Point(340, 43);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(101, 18);
-            this.label7.TabIndex = 10;
-            this.label7.Text = "Size Kertas";
-            // 
             // printoutCheckBox
             // 
             this.printoutCheckBox.AutoSize = true;
@@ -284,7 +258,7 @@
             this.printoutCheckBox.ForeColor = System.Drawing.Color.FloralWhite;
             this.printoutCheckBox.Location = new System.Drawing.Point(11, 110);
             this.printoutCheckBox.Name = "printoutCheckBox";
-            this.printoutCheckBox.Size = new System.Drawing.Size(236, 22);
+            this.printoutCheckBox.Size = new System.Drawing.Size(234, 22);
             this.printoutCheckBox.TabIndex = 8;
             this.printoutCheckBox.Text = "Tanpa Cetak &Struk - Nota";
             this.printoutCheckBox.UseVisualStyleBackColor = true;
@@ -333,7 +307,7 @@
             this.cashRadioButton.ForeColor = System.Drawing.Color.FloralWhite;
             this.cashRadioButton.Location = new System.Drawing.Point(154, 41);
             this.cashRadioButton.Name = "cashRadioButton";
-            this.cashRadioButton.Size = new System.Drawing.Size(71, 22);
+            this.cashRadioButton.Size = new System.Drawing.Size(69, 22);
             this.cashRadioButton.TabIndex = 4;
             this.cashRadioButton.TabStop = true;
             this.cashRadioButton.Text = "Tuna&i";
@@ -397,6 +371,17 @@
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(370, 161);
             this.panel6.TabIndex = 0;
+            // 
+            // bayarTextBox
+            // 
+            this.bayarTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bayarTextBox.Location = new System.Drawing.Point(186, 102);
+            this.bayarTextBox.Mask = "000000000000000";
+            this.bayarTextBox.Name = "bayarTextBox";
+            this.bayarTextBox.Size = new System.Drawing.Size(181, 27);
+            this.bayarTextBox.TabIndex = 18;
+            this.bayarTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.bayarTextBox.TextChanged += new System.EventHandler(this.bayarTextBox_TextChanged);
             // 
             // discJualMaskedTextBox
             // 
@@ -581,7 +566,7 @@
             this.userStatusLabel.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.userStatusLabel.ForeColor = System.Drawing.Color.FloralWhite;
             this.userStatusLabel.Name = "userStatusLabel";
-            this.userStatusLabel.Size = new System.Drawing.Size(105, 17);
+            this.userStatusLabel.Size = new System.Drawing.Size(104, 17);
             this.userStatusLabel.Text = "Welcome, JOKO";
             // 
             // statusShiftLabel
@@ -596,7 +581,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(691, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(692, 17);
             this.toolStripStatusLabel1.Spring = true;
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
@@ -621,16 +606,17 @@
             this.productComboHidden.TabIndex = 13;
             this.productComboHidden.Visible = false;
             // 
-            // bayarTextBox
+            // ChangePrinterButton
             // 
-            this.bayarTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bayarTextBox.Location = new System.Drawing.Point(186, 102);
-            this.bayarTextBox.Mask = "000000000000000";
-            this.bayarTextBox.Name = "bayarTextBox";
-            this.bayarTextBox.Size = new System.Drawing.Size(181, 27);
-            this.bayarTextBox.TabIndex = 18;
-            this.bayarTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.bayarTextBox.TextChanged += new System.EventHandler(this.bayarTextBox_TextChanged);
+            this.ChangePrinterButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ChangePrinterButton.ForeColor = System.Drawing.Color.Black;
+            this.ChangePrinterButton.Location = new System.Drawing.Point(343, 68);
+            this.ChangePrinterButton.Name = "ChangePrinterButton";
+            this.ChangePrinterButton.Size = new System.Drawing.Size(158, 34);
+            this.ChangePrinterButton.TabIndex = 37;
+            this.ChangePrinterButton.Text = "SET PRINTER";
+            this.ChangePrinterButton.UseVisualStyleBackColor = true;
+            this.ChangePrinterButton.Click += new System.EventHandler(this.ChangePrinterButton_Click);
             // 
             // cashierForm
             // 
@@ -690,8 +676,6 @@
         private System.Windows.Forms.Label labelCaraBayar;
         private System.Windows.Forms.ComboBox paymentComboBox;
         private System.Windows.Forms.CheckBox printoutCheckBox;
-        private System.Windows.Forms.ComboBox sizeComboBox;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Label label13;
@@ -717,6 +701,7 @@
         private System.Windows.Forms.MaskedTextBox tempoMaskedTextBox;
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.MaskedTextBox bayarTextBox;
+        private System.Windows.Forms.Button ChangePrinterButton;
     }
 }
 

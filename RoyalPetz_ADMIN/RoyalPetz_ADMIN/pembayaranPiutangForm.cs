@@ -121,7 +121,7 @@ namespace RoyalPetz_ADMIN
             DataTable dt = new DataTable();
             string sqlCommand = "";
 
-            sqlCommand = "SELECT PAYMENT_INVALID, PAYMENT_ID, PM_NAME AS 'TIPE', IF(PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TANGGAL', PAYMENT_NOMINAL AS 'NOMINAL', PAYMENT_DESCRIPTION AS 'DESKRIPSI' FROM PAYMENT_CREDIT PC, PAYMENT_METHOD PM WHERE PC.PM_ID = PM.PM_ID AND CREDIT_ID = " + selectedCreditID;
+            sqlCommand = "SELECT PAYMENT_INVALID, PAYMENT_ID, PM_NAME AS 'TIPE', IF(PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DUE_DATE, '%d-%M-%Y') AS 'TANGGAL PEMBAYARAN', PAYMENT_NOMINAL AS 'NOMINAL', PAYMENT_DESCRIPTION AS 'DESKRIPSI' FROM PAYMENT_CREDIT PC, PAYMENT_METHOD PM WHERE PC.PM_ID = PM.PM_ID AND CREDIT_ID = " + selectedCreditID;
             using (rdr = DS.getData(sqlCommand))
             {
                 detailPaymentInfoDataGrid.DataSource = null;
@@ -215,6 +215,8 @@ namespace RoyalPetz_ADMIN
             int paymentMethod = 0;
             string paymentDateTime = "";
             DateTime selectedPaymentDate;
+            string paymentDueDateTime = "";
+            DateTime selectedPaymentDueDate;
             double paymentNominal = 0;
             int branchID = 0;
 
@@ -232,8 +234,23 @@ namespace RoyalPetz_ADMIN
             if (paymentNominal > globalTotalValue)
                 paymentNominal = globalTotalValue;
 
-            if (paymentMethod <= 3)
+            if (paymentMethod <= 3) //1, 2, 3
+            {
+                // TUNAI, KARTU KREDIT, KARTU DEBIT
                 paymentConfirmed = 1;
+                paymentDueDateTime = paymentDateTime;
+            }
+            else if (paymentMethod == 4)
+            {
+                // TRANSFER
+                paymentDueDateTime = paymentDateTime;
+            }
+            else if (paymentMethod > 4) // 5, 6
+            {
+                // CEK, BG
+                selectedPaymentDueDate = cairDTPicker.Value;
+                paymentDueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPaymentDueDate);
+            }
 
             branchID = getBranchID();
 
@@ -244,8 +261,8 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                 // SAVE HEADER TABLE
-                sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED) VALUES " +
-                                    "(" + selectedCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), " + paymentMethod + ", " + paymentNominal + ", '" + paymentDescription + "', " + paymentConfirmed + ")";
+                sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE) VALUES " +
+                                    "(" + selectedCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), " + paymentMethod + ", " + paymentNominal + ", '" + paymentDescription + "', " + paymentConfirmed + ", STR_TO_DATE('" + paymentDueDateTime + "', '%d-%m-%Y'))";
 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
@@ -590,7 +607,10 @@ namespace RoyalPetz_ADMIN
                         loadDataDetailPayment();
                     }
                 }
-                selectedRow.DefaultCellStyle.BackColor = Color.White;
+                if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
+                    selectedRow.DefaultCellStyle.BackColor = Color.White;
+                else
+                    selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
             }
         }
 
@@ -622,13 +642,17 @@ namespace RoyalPetz_ADMIN
                 }
             }
 
-            selectedRow.DefaultCellStyle.BackColor = Color.White;
+            if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
+                selectedRow.DefaultCellStyle.BackColor = Color.White;
+            else
+                selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
         }
         
         private void pembayaranPiutangForm_Load(object sender, EventArgs e)
         {
             errorLabel.Text = "";
             paymentDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
+            cairDTPicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             fillInPaymentMethod();
 
             isLoading = true;
@@ -672,6 +696,19 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        
+        private void paymentCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (paymentCombo.SelectedIndex > 3)
+            {
+                labelCair.Visible = true;
+                cairDTPicker.Visible = true;
+                cairDTPicker.Value = DateTime.Now;
+            }
+            else
+            {
+                labelCair.Visible = false;
+                cairDTPicker.Visible = false;
+            }
+        }
     }
 }

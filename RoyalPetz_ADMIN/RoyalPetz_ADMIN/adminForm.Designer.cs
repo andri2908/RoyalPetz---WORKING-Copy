@@ -71,8 +71,6 @@
             this.MENU_tambahMutasiBarang = new System.Windows.Forms.ToolStripMenuItem();
             this.MENU_cekPermintaanBarang = new System.Windows.Forms.ToolStripMenuItem();
             this.MENU_penerimaanBarang = new System.Windows.Forms.ToolStripMenuItem();
-            this.MENU_dariMutasiBarang = new System.Windows.Forms.ToolStripMenuItem();
-            this.MENU_dariPO = new System.Windows.Forms.ToolStripMenuItem();
             this.MAINMENU_pembelian = new System.Windows.Forms.ToolStripMenuItem();
             this.MENU_supplier = new System.Windows.Forms.ToolStripMenuItem();
             this.MENU_tambahSupplier = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,22 +123,6 @@
             this.toolStripMenuItem31 = new System.Windows.Forms.ToolStripMenuItem();
             this.informasiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.developerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.welcomeLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timeStampStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.SHORTCUT_produk = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_beli = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_jual = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_piutang = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_hutang = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_jurnal = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_returBeli = new System.Windows.Forms.ToolStripButton();
-            this.SHORTCUT_returJual = new System.Windows.Forms.ToolStripButton();
             this.laporanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pembelianBarangToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
@@ -188,6 +170,22 @@
             this.historiPenjualanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
             this.mutasiBarangToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.welcomeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timeStampStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.SHORTCUT_produk = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_beli = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_jual = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_piutang = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_hutang = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_jurnal = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_returBeli = new System.Windows.Forms.ToolStripButton();
+            this.SHORTCUT_returJual = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -601,34 +599,12 @@
             // MENU_penerimaanBarang
             // 
             this.MENU_penerimaanBarang.BackColor = System.Drawing.Color.SteelBlue;
-            this.MENU_penerimaanBarang.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MENU_dariMutasiBarang,
-            this.MENU_dariPO});
             this.MENU_penerimaanBarang.ForeColor = System.Drawing.Color.FloralWhite;
             this.MENU_penerimaanBarang.Name = "MENU_penerimaanBarang";
             this.MENU_penerimaanBarang.ShowShortcutKeys = false;
             this.MENU_penerimaanBarang.Size = new System.Drawing.Size(211, 22);
             this.MENU_penerimaanBarang.Text = "Penerimaan Barang";
-            // 
-            // MENU_dariMutasiBarang
-            // 
-            this.MENU_dariMutasiBarang.BackColor = System.Drawing.Color.SteelBlue;
-            this.MENU_dariMutasiBarang.ForeColor = System.Drawing.Color.FloralWhite;
-            this.MENU_dariMutasiBarang.Name = "MENU_dariMutasiBarang";
-            this.MENU_dariMutasiBarang.ShowShortcutKeys = false;
-            this.MENU_dariMutasiBarang.Size = new System.Drawing.Size(205, 22);
-            this.MENU_dariMutasiBarang.Text = "Dari Mutasi Barang";
-            this.MENU_dariMutasiBarang.Click += new System.EventHandler(this.toolStripMenuItem11_Click_2);
-            // 
-            // MENU_dariPO
-            // 
-            this.MENU_dariPO.BackColor = System.Drawing.Color.SteelBlue;
-            this.MENU_dariPO.ForeColor = System.Drawing.Color.FloralWhite;
-            this.MENU_dariPO.Name = "MENU_dariPO";
-            this.MENU_dariPO.ShowShortcutKeys = false;
-            this.MENU_dariPO.Size = new System.Drawing.Size(205, 22);
-            this.MENU_dariPO.Text = "Dari PO";
-            this.MENU_dariPO.Click += new System.EventHandler(this.toolStripMenuItem12_Click_2);
+            this.MENU_penerimaanBarang.Click += new System.EventHandler(this.MENU_penerimaanBarang_Click);
             // 
             // MAINMENU_pembelian
             // 
@@ -1168,170 +1144,6 @@
             this.developerToolStripMenuItem.Text = "Developer";
             this.developerToolStripMenuItem.Click += new System.EventHandler(this.developerToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem26
-            // 
-            this.toolStripMenuItem26.Name = "toolStripMenuItem26";
-            this.toolStripMenuItem26.Size = new System.Drawing.Size(32, 19);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.BackColor = System.Drawing.Color.SteelBlue;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.welcomeLabel,
-            this.toolStripStatusLabel1,
-            this.timeStampStatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 707);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // welcomeLabel
-            // 
-            this.welcomeLabel.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.welcomeLabel.ForeColor = System.Drawing.Color.FloralWhite;
-            this.welcomeLabel.Name = "welcomeLabel";
-            this.welcomeLabel.Size = new System.Drawing.Size(76, 17);
-            this.welcomeLabel.Text = "WELCOME";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(696, 17);
-            this.toolStripStatusLabel1.Spring = true;
-            // 
-            // timeStampStatusLabel
-            // 
-            this.timeStampStatusLabel.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeStampStatusLabel.ForeColor = System.Drawing.Color.FloralWhite;
-            this.timeStampStatusLabel.Name = "timeStampStatusLabel";
-            this.timeStampStatusLabel.Size = new System.Drawing.Size(221, 17);
-            this.timeStampStatusLabel.Text = "Kamis, 21 Januari 2016 - 22:47";
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 60000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SHORTCUT_produk,
-            this.SHORTCUT_beli,
-            this.SHORTCUT_jual,
-            this.SHORTCUT_piutang,
-            this.SHORTCUT_hutang,
-            this.SHORTCUT_jurnal,
-            this.SHORTCUT_returBeli,
-            this.SHORTCUT_returJual});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1008, 69);
-            this.toolStrip1.TabIndex = 4;
-            this.toolStrip1.Text = "toolStrip1";
-            this.toolStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStrip1_ItemClicked);
-            // 
-            // SHORTCUT_produk
-            // 
-            this.SHORTCUT_produk.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_produk.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_produk.Image")));
-            this.SHORTCUT_produk.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_produk.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_produk.Name = "SHORTCUT_produk";
-            this.SHORTCUT_produk.Size = new System.Drawing.Size(63, 66);
-            this.SHORTCUT_produk.Text = "PRODUK";
-            this.SHORTCUT_produk.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_produk.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // SHORTCUT_beli
-            // 
-            this.SHORTCUT_beli.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_beli.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_beli.Image")));
-            this.SHORTCUT_beli.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_beli.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_beli.Name = "SHORTCUT_beli";
-            this.SHORTCUT_beli.Size = new System.Drawing.Size(52, 66);
-            this.SHORTCUT_beli.Text = "BELI";
-            this.SHORTCUT_beli.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_beli.Click += new System.EventHandler(this.toolStripButton3_Click);
-            // 
-            // SHORTCUT_jual
-            // 
-            this.SHORTCUT_jual.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_jual.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_jual.Image")));
-            this.SHORTCUT_jual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_jual.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_jual.Name = "SHORTCUT_jual";
-            this.SHORTCUT_jual.Size = new System.Drawing.Size(52, 66);
-            this.SHORTCUT_jual.Text = "JUAL";
-            this.SHORTCUT_jual.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_jual.Click += new System.EventHandler(this.toolStripButton4_Click);
-            // 
-            // SHORTCUT_piutang
-            // 
-            this.SHORTCUT_piutang.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_piutang.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_piutang.Image")));
-            this.SHORTCUT_piutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_piutang.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_piutang.Name = "SHORTCUT_piutang";
-            this.SHORTCUT_piutang.Size = new System.Drawing.Size(65, 66);
-            this.SHORTCUT_piutang.Text = "PIUTANG";
-            this.SHORTCUT_piutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_piutang.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
-            // SHORTCUT_hutang
-            // 
-            this.SHORTCUT_hutang.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_hutang.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_hutang.Image")));
-            this.SHORTCUT_hutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_hutang.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_hutang.Name = "SHORTCUT_hutang";
-            this.SHORTCUT_hutang.Size = new System.Drawing.Size(61, 66);
-            this.SHORTCUT_hutang.Text = "HUTANG";
-            this.SHORTCUT_hutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_hutang.Click += new System.EventHandler(this.toolStripButton5_Click);
-            // 
-            // SHORTCUT_jurnal
-            // 
-            this.SHORTCUT_jurnal.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_jurnal.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_jurnal.Image")));
-            this.SHORTCUT_jurnal.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_jurnal.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_jurnal.Name = "SHORTCUT_jurnal";
-            this.SHORTCUT_jurnal.Size = new System.Drawing.Size(57, 66);
-            this.SHORTCUT_jurnal.Text = "JURNAL";
-            this.SHORTCUT_jurnal.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_jurnal.Click += new System.EventHandler(this.toolStripButton9_Click);
-            // 
-            // SHORTCUT_returBeli
-            // 
-            this.SHORTCUT_returBeli.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_returBeli.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_returBeli.Image")));
-            this.SHORTCUT_returBeli.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_returBeli.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_returBeli.Name = "SHORTCUT_returBeli";
-            this.SHORTCUT_returBeli.Size = new System.Drawing.Size(68, 66);
-            this.SHORTCUT_returBeli.Text = "RET. BELI";
-            this.SHORTCUT_returBeli.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_returBeli.Click += new System.EventHandler(this.toolStripButton7_Click);
-            // 
-            // SHORTCUT_returJual
-            // 
-            this.SHORTCUT_returJual.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SHORTCUT_returJual.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_returJual.Image")));
-            this.SHORTCUT_returJual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.SHORTCUT_returJual.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SHORTCUT_returJual.Name = "SHORTCUT_returJual";
-            this.SHORTCUT_returJual.Size = new System.Drawing.Size(69, 66);
-            this.SHORTCUT_returJual.Text = "RET. JUAL";
-            this.SHORTCUT_returJual.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.SHORTCUT_returJual.Click += new System.EventHandler(this.toolStripButton6_Click);
-            // 
             // laporanToolStripMenuItem
             // 
             this.laporanToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1659,6 +1471,170 @@
             this.mutasiBarangToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.mutasiBarangToolStripMenuItem.Text = "Mutasi Barang";
             // 
+            // toolStripMenuItem26
+            // 
+            this.toolStripMenuItem26.Name = "toolStripMenuItem26";
+            this.toolStripMenuItem26.Size = new System.Drawing.Size(32, 19);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.BackColor = System.Drawing.Color.SteelBlue;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.welcomeLabel,
+            this.toolStripStatusLabel1,
+            this.timeStampStatusLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 707);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // welcomeLabel
+            // 
+            this.welcomeLabel.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.welcomeLabel.ForeColor = System.Drawing.Color.FloralWhite;
+            this.welcomeLabel.Name = "welcomeLabel";
+            this.welcomeLabel.Size = new System.Drawing.Size(76, 17);
+            this.welcomeLabel.Text = "WELCOME";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(696, 17);
+            this.toolStripStatusLabel1.Spring = true;
+            // 
+            // timeStampStatusLabel
+            // 
+            this.timeStampStatusLabel.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.timeStampStatusLabel.ForeColor = System.Drawing.Color.FloralWhite;
+            this.timeStampStatusLabel.Name = "timeStampStatusLabel";
+            this.timeStampStatusLabel.Size = new System.Drawing.Size(221, 17);
+            this.timeStampStatusLabel.Text = "Kamis, 21 Januari 2016 - 22:47";
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 60000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SHORTCUT_produk,
+            this.SHORTCUT_beli,
+            this.SHORTCUT_jual,
+            this.SHORTCUT_piutang,
+            this.SHORTCUT_hutang,
+            this.SHORTCUT_jurnal,
+            this.SHORTCUT_returBeli,
+            this.SHORTCUT_returJual});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(1008, 69);
+            this.toolStrip1.TabIndex = 4;
+            this.toolStrip1.Text = "toolStrip1";
+            this.toolStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStrip1_ItemClicked);
+            // 
+            // SHORTCUT_produk
+            // 
+            this.SHORTCUT_produk.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_produk.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_produk.Image")));
+            this.SHORTCUT_produk.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_produk.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_produk.Name = "SHORTCUT_produk";
+            this.SHORTCUT_produk.Size = new System.Drawing.Size(63, 66);
+            this.SHORTCUT_produk.Text = "PRODUK";
+            this.SHORTCUT_produk.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_produk.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // SHORTCUT_beli
+            // 
+            this.SHORTCUT_beli.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_beli.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_beli.Image")));
+            this.SHORTCUT_beli.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_beli.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_beli.Name = "SHORTCUT_beli";
+            this.SHORTCUT_beli.Size = new System.Drawing.Size(52, 66);
+            this.SHORTCUT_beli.Text = "BELI";
+            this.SHORTCUT_beli.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_beli.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // SHORTCUT_jual
+            // 
+            this.SHORTCUT_jual.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_jual.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_jual.Image")));
+            this.SHORTCUT_jual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_jual.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_jual.Name = "SHORTCUT_jual";
+            this.SHORTCUT_jual.Size = new System.Drawing.Size(52, 66);
+            this.SHORTCUT_jual.Text = "JUAL";
+            this.SHORTCUT_jual.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_jual.Click += new System.EventHandler(this.toolStripButton4_Click);
+            // 
+            // SHORTCUT_piutang
+            // 
+            this.SHORTCUT_piutang.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_piutang.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_piutang.Image")));
+            this.SHORTCUT_piutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_piutang.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_piutang.Name = "SHORTCUT_piutang";
+            this.SHORTCUT_piutang.Size = new System.Drawing.Size(65, 66);
+            this.SHORTCUT_piutang.Text = "PIUTANG";
+            this.SHORTCUT_piutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_piutang.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // SHORTCUT_hutang
+            // 
+            this.SHORTCUT_hutang.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_hutang.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_hutang.Image")));
+            this.SHORTCUT_hutang.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_hutang.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_hutang.Name = "SHORTCUT_hutang";
+            this.SHORTCUT_hutang.Size = new System.Drawing.Size(61, 66);
+            this.SHORTCUT_hutang.Text = "HUTANG";
+            this.SHORTCUT_hutang.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_hutang.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
+            // SHORTCUT_jurnal
+            // 
+            this.SHORTCUT_jurnal.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_jurnal.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_jurnal.Image")));
+            this.SHORTCUT_jurnal.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_jurnal.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_jurnal.Name = "SHORTCUT_jurnal";
+            this.SHORTCUT_jurnal.Size = new System.Drawing.Size(57, 66);
+            this.SHORTCUT_jurnal.Text = "JURNAL";
+            this.SHORTCUT_jurnal.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_jurnal.Click += new System.EventHandler(this.toolStripButton9_Click);
+            // 
+            // SHORTCUT_returBeli
+            // 
+            this.SHORTCUT_returBeli.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_returBeli.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_returBeli.Image")));
+            this.SHORTCUT_returBeli.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_returBeli.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_returBeli.Name = "SHORTCUT_returBeli";
+            this.SHORTCUT_returBeli.Size = new System.Drawing.Size(68, 66);
+            this.SHORTCUT_returBeli.Text = "RET. BELI";
+            this.SHORTCUT_returBeli.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_returBeli.Click += new System.EventHandler(this.toolStripButton7_Click);
+            // 
+            // SHORTCUT_returJual
+            // 
+            this.SHORTCUT_returJual.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SHORTCUT_returJual.Image = ((System.Drawing.Image)(resources.GetObject("SHORTCUT_returJual.Image")));
+            this.SHORTCUT_returJual.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.SHORTCUT_returJual.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SHORTCUT_returJual.Name = "SHORTCUT_returJual";
+            this.SHORTCUT_returJual.Size = new System.Drawing.Size(69, 66);
+            this.SHORTCUT_returJual.Text = "RET. JUAL";
+            this.SHORTCUT_returJual.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.SHORTCUT_returJual.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
             // adminForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1787,8 +1763,6 @@
         private System.Windows.Forms.ToolStripMenuItem MENU_pembayaranPiutangMutasi;
         private System.Windows.Forms.ToolStripMenuItem MENU_importDataCSV;
         private System.Windows.Forms.ToolStripMenuItem MENU_penerimaanBarang;
-        private System.Windows.Forms.ToolStripMenuItem MENU_dariMutasiBarang;
-        private System.Windows.Forms.ToolStripMenuItem MENU_dariPO;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;

@@ -337,7 +337,7 @@ namespace RoyalPetz_ADMIN
         private void toolStripMenuItem63_Click(object sender, EventArgs e)
         {
             //dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.CEK_DATA_MUTASI);
-            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.PERMINTAAN_BARANG);
+            dataPermintaanForm displayedForm = new dataPermintaanForm(globalConstants.CEK_DATA_MUTASI);
             displayedForm.ShowDialog(this);
         }
 
@@ -765,8 +765,8 @@ namespace RoyalPetz_ADMIN
             setAccessibility(globalConstants.MENU_CEK_PERMINTAAN_BARANG, MENU_cekPermintaanBarang);
             // SUB MENU PENERIMAAN BARANG
             setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG, MENU_penerimaanBarang);
-            setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_MUTASI, MENU_dariMutasiBarang);
-            setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_PO, MENU_dariPO);
+           // setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_MUTASI, MENU_dariMutasiBarang);
+           // setAccessibility(globalConstants.MENU_PENERIMAAN_BARANG_DARI_PO, MENU_dariPO);
 
             // SET ACCESSIBILITY FOR PEMBELIAN MAIN MENU
             setAccessibility(globalConstants.MENU_PEMBELIAN, MAINMENU_pembelian);
@@ -925,6 +925,12 @@ namespace RoyalPetz_ADMIN
         private void backUpRestoreDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             backupRestoreDatabaseForm displayedForm = new backupRestoreDatabaseForm();
+            displayedForm.ShowDialog(this);
+        }
+
+        private void MENU_penerimaanBarang_Click(object sender, EventArgs e)
+        {
+            penerimaanBarangForm displayedForm = new penerimaanBarangForm();
             displayedForm.ShowDialog(this);
         }
     }

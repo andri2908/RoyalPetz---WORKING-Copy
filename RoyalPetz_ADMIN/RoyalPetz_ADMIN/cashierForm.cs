@@ -1117,5 +1117,10 @@ namespace RoyalPetz_ADMIN
             selectedPaymentMethod = paymentComboBox.SelectedIndex;
         }
 
+        private void ChangePrinterButton_Click(object sender, EventArgs e)
+        {
+            SetPrinterForm displayedForm = new SetPrinterForm();
+            displayedForm.ShowDialog(this);
+        }
     }
 }

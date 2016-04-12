@@ -211,13 +211,18 @@ namespace RoyalPetz_ADMIN
             DataTable dt = new DataTable();
             string sqlCommand;
 
-            sqlCommand = "SELECT D.DEBT_ID, PH.PURCHASE_INVOICE AS 'PURCHASE INVOICE', DATE_FORMAT(PH.PURCHASE_DATETIME, '%d-%M-%Y') AS 'TGL PO', DEBT_NOMINAL AS 'TOTAL HUTANG', (DEBT_NOMINAL - IFNULL(PD.PAYMENT, 0)) AS 'SISA HUTANG' " +
+            //sqlCommand = "SELECT D.DEBT_ID, PH.PURCHASE_INVOICE AS 'PURCHASE INVOICE', DATE_FORMAT(PH.PURCHASE_TERM_OF_PAYMENT_DATE, '%d-%M-%Y') AS 'TGL JATUH TEMPO', DEBT_NOMINAL AS 'TOTAL HUTANG', (DEBT_NOMINAL - IFNULL(PD.PAYMENT, 0)) AS 'SISA HUTANG' " +
+            //                    "FROM PURCHASE_HEADER PH, DEBT D LEFT OUTER JOIN (SELECT DEBT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_DEBT WHERE PAYMENT_INVALID = 0 GROUP BY DEBT_ID) PD ON PD.DEBT_ID = D.DEBT_ID  " +
+            //                    "WHERE PH.SUPPLIER_ID = " + selectedSupplierID + " AND PH.PURCHASE_INVOICE = D.PURCHASE_INVOICE";
+
+            sqlCommand = "SELECT D.DEBT_ID, D.PURCHASE_INVOICE AS 'PURCHASE INVOICE', DATE_FORMAT(D.DEBT_DUE_DATE, '%d-%M-%Y') AS 'TGL JATUH TEMPO', DEBT_NOMINAL AS 'TOTAL HUTANG', (DEBT_NOMINAL - IFNULL(PD.PAYMENT, 0)) AS 'SISA HUTANG' " +
                                 "FROM PURCHASE_HEADER PH, DEBT D LEFT OUTER JOIN (SELECT DEBT_ID, SUM(PAYMENT_NOMINAL) AS PAYMENT FROM PAYMENT_DEBT WHERE PAYMENT_INVALID = 0 GROUP BY DEBT_ID) PD ON PD.DEBT_ID = D.DEBT_ID  " +
                                 "WHERE PH.SUPPLIER_ID = " + selectedSupplierID + " AND PH.PURCHASE_INVOICE = D.PURCHASE_INVOICE";
 
             if (!displayFullyPaid)
             {
-                sqlCommand = sqlCommand + " AND PH.PURCHASE_PAID = 0";
+                //sqlCommand = sqlCommand + " AND PH.PURCHASE_PAID = 0";
+                sqlCommand = sqlCommand + " AND D.DEBT_PAID = 0";
             }
 
             using (rdr = DS.getData(sqlCommand))
@@ -231,7 +236,7 @@ namespace RoyalPetz_ADMIN
 
                     detailPMDataGridView.Columns["DEBT_ID"].Visible = false;
                     detailPMDataGridView.Columns["PURCHASE INVOICE"].Width = 200;
-                    detailPMDataGridView.Columns["TGL PO"].Width = 200;
+                    detailPMDataGridView.Columns["TGL JATUH TEMPO"].Width = 200;
                     detailPMDataGridView.Columns["TOTAL HUTANG"].Width = 200;
                     detailPMDataGridView.Columns["SISA HUTANG"].Width = 200;
                 }
@@ -246,15 +251,15 @@ namespace RoyalPetz_ADMIN
             string sqlCommand = "";
 
             if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
-                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, PM.PM_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
+                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, PM.PM_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DUE_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
                                     "FROM PAYMENT_CREDIT PC, PRODUCTS_MUTATION_HEADER PM, CREDIT C " +
                                     "WHERE PM.BRANCH_ID_TO = " + selectedBranchID + " AND PC.CREDIT_ID = C.CREDIT_ID AND PM.PM_INVOICE = C.PM_INVOICE AND C.CREDIT_ID = " + creditID;
             else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
-                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, SH.SALES_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
+                sqlCommand = "SELECT PC.PAYMENT_INVALID, PC.PAYMENT_ID, SH.SALES_INVOICE AS 'NO INVOICE', IF(PC.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DUE_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
                                     "FROM PAYMENT_CREDIT PC, SALES_HEADER SH, CREDIT C " +
                                     "WHERE SH.CUSTOMER_ID = " + selectedCustomerID + " AND PC.CREDIT_ID = C.CREDIT_ID AND SH.SALES_INVOICE = C.SALES_INVOICE AND C.CREDIT_ID = " + creditID;
             else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                sqlCommand = "SELECT PD.PAYMENT_INVALID, PD.PAYMENT_ID, PH.PURCHASE_INVOICE AS 'NO INVOICE', IF(PD.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
+                sqlCommand = "SELECT PD.PAYMENT_INVALID, PD.PAYMENT_ID, PH.PURCHASE_INVOICE AS 'NO INVOICE', IF(PD.PAYMENT_CONFIRMED = 1, 'Y', 'N') AS STATUS, DATE_FORMAT(PAYMENT_DUE_DATE, '%d-%M-%Y') AS 'TGL PEMBAYARAN', PAYMENT_NOMINAL AS 'JUMLAH', PAYMENT_DESCRIPTION AS DESKRIPSI " +
                                     "FROM PAYMENT_DEBT PD, PURCHASE_HEADER PH, DEBT D " +
                                     "WHERE PH.SUPPLIER_ID = " + selectedSupplierID + " AND PD.DEBT_ID = D.DEBT_ID AND PH.PURCHASE_INVOICE = D.PURCHASE_INVOICE AND D.DEBT_ID = " + creditID;
 
@@ -332,6 +337,8 @@ namespace RoyalPetz_ADMIN
             int paymentConfirmed = 0;
             string noInvoice = "";
             int branchID = 0;
+            string paymentDueDateTime = "";
+            DateTime selectedPaymentDueDate;
 
             string paymentDescription = "";
 
@@ -350,8 +357,23 @@ namespace RoyalPetz_ADMIN
                 paymentNominal = globalTotalValue;
             }
 
-            if (paymentCombo.SelectedIndex <= 2)
+            if (paymentCombo.SelectedIndex < 3) //0, 1, 2
+            {
+                // TUNAI, KARTU KREDIT, KARTU DEBIT
                 paymentConfirmed = 1;
+                paymentDueDateTime = paymentDateTime;
+            }
+            else if (paymentCombo.SelectedIndex == 3) //3
+            {
+                // TRANSFER
+                paymentDueDateTime = paymentDateTime;
+            }
+            else if (paymentCombo.SelectedIndex > 3) // 4, 5
+            {
+                // CEK, BG
+                selectedPaymentDueDate = cairDTPicker.Value;
+                paymentDueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPaymentDueDate);
+            }
 
             DS.beginTransaction();
 
@@ -406,11 +428,11 @@ namespace RoyalPetz_ADMIN
                             actualPaymentAmount = paymentNominal;
 
                         if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                            sqlCommand = "INSERT INTO PAYMENT_DEBT (DEBT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED) VALUES " +
-                                                "(" + currentCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), 1, " + actualPaymentAmount + ", '" + paymentDescription + "', " + paymentConfirmed + ")";
+                            sqlCommand = "INSERT INTO PAYMENT_DEBT (DEBT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE) VALUES " +
+                                                "(" + currentCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), 1, " + actualPaymentAmount + ", '" + paymentDescription + "', " + paymentConfirmed + ", STR_TO_DATE('" + paymentDueDateTime + "', '%d-%m-%Y'))";
                         else
-                            sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED) VALUES " +
-                                            "(" + currentCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), 1, " + actualPaymentAmount + ", '" + paymentDescription + "', " + paymentConfirmed + ")";
+                            sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE) VALUES " +
+                                            "(" + currentCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), 1, " + actualPaymentAmount + ", '" + paymentDescription + "', " + paymentConfirmed + ", STR_TO_DATE('" + paymentDueDateTime + "', '%d-%m-%Y'))";
                         
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
@@ -561,6 +583,7 @@ namespace RoyalPetz_ADMIN
         {
             errorLabel.Text = "";
             paymentDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
+            cairDTPicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             fillInPaymentMethod();
             
@@ -827,7 +850,11 @@ namespace RoyalPetz_ADMIN
                             loadDataPO();
                     }
                 }
-                selectedRow.DefaultCellStyle.BackColor = Color.White;
+
+                if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
+                    selectedRow.DefaultCellStyle.BackColor = Color.White;
+                else
+                    selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
             }
 
         }
@@ -916,8 +943,10 @@ namespace RoyalPetz_ADMIN
                         loadDataPO();
                 }
             }
-
-            selectedRow.DefaultCellStyle.BackColor = Color.White;
+            if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
+                selectedRow.DefaultCellStyle.BackColor = Color.White;
+            else
+                selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
         }
 
         private void fillInPaymentMethod()
@@ -960,6 +989,21 @@ namespace RoyalPetz_ADMIN
                     loadDataPM();
                 else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
                     loadDataSO();
+            }
+        }
+
+        private void paymentCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (paymentCombo.SelectedIndex > 3)
+            {
+                labelCair.Visible = true;
+                cairDTPicker.Visible = true;
+                cairDTPicker.Value = DateTime.Now;
+            }
+            else
+            {
+                labelCair.Visible = false;
+                cairDTPicker.Visible = false;
             }
         }
     }
