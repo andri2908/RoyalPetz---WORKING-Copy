@@ -29,14 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.saveButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.cairDTPicker = new System.Windows.Forms.DateTimePicker();
+            this.labelCair = new System.Windows.Forms.Label();
             this.paymentCombo = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -65,10 +68,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.confirmBayar = new System.Windows.Forms.ToolStripMenuItem();
             this.invalidPayment = new System.Windows.Forms.ToolStripMenuItem();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.labelCair = new System.Windows.Forms.Label();
-            this.cairDTPicker = new System.Windows.Forms.DateTimePicker();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -76,7 +77,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.detailPurchaseOrderDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.detailPaymentDataGridView)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // saveButton
@@ -180,6 +180,46 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(888, 271);
             this.tableLayoutPanel1.TabIndex = 53;
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.93733F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.06267F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 257F));
+            this.tableLayoutPanel4.Controls.Add(this.cairDTPicker, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.labelCair, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.paymentCombo, 0, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(261, 171);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 31);
+            this.tableLayoutPanel4.TabIndex = 67;
+            // 
+            // cairDTPicker
+            // 
+            this.cairDTPicker.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.cairDTPicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cairDTPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.cairDTPicker.Location = new System.Drawing.Point(369, 3);
+            this.cairDTPicker.Name = "cairDTPicker";
+            this.cairDTPicker.Size = new System.Drawing.Size(173, 27);
+            this.cairDTPicker.TabIndex = 59;
+            this.cairDTPicker.Visible = false;
+            // 
+            // labelCair
+            // 
+            this.labelCair.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelCair.AutoSize = true;
+            this.labelCair.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCair.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelCair.Location = new System.Drawing.Point(256, 6);
+            this.labelCair.Name = "labelCair";
+            this.labelCair.Size = new System.Drawing.Size(104, 18);
+            this.labelCair.TabIndex = 58;
+            this.labelCair.Text = "TGL CAIR :";
+            this.labelCair.Visible = false;
+            // 
             // paymentCombo
             // 
             this.paymentCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -220,7 +260,7 @@
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70.74341F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.2566F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 207F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 208F));
             this.tableLayoutPanel3.Controls.Add(this.supplierNameTextBox, 0, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(261, 84);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -454,14 +494,14 @@
             // 
             this.detailPurchaseOrderDataGridView.AllowUserToAddRows = false;
             this.detailPurchaseOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailPurchaseOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailPurchaseOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.detailPurchaseOrderDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailPurchaseOrderDataGridView.Location = new System.Drawing.Point(4, 306);
             this.detailPurchaseOrderDataGridView.Name = "detailPurchaseOrderDataGridView";
@@ -474,14 +514,14 @@
             // 
             this.detailPaymentDataGridView.AllowUserToAddRows = false;
             this.detailPaymentDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailPaymentDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailPaymentDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.detailPaymentDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailPaymentDataGridView.ContextMenuStrip = this.contextMenuStrip1;
             this.detailPaymentDataGridView.Location = new System.Drawing.Point(3, 460);
@@ -514,46 +554,6 @@
             this.invalidPayment.Text = "Pembayaran Invalid";
             this.invalidPayment.Click += new System.EventHandler(this.invalidPayment_Click);
             // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 3;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.93733F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.06267F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 256F));
-            this.tableLayoutPanel4.Controls.Add(this.cairDTPicker, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.labelCair, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.paymentCombo, 0, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(261, 171);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 31);
-            this.tableLayoutPanel4.TabIndex = 67;
-            // 
-            // labelCair
-            // 
-            this.labelCair.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.labelCair.AutoSize = true;
-            this.labelCair.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCair.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelCair.Location = new System.Drawing.Point(256, 6);
-            this.labelCair.Name = "labelCair";
-            this.labelCair.Size = new System.Drawing.Size(104, 18);
-            this.labelCair.TabIndex = 58;
-            this.labelCair.Text = "TGL CAIR :";
-            this.labelCair.Visible = false;
-            // 
-            // cairDTPicker
-            // 
-            this.cairDTPicker.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.cairDTPicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cairDTPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.cairDTPicker.Location = new System.Drawing.Point(370, 3);
-            this.cairDTPicker.Name = "cairDTPicker";
-            this.cairDTPicker.Size = new System.Drawing.Size(173, 27);
-            this.cairDTPicker.TabIndex = 59;
-            this.cairDTPicker.Visible = false;
-            // 
             // pembayaranHutangForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -575,6 +575,8 @@
             this.Load += new System.EventHandler(this.pembayaranHutangForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
@@ -585,8 +587,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.detailPurchaseOrderDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.detailPaymentDataGridView)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
 
         }

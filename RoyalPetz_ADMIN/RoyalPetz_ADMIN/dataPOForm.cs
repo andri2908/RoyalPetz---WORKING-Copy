@@ -267,5 +267,10 @@ namespace RoyalPetz_ADMIN
             if (noPOInvoiceTextBox.Text.Length > 0)
                 displayButton.PerformClick();
         }
+
+        private void dataPurchaseOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

@@ -294,19 +294,19 @@ namespace RoyalPetz_ADMIN
 
         private void detailPMDataGridView_Click(object sender, EventArgs e)
         {
-            int creditID = 0;
-            if (detailPMDataGridView.Rows.Count <= 0)
-                return;
+            //int creditID = 0;
+            //if (detailPMDataGridView.Rows.Count <= 0)
+            //    return;
 
-            int rowSelectedIndex = detailPMDataGridView.SelectedCells[0].RowIndex;
-            DataGridViewRow selectedRow = detailPMDataGridView.Rows[rowSelectedIndex];
+            //int rowSelectedIndex = detailPMDataGridView.SelectedCells[0].RowIndex;
+            //DataGridViewRow selectedRow = detailPMDataGridView.Rows[rowSelectedIndex];
 
-            if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                creditID = Convert.ToInt32(selectedRow.Cells["DEBT_ID"].Value);
-            else
-                creditID = Convert.ToInt32(selectedRow.Cells["CREDIT_ID"].Value);
+            //if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
+            //    creditID = Convert.ToInt32(selectedRow.Cells["DEBT_ID"].Value);
+            //else
+            //    creditID = Convert.ToInt32(selectedRow.Cells["CREDIT_ID"].Value);
 
-            loadDataPayment(creditID);
+            //loadDataPayment(creditID);
         }
 
         private bool dataValidated()
@@ -586,28 +586,6 @@ namespace RoyalPetz_ADMIN
             cairDTPicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
 
             fillInPaymentMethod();
-            
-            if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
-            {
-                loadDataPM();
-                loadDataBranch();
-            }
-            else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
-            { 
-                loadDataSO();
-                loadDataCustomer();
-            }
-            else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-            {
-                loadDataPO();
-                loadDataSupplier();
-            }
-            
-            paymentCombo.SelectedIndex = 0;
-            paymentCombo.Text = paymentCombo.Items[0].ToString();
-//            loadDataPayment();
-
-            calculateGlobalOutstandingCredit();
             
             gutil.reArrangeTabOrder(this);
         }
@@ -972,24 +950,13 @@ namespace RoyalPetz_ADMIN
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             detailPaymentInfoDataGrid.DataSource = null;
-            if (checkBox1.Checked)
-            {
-                if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                    loadDataPO(true);
-                else if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
-                    loadDataPM(true);
-                else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
-                    loadDataSO(true);
-            }
-            else
-            {
-                if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
-                    loadDataPO();
-                else if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
-                    loadDataPM();
-                else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
-                    loadDataSO();
-            }
+
+            if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
+                loadDataPO(checkBox1.Checked);
+            else if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+                loadDataPM(checkBox1.Checked);
+            else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                loadDataSO(checkBox1.Checked);
         }
 
         private void paymentCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -1004,6 +971,101 @@ namespace RoyalPetz_ADMIN
             {
                 labelCair.Visible = false;
                 cairDTPicker.Visible = false;
+            }
+        }
+
+        private void pembayaranLumpSumForm_Activated(object sender, EventArgs e)
+        {
+            if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
+            {
+                loadDataPM(checkBox1.Checked);
+                loadDataBranch();
+            }
+            else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+            {
+                loadDataSO(checkBox1.Checked);
+                loadDataCustomer();
+            }
+            else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
+            {
+                loadDataPO(checkBox1.Checked);
+                loadDataSupplier();
+            }
+
+            paymentCombo.SelectedIndex = 0;
+            paymentCombo.Text = paymentCombo.Items[0].ToString();
+            //            loadDataPayment();
+
+            calculateGlobalOutstandingCredit();
+        }
+
+        private void detailPMDataGridView_DoubleClick(object sender, EventArgs e)
+        {
+            string selectedPurchaseInvoice= "";
+            string selectedSO = "";
+
+            if (detailPMDataGridView.Rows.Count <= 0)
+                return;
+
+            int rowSelectedIndex = detailPMDataGridView.SelectedCells[0].RowIndex;
+            DataGridViewRow selectedRow = detailPMDataGridView.Rows[rowSelectedIndex];
+
+            if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+            {
+                if (selectedRow.Cells["SISA PIUTANG"].Value.ToString() == "0")
+                    return;
+
+                selectedSO = selectedRow.Cells["SALES INVOICE"].Value.ToString();
+
+                pembayaranPiutangForm pembayaranForm = new pembayaranPiutangForm(selectedSO);
+                pembayaranForm.ShowDialog(this);
+             
+             }
+            else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
+            {
+                if (selectedRow.Cells["SISA HUTANG"].Value.ToString() == "0")
+                    return;
+
+                selectedPurchaseInvoice = selectedRow.Cells["PURCHASE INVOICE"].Value.ToString();
+                pembayaranHutangForm displayedPembayaranForm = new pembayaranHutangForm(selectedPurchaseInvoice);
+                displayedPembayaranForm.ShowDialog(this);
+            }
+        }
+
+        private void detailPMDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            string selectedPurchaseInvoice = "";
+            string selectedSO = "";
+            int rowSelectedIndex = 0;
+
+            if (detailPMDataGridView.Rows.Count <= 0)
+                return;
+
+            if (e.KeyCode == Keys.Enter)
+            { 
+                rowSelectedIndex = detailPMDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailPMDataGridView.Rows[rowSelectedIndex];
+
+                if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
+                {
+                    if (selectedRow.Cells["SISA PIUTANG"].Value.ToString() == "0")
+                        return;
+
+                    selectedSO = selectedRow.Cells["SALES INVOICE"].Value.ToString();
+
+                    pembayaranPiutangForm pembayaranForm = new pembayaranPiutangForm(selectedSO);
+                    pembayaranForm.ShowDialog(this);
+
+                }
+                else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
+                {
+                    if (selectedRow.Cells["SISA HUTANG"].Value.ToString() == "0")
+                        return;
+
+                    selectedPurchaseInvoice = selectedRow.Cells["PURCHASE INVOICE"].Value.ToString();
+                    pembayaranHutangForm displayedPembayaranForm = new pembayaranHutangForm(selectedPurchaseInvoice);
+                    displayedPembayaranForm.ShowDialog(this);
+                }
             }
         }
     }

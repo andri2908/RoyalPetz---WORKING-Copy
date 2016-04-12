@@ -292,14 +292,15 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string sqlCommand = "";
             string pmInvoice = "";
-            bool checkForRO = true;
-            int lastPos = 0;
-            int prevPos = 0;
-            int firstPos = 0;
+            //bool checkForRO = true;
+            //int lastPos = 0;
+            //int prevPos = 0;
+            //int firstPos = 0;
             string roInvoice = "";
             string tempString = "";
             int importedBranchID = 0;
             int storedBranchID = 0;
+            MySqlException internalEX = null;
 
             DS.beginTransaction();
             
@@ -310,61 +311,80 @@ namespace RoyalPetz_ADMIN
                 System.IO.StreamReader file = new System.IO.StreamReader(fileName);
 
                 pmInvoice = file.ReadLine();
+                roInvoice = file.ReadLine();
+                tempString = file.ReadLine(); ;
+                if (int.TryParse(tempString, out importedBranchID))
+                {
+                    storedBranchID = getBranchID();
+                    if (storedBranchID != importedBranchID)
+                    {
+                        file.Close();
+                        throw new Exception("INFORMASI BRANCH ID TIDAK SESUAI");
+                    }
+                }
+                else
+                {
+                    //MessageBox.Show("INFORMASI BRANCH ID TIDAK DITEMUKAN");
+
+                    file.Close();
+                    throw new Exception("INFORMASI BRANCH ID TIDAK DITEMUKAN");
+                }
 
                 if (!noPMExist(pmInvoice))
                 {
                     while ((sqlCommand = file.ReadLine()) != null)
                     {
-                        if (checkForRO)
-                        {
-                            tempString = sqlCommand;
-                            // GET RO_INVOICE
-                            if (sqlCommand.LastIndexOf("RO_INVOICE") > 0) 
-                            {
-                                lastPos = sqlCommand.LastIndexOf("',");
-                                prevPos = sqlCommand.LastIndexOf(", '", lastPos - 1);
-                                roInvoice = sqlCommand.Substring(prevPos+3, lastPos - prevPos-3);
-                            }
+                        //if (checkForRO)
+                        //{
+                        //    tempString = sqlCommand;
+                        //    // GET RO_INVOICE
+                        //    if (sqlCommand.LastIndexOf("RO_INVOICE") > 0) 
+                        //    {
+                        //        lastPos = sqlCommand.LastIndexOf("',");
+                        //        prevPos = sqlCommand.LastIndexOf(", '", lastPos - 1);
+                        //        roInvoice = sqlCommand.Substring(prevPos+3, lastPos - prevPos-3);
+                        //    }
 
-                            // GET BRANCH_ID
-                            if (sqlCommand.IndexOf("BRANCH_ID_TO") > 0)
-                            {
-                                firstPos = tempString.IndexOf("('");
-                                tempString = tempString.Substring(firstPos);
+                        //    // GET BRANCH_ID
+                        //    if (sqlCommand.IndexOf("BRANCH_ID_TO") > 0)
+                        //    {
+                        //        firstPos = tempString.IndexOf("('");
+                        //        tempString = tempString.Substring(firstPos);
 
-                                firstPos = tempString.IndexOf(",");
-                                tempString = tempString.Substring(firstPos+1);
+                        //        firstPos = tempString.IndexOf(",");
+                        //        tempString = tempString.Substring(firstPos+1);
 
-                                firstPos = tempString.IndexOf(",");
-                                tempString = tempString.Substring(firstPos + 1);
+                        //        firstPos = tempString.IndexOf(",");
+                        //        tempString = tempString.Substring(firstPos + 1);
 
-                                firstPos = tempString.IndexOf(",");
-                                tempString = tempString.Substring(1, firstPos-1);
+                        //        firstPos = tempString.IndexOf(",");
+                        //        tempString = tempString.Substring(1, firstPos-1);
 
-                                if (int.TryParse(tempString, out importedBranchID))
-                                {
-                                    storedBranchID = getBranchID();
+                        //        if (int.TryParse(tempString, out importedBranchID))
+                        //        {
+                        //            storedBranchID = getBranchID();
 
-                                    if (storedBranchID != importedBranchID)
-                                    {
-                                        //MessageBox.Show("INFORMASI BRANCH ID TIDAK SESUAI");
+                        //            if (storedBranchID != importedBranchID)
+                        //            {
+                        //                //MessageBox.Show("INFORMASI BRANCH ID TIDAK SESUAI");
 
-                                        file.Close();
-                                        throw new Exception("INFORMASI BRANCH ID TIDAK SESUAI");
-                                    }
-                                }
-                                else
-                                {
-                                    //MessageBox.Show("INFORMASI BRANCH ID TIDAK DITEMUKAN");
+                        //                file.Close();
+                        //                throw new Exception("INFORMASI BRANCH ID TIDAK SESUAI");
+                        //            }
+                        //        }
+                        //        else
+                        //        {
+                        //            //MessageBox.Show("INFORMASI BRANCH ID TIDAK DITEMUKAN");
 
-                                    file.Close();
-                                    throw new Exception("INFORMASI BRANCH ID TIDAK DITEMUKAN");
-                                }
-                            }
+                        //            file.Close();
+                        //            throw new Exception("INFORMASI BRANCH ID TIDAK DITEMUKAN");
+                        //        }
+                        //    }
 
-                        }
-                        checkForRO = false;
-                        DS.executeNonQueryCommand(sqlCommand);
+                        //}
+                        //checkForRO = false;
+                        if (DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
                     }
 
                     file.Close();
@@ -372,7 +392,8 @@ namespace RoyalPetz_ADMIN
                     if (roInvoice.Length > 0)
                     {
                         sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
-                        DS.executeNonQueryCommand(sqlCommand);
+                        if (DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
                     }
 
                     DS.commit();
@@ -430,7 +451,7 @@ namespace RoyalPetz_ADMIN
                         loadROdata();
                     }
                     else
-                        MessageBox.Show("ERROR CAN'T LOAD FILE");
+                        MessageBox.Show("ERROR LOADING FILE");
                 }
                 catch (Exception ex)
                 {

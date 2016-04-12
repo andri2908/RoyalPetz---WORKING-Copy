@@ -132,7 +132,7 @@ namespace RoyalPetz_ADMIN
 
                     detailPaymentInfoDataGrid.Columns["PAYMENT_INVALID"].Visible = false;
                     detailPaymentInfoDataGrid.Columns["PAYMENT_ID"].Visible= false;
-                    detailPaymentInfoDataGrid.Columns["TANGGAL"].Width = 200;
+                    detailPaymentInfoDataGrid.Columns["TANGGAL PEMBAYARAN"].Width = 200;
                     detailPaymentInfoDataGrid.Columns["NOMINAL"].Width = 200;                    
                     detailPaymentInfoDataGrid.Columns["DESKRIPSI"].Width = 300;
 
@@ -607,10 +607,11 @@ namespace RoyalPetz_ADMIN
                         loadDataDetailPayment();
                     }
                 }
-                if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
-                    selectedRow.DefaultCellStyle.BackColor = Color.White;
+
+                if (detailPaymentInfoDataGrid.Rows[rowSelectedIndex].Cells["STATUS"].Value.ToString().Equals("Y"))
+                    detailPaymentInfoDataGrid.Rows[rowSelectedIndex].DefaultCellStyle.BackColor = Color.White;
                 else
-                    selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
+                    detailPaymentInfoDataGrid.Rows[rowSelectedIndex].DefaultCellStyle.BackColor = Color.LightBlue;
             }
         }
 
@@ -642,10 +643,10 @@ namespace RoyalPetz_ADMIN
                 }
             }
 
-            if (selectedRow.Cells["STATUS"].Value.ToString().Equals("Y"))
-                selectedRow.DefaultCellStyle.BackColor = Color.White;
+            if (detailPaymentInfoDataGrid.Rows[rowSelectedIndex].Cells["STATUS"].Value.ToString().Equals("Y"))
+                detailPaymentInfoDataGrid.Rows[rowSelectedIndex].DefaultCellStyle.BackColor = Color.White;
             else
-                selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
+                detailPaymentInfoDataGrid.Rows[rowSelectedIndex].DefaultCellStyle.BackColor = Color.LightBlue;
         }
         
         private void pembayaranPiutangForm_Load(object sender, EventArgs e)

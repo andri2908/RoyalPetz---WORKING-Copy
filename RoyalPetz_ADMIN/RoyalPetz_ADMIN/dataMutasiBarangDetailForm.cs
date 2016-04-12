@@ -1034,11 +1034,24 @@ namespace RoyalPetz_ADMIN
 
             try
             {
-                //WRITE RO INVOICE
+                //WRITE PM INVOICE
                 using (StreamWriter outputFile = new StreamWriter(exportedFileName))
                 {
                     outputFile.WriteLine(noMutasi);
                 }
+
+                //WRITE PM INVOICE
+                using (StreamWriter outputFile = new StreamWriter(exportedFileName, true))
+                {
+                    outputFile.WriteLine(roInvoice);
+                }
+
+                //WRITE PM INVOICE
+                using (StreamWriter outputFile = new StreamWriter(exportedFileName, true))
+                {
+                    outputFile.WriteLine(branchIDTo);
+                }
+
 
                 if (roInvoice.Length > 0)
                     // WRITE HEADER TABLE SQL

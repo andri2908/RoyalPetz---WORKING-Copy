@@ -147,5 +147,10 @@ namespace RoyalPetz_ADMIN
                 }
             }
         }
+
+        private void dataCabangGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

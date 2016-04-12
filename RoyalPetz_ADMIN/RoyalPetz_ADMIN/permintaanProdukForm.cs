@@ -521,13 +521,13 @@ namespace RoyalPetz_ADMIN
             if (invoiceExist())
             {
                 errorLabel.Text = "NO PERMINTAAN SUDAH ADA";
-                ROinvoiceTextBox.BackColor = Color.Red;
+                //ROinvoiceTextBox.BackColor = Color.Red;
                 ROinvoiceTextBox.Focus();
             }
             else
             {
                 errorLabel.Text = "";
-                ROinvoiceTextBox.BackColor = Color.White;
+               // ROinvoiceTextBox.BackColor = Color.White;
             }
         }
 
