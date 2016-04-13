@@ -299,6 +299,7 @@ namespace RoyalPetz_ADMIN
             if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_PO || originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
             {
                 detailGridView.AllowUserToAddRows = false;
+
                 productID_textBox.Name = "productID";
                 productID_textBox.HeaderText = "KODE PRODUK";
                 productID_textBox.ReadOnly = true;
@@ -323,18 +324,12 @@ namespace RoyalPetz_ADMIN
                 sqlCommand = "SELECT PRODUCT_ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
                 using (rdr = DS.getData(sqlCommand))
                 {
-                    productIDHiddenCombo.Items.Clear();
-                    productNameHiddenCombo.Items.Clear();
-
                     if (rdr.HasRows)
                     {
                         while (rdr.Read())
                         {
                             productID_comboBox.Items.Add(rdr.GetString("PRODUCT_ID"));
-                            productIDHiddenCombo.Items.Add(rdr.GetString("PRODUCT_ID"));
-
                             namaProduct_comboBox.Items.Add(rdr.GetString("PRODUCT_NAME"));
-                            productNameHiddenCombo.Items.Add(rdr.GetString("PRODUCT_NAME"));
                         }
                     }
                 }
@@ -448,8 +443,6 @@ namespace RoyalPetz_ADMIN
                 ComboBox comboBox = e.Control as ComboBox;
                 comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             }
-
-
         }
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -470,28 +463,21 @@ namespace RoyalPetz_ADMIN
             selectedIndex = dataGridViewComboBoxEditingControl.SelectedIndex;
             rowSelectedIndex = detailGridView.SelectedCells[0].RowIndex;
             DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
-            selectedProductID = productIDHiddenCombo.Items[selectedIndex].ToString();
 
-            if (detailGridView.CurrentCell.OwningColumn.Name == "productID")
-            {
-                selectedRow.Cells["productName"].Value = productNameHiddenCombo.Items[selectedIndex].ToString();
-            }
-            else
-            {
-                selectedRow.Cells["productID"].Value = productIDHiddenCombo.Items[selectedIndex].ToString();
-            }
+            DataGridViewComboBoxCell productIDComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productID"];
+            DataGridViewComboBoxCell productNameComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productName"];
+
+            selectedProductID = productIDComboCell.Items[selectedIndex].ToString();
+            productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
+            productNameComboCell.Value = productNameComboCell.Items[selectedIndex];
 
             hpp = getHPPValue(selectedProductID);
 
-            
-            //selectedRow.Cells["hpp"].Value = hpp.ToString("C", culture);
             selectedRow.Cells["hpp"].Value = hpp.ToString();
             detailHpp[rowSelectedIndex] = hpp.ToString();
 
             if (null == selectedRow.Cells["qtyReceived"].Value)
                 selectedRow.Cells["qtyReceived"].Value = 0;
-
-            //selectedRow.Cells["productId"].Value = selectedProductID;
 
             if (null != selectedRow.Cells["qtyReceived"].Value)
             {

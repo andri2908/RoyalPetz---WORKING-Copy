@@ -122,7 +122,7 @@ namespace RoyalPetz_ADMIN
                 }
                 if (!previousInput.Equals(dataGridViewTextBoxEditingControl.Text))
                 { 
-                    selectedRow.DefaultCellStyle.BackColor = Color.LightBlue;
+                    selectedRow.DefaultCellStyle.BackColor = Color.LightCoral;
                     selectedRow.Cells["CHANGED"].Value = true;
                 }
             }
@@ -220,16 +220,19 @@ namespace RoyalPetz_ADMIN
             hepColumn.Name = "HARGA_ECER";
             hepColumn.HeaderText = "HARGA JUAL ECER";
             hepColumn.Width = 250;
+            hepColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             DataGridViewTextBoxColumn hPartaiColumn = new DataGridViewTextBoxColumn();
             hPartaiColumn.Name = "HARGA_PARTAI";
             hPartaiColumn.HeaderText = "HARGA JUAL GROSIR";
             hPartaiColumn.Width = 250;
+            hPartaiColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             DataGridViewTextBoxColumn hGrosirColumn = new DataGridViewTextBoxColumn();
             hGrosirColumn.Name = "HARGA_GROSIR";
             hGrosirColumn.HeaderText = "HARGA JUAL PARTAI";
             hGrosirColumn.Width = 250;
+            hGrosirColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             dataProdukDataGridView.Columns.Add(hppColumn);
             dataProdukDataGridView.Columns.Add(hepColumn);
@@ -245,6 +248,7 @@ namespace RoyalPetz_ADMIN
             limitStokColumn.Name = "LIMIT_STOK";
             limitStokColumn.HeaderText = "LIMIT STOK";
             limitStokColumn.Width = 200;
+            limitStokColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             dataProdukDataGridView.Columns.Add(limitStokColumn);
         }
@@ -258,12 +262,14 @@ namespace RoyalPetz_ADMIN
             kodeRakColumn.HeaderText = "KODE RAK";
             kodeRakColumn.Width = 200;
             kodeRakColumn.MaxInputLength = 2;
+            kodeRakColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             DataGridViewTextBoxColumn nomorRakColumn = new DataGridViewTextBoxColumn();
             nomorRakColumn.Name = "NOMOR_RAK";
             nomorRakColumn.HeaderText = "NOMOR BARIS RAK";
             nomorRakColumn.Width = 200;
             nomorRakColumn.MaxInputLength = 2;
+            nomorRakColumn.DefaultCellStyle.BackColor = Color.LightBlue;
 
             dataProdukDataGridView.Columns.Add(kodeRakColumn);
             dataProdukDataGridView.Columns.Add(nomorRakColumn);

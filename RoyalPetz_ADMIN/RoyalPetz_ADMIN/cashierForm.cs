@@ -610,7 +610,7 @@ namespace RoyalPetz_ADMIN
 
             salesInvPrefix = getNoFaktur() + "-";//String.Format(culture, "{0:yyyyMMdd}", localDate);
 
-            sqlCommand = "SELECT IFNULL(MAX(SALES_INVOICE),'') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
+            sqlCommand = "SELECT IFNULL(MAX(CONVERT(SUBSTRING(SALES_INVOICE, INSTR(SALES_INVOICE,'-')+1), UNSIGNED INTEGER)),'') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
 
             maxSalesInvoice = DS.getDataSingleValue(sqlCommand).ToString();
             if (maxSalesInvoice.Length > salesInvPrefix.Length)
@@ -639,13 +639,6 @@ namespace RoyalPetz_ADMIN
             salesInvoice = salesInvPrefix + maxSalesInvoice;
 
             return salesInvoice;
-        }
-
-        private string getProductID(int selectedIndex)
-        {
-            string productID = "";
-            productID = productComboHidden.Items[selectedIndex].ToString();
-            return productID;
         }
 
         private double getProductPriceValue(string productID, int customerType = 0)
@@ -755,24 +748,32 @@ namespace RoyalPetz_ADMIN
             double subTotal = 0;
             MySqlDataReader rdr;
 
-            if (isLoading)
+            if (isLoading)  
                 return;
 
             DataGridViewComboBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewComboBoxEditingControl;
-
             selectedIndex = dataGridViewComboBoxEditingControl.SelectedIndex;
             rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
             DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
-            selectedProductID = productComboHidden.Items[selectedIndex].ToString();//getProductID(selectedIndex);
 
-            if(cashierDataGridView.CurrentCell.OwningColumn.Name == "productID")
-            {
-                selectedRow.Cells["productName"].Value = productNameHidden.Items[selectedIndex].ToString();
-            }
-            else
-            {
-                selectedRow.Cells["productID"].Value = productComboHidden.Items[selectedIndex].ToString();
-            }
+            DataGridViewComboBoxCell productIDComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productID"];
+            DataGridViewComboBoxCell productNameComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productName"];
+
+            selectedProductID = productIDComboCell.Items[selectedIndex].ToString();
+            productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
+            productNameComboCell.Value = productNameComboCell.Items[selectedIndex];
+
+
+            //selectedProductID = productComboHidden.Items[selectedIndex].ToString();//getProductID(selectedIndex);
+
+            //if(cashierDataGridView.CurrentCell.OwningColumn.Name == "productID")
+            //{
+            //    selectedRow.Cells["productName"].Value = productNameHidden.Items[selectedIndex].ToString();
+            //}
+            //else
+            //{
+            //    selectedRow.Cells["productID"].Value = productComboHidden.Items[selectedIndex].ToString();
+            //}
 
             hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
             
@@ -964,17 +965,12 @@ namespace RoyalPetz_ADMIN
             
             sqlCommand = "SELECT PRODUCT_ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
 
-            productComboHidden.Items.Clear();
-            productNameHidden.Items.Clear();
-
             using (rdr = DS.getData(sqlCommand))
             {
                 while (rdr.Read())
                 {
                     productNameCmb.Items.Add(rdr.GetString("PRODUCT_NAME"));
-                    productNameHidden.Items.Add(rdr.GetString("PRODUCT_NAME"));
                     productIdColumn.Items.Add(rdr.GetString("PRODUCT_ID"));
-                    productComboHidden.Items.Add(rdr.GetString("PRODUCT_ID"));
                 }
             }
 

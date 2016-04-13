@@ -177,8 +177,8 @@ namespace RoyalPetz_ADMIN
 
         private void dataSalesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataSalesForm displayedForm = new dataSalesForm();
-            displayedForm.ShowDialog(this);
+        //    dataSalesForm displayedForm = new dataSalesForm();
+        //    displayedForm.ShowDialog(this);
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -237,11 +237,11 @@ namespace RoyalPetz_ADMIN
             displayedForm.ShowDialog(this);
         }
 
-        private void toolStripMenuItem16_Click(object sender, EventArgs e)
-        {
-            IPPusatForm displayedForm = new IPPusatForm();
-            displayedForm.ShowDialog(this);
-        }
+        //private void toolStripMenuItem16_Click(object sender, EventArgs e)
+        //{
+        //    IPPusatForm displayedForm = new IPPusatForm();
+        //    displayedForm.ShowDialog(this);
+        //}
 
         private void toolStripMenuItem48_Click(object sender, EventArgs e)
         {
@@ -267,11 +267,11 @@ namespace RoyalPetz_ADMIN
             displayedForm.ShowDialog(this);
         }
 
-        private void toolStripMenuItem12_Click(object sender, EventArgs e)
-        {
-            dataGroupForm displayedForm = new dataGroupForm(globalConstants.PENGATURAN_POTONGAN_HARGA);
-            displayedForm.ShowDialog(this);
-        }
+        //private void toolStripMenuItem12_Click(object sender, EventArgs e)
+        //{
+        //    dataGroupForm displayedForm = new dataGroupForm(globalConstants.PENGATURAN_POTONGAN_HARGA);
+        //    displayedForm.ShowDialog(this);
+        //}
 
         private void toolStripMenuItem9_Click(object sender, EventArgs e)
         {

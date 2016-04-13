@@ -83,7 +83,7 @@ namespace RoyalPetz_ADMIN
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (!namaProdukTextBox.Text.Equals(""))
+            //if (!namaProdukTextBox.Text.Equals(""))
             {
                 loadProdukData();
             }
@@ -100,7 +100,7 @@ namespace RoyalPetz_ADMIN
             if (namaProdukTextBox.Text.Equals(""))
                 return;
 
-            sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
+            sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_ID LIKE '%" + textBox1.Text + "%' AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
             
             if (originModuleID == globalConstants.STOK_PECAH_BARANG)
             {
@@ -194,6 +194,11 @@ namespace RoyalPetz_ADMIN
                 newButton.Visible = true;
             else
                 newButton.Visible = false;
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+            loadProdukData();
         }
     }
 }

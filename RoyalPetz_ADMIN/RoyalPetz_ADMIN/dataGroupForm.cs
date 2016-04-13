@@ -98,10 +98,10 @@ namespace RoyalPetz_ADMIN
                     groupAccessForm.ShowDialog(this);
                     break;
 
-                case globalConstants.PENGATURAN_POTONGAN_HARGA:
-                    pengaturanPotonganHargaForm pengaturanHargaForm = new pengaturanPotonganHargaForm();
-                    pengaturanHargaForm.ShowDialog(this);
-                    break;
+                //case globalConstants.PENGATURAN_POTONGAN_HARGA:
+                //    pengaturanPotonganHargaForm pengaturanHargaForm = new pengaturanPotonganHargaForm();
+                //    pengaturanHargaForm.ShowDialog(this);
+                //    break;
 
                 case globalConstants.TAMBAH_HAPUS_USER:
                     userDetailForm.setSelectedGroupID(selectedGroupID);

@@ -38,6 +38,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.durationTextBox = new System.Windows.Forms.MaskedTextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.supplierCombo = new System.Windows.Forms.ComboBox();
             this.labelAsal_1 = new System.Windows.Forms.Label();
             this.labelTujuan = new System.Windows.Forms.Label();
@@ -66,10 +68,6 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.supplierHiddenCombo = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.durationTextBox = new System.Windows.Forms.MaskedTextBox();
-            this.productIDHiddenCombo = new System.Windows.Forms.ComboBox();
-            this.productNameHiddenCombo = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -197,7 +195,7 @@
             this.tableLayoutPanel4.ColumnCount = 3;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 79.32584F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.67416F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 141F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 142F));
             this.tableLayoutPanel4.Controls.Add(this.durationTextBox, 2, 0);
             this.tableLayoutPanel4.Controls.Add(this.label1, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.supplierCombo, 0, 0);
@@ -207,6 +205,29 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(624, 38);
             this.tableLayoutPanel4.TabIndex = 23;
+            // 
+            // durationTextBox
+            // 
+            this.durationTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.durationTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.durationTextBox.Location = new System.Drawing.Point(484, 5);
+            this.durationTextBox.Mask = "000";
+            this.durationTextBox.Name = "durationTextBox";
+            this.durationTextBox.Size = new System.Drawing.Size(54, 27);
+            this.durationTextBox.TabIndex = 57;
+            this.durationTextBox.Text = "0";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Location = new System.Drawing.Point(385, 10);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(83, 18);
+            this.label1.TabIndex = 57;
+            this.label1.Text = "TEMPO :";
             // 
             // supplierCombo
             // 
@@ -299,7 +320,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 91.38756F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.61244F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 198F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
             this.tableLayoutPanel6.Controls.Add(this.prInvoiceTextBox, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.label11, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.PRDtPicker, 3, 0);
@@ -317,7 +338,7 @@
             this.prInvoiceTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.prInvoiceTextBox.Location = new System.Drawing.Point(3, 4);
             this.prInvoiceTextBox.Name = "prInvoiceTextBox";
-            this.prInvoiceTextBox.Size = new System.Drawing.Size(170, 27);
+            this.prInvoiceTextBox.Size = new System.Drawing.Size(169, 27);
             this.prInvoiceTextBox.TabIndex = 16;
             this.prInvoiceTextBox.TextChanged += new System.EventHandler(this.prInvoiceTextBox_TextChanged);
             // 
@@ -327,7 +348,7 @@
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label11.Location = new System.Drawing.Point(195, 8);
+            this.label11.Location = new System.Drawing.Point(194, 8);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(224, 18);
             this.label11.TabIndex = 20;
@@ -337,7 +358,7 @@
             // 
             this.PRDtPicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PRDtPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.PRDtPicker.Location = new System.Drawing.Point(428, 3);
+            this.PRDtPicker.Location = new System.Drawing.Point(427, 3);
             this.PRDtPicker.Name = "PRDtPicker";
             this.PRDtPicker.Size = new System.Drawing.Size(147, 27);
             this.PRDtPicker.TabIndex = 39;
@@ -349,7 +370,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.54545F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 132F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 186F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 87F));
             this.tableLayoutPanel2.Controls.Add(this.searchMutasiButton, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.searchPOButton, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.noInvoiceTextBox, 0, 0);
@@ -367,7 +388,7 @@
             this.searchMutasiButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.searchMutasiButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("searchMutasiButton.BackgroundImage")));
             this.searchMutasiButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.searchMutasiButton.Location = new System.Drawing.Point(540, 5);
+            this.searchMutasiButton.Location = new System.Drawing.Point(539, 5);
             this.searchMutasiButton.Name = "searchMutasiButton";
             this.searchMutasiButton.Size = new System.Drawing.Size(24, 24);
             this.searchMutasiButton.TabIndex = 49;
@@ -379,7 +400,7 @@
             this.searchPOButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.searchPOButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("searchPOButton.BackgroundImage")));
             this.searchPOButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.searchPOButton.Location = new System.Drawing.Point(180, 5);
+            this.searchPOButton.Location = new System.Drawing.Point(179, 5);
             this.searchPOButton.Name = "searchPOButton";
             this.searchPOButton.Size = new System.Drawing.Size(24, 24);
             this.searchPOButton.TabIndex = 49;
@@ -394,7 +415,7 @@
             this.noInvoiceTextBox.Location = new System.Drawing.Point(3, 4);
             this.noInvoiceTextBox.Name = "noInvoiceTextBox";
             this.noInvoiceTextBox.ReadOnly = true;
-            this.noInvoiceTextBox.Size = new System.Drawing.Size(171, 27);
+            this.noInvoiceTextBox.Size = new System.Drawing.Size(170, 27);
             this.noInvoiceTextBox.TabIndex = 16;
             // 
             // labelTanggal
@@ -403,7 +424,7 @@
             this.labelTanggal.AutoSize = true;
             this.labelTanggal.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTanggal.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelTanggal.Location = new System.Drawing.Point(222, 8);
+            this.labelTanggal.Location = new System.Drawing.Point(221, 8);
             this.labelTanggal.Name = "labelTanggal";
             this.labelTanggal.Size = new System.Drawing.Size(122, 18);
             this.labelTanggal.TabIndex = 20;
@@ -414,7 +435,7 @@
             this.noMutasiTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.noMutasiTextBox.Enabled = false;
             this.noMutasiTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noMutasiTextBox.Location = new System.Drawing.Point(354, 4);
+            this.noMutasiTextBox.Location = new System.Drawing.Point(353, 4);
             this.noMutasiTextBox.Name = "noMutasiTextBox";
             this.noMutasiTextBox.ReadOnly = true;
             this.noMutasiTextBox.Size = new System.Drawing.Size(172, 27);
@@ -546,57 +567,12 @@
             this.supplierHiddenCombo.TabIndex = 56;
             this.supplierHiddenCombo.Visible = false;
             // 
-            // label1
-            // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label1.Location = new System.Drawing.Point(386, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 18);
-            this.label1.TabIndex = 57;
-            this.label1.Text = "TEMPO :";
-            // 
-            // durationTextBox
-            // 
-            this.durationTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.durationTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.durationTextBox.Location = new System.Drawing.Point(485, 5);
-            this.durationTextBox.Mask = "000";
-            this.durationTextBox.Name = "durationTextBox";
-            this.durationTextBox.Size = new System.Drawing.Size(54, 27);
-            this.durationTextBox.TabIndex = 57;
-            this.durationTextBox.Text = "0";
-            // 
-            // productIDHiddenCombo
-            // 
-            this.productIDHiddenCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.productIDHiddenCombo.FormattingEnabled = true;
-            this.productIDHiddenCombo.Location = new System.Drawing.Point(661, 404);
-            this.productIDHiddenCombo.Name = "productIDHiddenCombo";
-            this.productIDHiddenCombo.Size = new System.Drawing.Size(311, 26);
-            this.productIDHiddenCombo.TabIndex = 57;
-            this.productIDHiddenCombo.Visible = false;
-            // 
-            // productNameHiddenCombo
-            // 
-            this.productNameHiddenCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.productNameHiddenCombo.FormattingEnabled = true;
-            this.productNameHiddenCombo.Location = new System.Drawing.Point(661, 436);
-            this.productNameHiddenCombo.Name = "productNameHiddenCombo";
-            this.productNameHiddenCombo.Size = new System.Drawing.Size(311, 26);
-            this.productNameHiddenCombo.TabIndex = 58;
-            this.productNameHiddenCombo.Visible = false;
-            // 
             // penerimaanBarangForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(984, 661);
-            this.Controls.Add(this.productNameHiddenCombo);
-            this.Controls.Add(this.productIDHiddenCombo);
             this.Controls.Add(this.supplierHiddenCombo);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -667,7 +643,5 @@
         private System.Windows.Forms.ComboBox supplierHiddenCombo;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.MaskedTextBox durationTextBox;
-        private System.Windows.Forms.ComboBox productIDHiddenCombo;
-        private System.Windows.Forms.ComboBox productNameHiddenCombo;
     }
 }

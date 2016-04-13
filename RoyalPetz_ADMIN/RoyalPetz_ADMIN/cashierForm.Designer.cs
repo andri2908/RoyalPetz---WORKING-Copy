@@ -74,8 +74,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.dateTimeStampLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.productComboHidden = new System.Windows.Forms.ComboBox();
-            this.productNameHidden = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cashierDataGridView)).BeginInit();
             this.panel5.SuspendLayout();
@@ -594,7 +592,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(692, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(661, 17);
             this.toolStripStatusLabel1.Spring = true;
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
@@ -610,32 +608,12 @@
             this.timer1.Interval = 60000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // productComboHidden
-            // 
-            this.productComboHidden.FormattingEnabled = true;
-            this.productComboHidden.Location = new System.Drawing.Point(570, 223);
-            this.productComboHidden.Name = "productComboHidden";
-            this.productComboHidden.Size = new System.Drawing.Size(121, 21);
-            this.productComboHidden.TabIndex = 13;
-            this.productComboHidden.Visible = false;
-            // 
-            // productNameHidden
-            // 
-            this.productNameHidden.FormattingEnabled = true;
-            this.productNameHidden.Location = new System.Drawing.Point(570, 250);
-            this.productNameHidden.Name = "productNameHidden";
-            this.productNameHidden.Size = new System.Drawing.Size(121, 21);
-            this.productNameHidden.TabIndex = 14;
-            this.productNameHidden.Visible = false;
-            // 
             // cashierForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(985, 661);
-            this.Controls.Add(this.productNameHidden);
-            this.Controls.Add(this.productComboHidden);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.totalLabel);
@@ -706,14 +684,12 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel dateTimeStampLabel;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.ComboBox productComboHidden;
         private System.Windows.Forms.MaskedTextBox discJualMaskedTextBox;
         private System.Windows.Forms.TextBox pelangganTextBox;
         private System.Windows.Forms.MaskedTextBox tempoMaskedTextBox;
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.MaskedTextBox bayarTextBox;
         private System.Windows.Forms.Button ChangePrinterButton;
-        private System.Windows.Forms.ComboBox productNameHidden;
     }
 }
 

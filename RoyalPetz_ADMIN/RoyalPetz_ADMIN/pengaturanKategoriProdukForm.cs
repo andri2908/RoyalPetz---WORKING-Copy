@@ -79,7 +79,7 @@ namespace RoyalPetz_ADMIN
             categoryProduct tempValue;
 
             DS.mySqlConnect();
-            sqlCommand = "SELECT M.PRODUCT_ID, M.PRODUCT_NAME, IFNULL(P.CATEGORY_ID, 0) AS CATEGORY_ID FROM MASTER_PRODUCT M LEFT OUTER JOIN PRODUCT_CATEGORY P ON (P.PRODUCT_ID = M.PRODUCT_ID AND P.CATEGORY_ID = " + selectedCategoryID + ") WHERE M.PRODUCT_NAME LIKE '%" + namaProdukTextbox.Text + "%'";
+            sqlCommand = "SELECT M.PRODUCT_ID, M.PRODUCT_NAME, IFNULL(P.CATEGORY_ID, 0) AS CATEGORY_ID FROM MASTER_PRODUCT M LEFT OUTER JOIN PRODUCT_CATEGORY P ON (P.PRODUCT_ID = M.PRODUCT_ID AND P.CATEGORY_ID = " + selectedCategoryID + ") WHERE M.PRODUCT_NAME LIKE '%" + namaProdukTextbox.Text + "%' AND M.PRODUCT_ID LIKE '%"+textBox1.Text+"%'";
 
             using (rdr = DS.getData(sqlCommand))
             {
@@ -253,6 +253,13 @@ namespace RoyalPetz_ADMIN
         private void pengaturanKategoriProdukForm_Activated(object sender, EventArgs e)
         {
             loadKategoriInformation();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            categoryProductValue.Clear();
+            pengaturanKategoriDataGridView.Rows.Clear();
+            loadProdukName();
         }
     }
 }

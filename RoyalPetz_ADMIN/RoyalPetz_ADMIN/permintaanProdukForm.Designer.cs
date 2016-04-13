@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.errorLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -63,8 +63,6 @@
             this.exportButton = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.saveButton = new System.Windows.Forms.Button();
-            this.productIDComboHidden = new System.Windows.Forms.ComboBox();
-            this.productNameComboHidden = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -469,14 +467,14 @@
             // detailRequestOrderDataGridView
             // 
             this.detailRequestOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.detailRequestOrderDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.detailRequestOrderDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.detailRequestOrderDataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.detailRequestOrderDataGridView.Location = new System.Drawing.Point(5, 303);
@@ -512,28 +510,6 @@
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
-            // productIDComboHidden
-            // 
-            this.productIDComboHidden.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.productIDComboHidden.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.productIDComboHidden.FormattingEnabled = true;
-            this.productIDComboHidden.Location = new System.Drawing.Point(561, 317);
-            this.productIDComboHidden.Name = "productIDComboHidden";
-            this.productIDComboHidden.Size = new System.Drawing.Size(230, 26);
-            this.productIDComboHidden.TabIndex = 41;
-            this.productIDComboHidden.Visible = false;
-            // 
-            // productNameComboHidden
-            // 
-            this.productNameComboHidden.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.productNameComboHidden.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.productNameComboHidden.FormattingEnabled = true;
-            this.productNameComboHidden.Location = new System.Drawing.Point(561, 349);
-            this.productNameComboHidden.Name = "productNameComboHidden";
-            this.productNameComboHidden.Size = new System.Drawing.Size(230, 26);
-            this.productNameComboHidden.TabIndex = 42;
-            this.productNameComboHidden.Visible = false;
-            // 
             // permintaanProdukForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -541,8 +517,6 @@
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(901, 661);
-            this.Controls.Add(this.productNameComboHidden);
-            this.Controls.Add(this.productIDComboHidden);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.exportButton);
             this.Controls.Add(this.generateButton);
@@ -605,8 +579,6 @@
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.ComboBox branchToComboHidden;
         private System.Windows.Forms.ComboBox branchFromComboHidden;
-        private System.Windows.Forms.ComboBox productIDComboHidden;
-        private System.Windows.Forms.ComboBox productNameComboHidden;
         private System.Windows.Forms.TextBox ROinvoiceTextBox;
         private System.Windows.Forms.Button deactivateButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;

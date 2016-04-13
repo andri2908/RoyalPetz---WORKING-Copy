@@ -134,20 +134,20 @@ namespace RoyalPetz_ADMIN
 
         private void detailRequestOrderDataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            int qtyPosition;
+            //int qtyPosition;
 
-            if (!directMutasiBarang)
-                qtyPosition = 2;
-            else
-                qtyPosition = 1;
+            //if (!directMutasiBarang)
+            //    qtyPosition = 2;
+            //else
+            //    qtyPosition = 1;
 
-            if (detailRequestOrderDataGridView.CurrentCell.ColumnIndex == 0 && e.Control is ComboBox)
+            if ((detailRequestOrderDataGridView.CurrentCell.OwningColumn.Name == "productID" || detailRequestOrderDataGridView.CurrentCell.OwningColumn.Name == "productName")  && e.Control is ComboBox)
             {
                 ComboBox comboBox = e.Control as ComboBox;
                 comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             }
 
-            if (detailRequestOrderDataGridView.CurrentCell.ColumnIndex == qtyPosition && e.Control is TextBox)
+            if (detailRequestOrderDataGridView.CurrentCell.OwningColumn.Name == "qty" && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
                 textBox.TextChanged += TextBox_TextChanged;
@@ -181,8 +181,12 @@ namespace RoyalPetz_ADMIN
             cmbSelectedIndex = dataGridViewComboBoxEditingControl.SelectedIndex;
 
             // get product id
-            productID = productIDHiddenCombo.Items[cmbSelectedIndex].ToString();
-            selectedRow.Cells["productID"].Value = productID;
+            DataGridViewComboBoxCell productIDComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productID"];
+            DataGridViewComboBoxCell productNameComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productName"];
+
+            productID = productIDComboCell.Items[cmbSelectedIndex].ToString();
+            productIDComboCell.Value = productIDComboCell.Items[cmbSelectedIndex];
+            productNameComboCell.Value = productNameComboCell.Items[cmbSelectedIndex];
 
             // get hpp
             hppValue = getHPP(productID);
@@ -493,22 +497,22 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private void addDataToProductNameCombo(DataGridViewComboBoxColumn comboColumn)
+        private void addDataToProductNameCombo(DataGridViewComboBoxColumn comboColumn, DataGridViewComboBoxColumn comboIDColumn)
         {
             MySqlDataReader rdr;
             string sqlCommand = "";
 
             sqlCommand = "SELECT PRODUCT_ID, PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 ORDER BY PRODUCT_NAME ASC";
 
-            productIDHiddenCombo.Items.Clear();
             comboColumn.Items.Clear();
+            comboIDColumn.Items.Clear();
 
             using (rdr = DS.getData(sqlCommand))
             {
                 while (rdr.Read())
                 {
                     comboColumn.Items.Add(rdr.GetString("PRODUCT_NAME"));
-                    productIDHiddenCombo.Items.Add(rdr.GetString("PRODUCT_ID"));
+                    comboIDColumn.Items.Add(rdr.GetString("PRODUCT_ID"));
                 }
             }
 
@@ -518,17 +522,24 @@ namespace RoyalPetz_ADMIN
 
         private void addColumnToDetailDataGrid()
         {
+            DataGridViewTextBoxColumn productIDColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn productNameColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn qtyReqColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn hppColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn subtotalColumn = new DataGridViewTextBoxColumn();
-            DataGridViewTextBoxColumn productIDColumn = new DataGridViewTextBoxColumn();
-
+            
+            DataGridViewComboBoxColumn productIDComboColumn = new DataGridViewComboBoxColumn();
             DataGridViewComboBoxColumn productNameComboColumn = new DataGridViewComboBoxColumn();
 
             if (!directMutasiBarang)
             {
+                productIDColumn.Name = "productID";
+                productIDColumn.HeaderText = "KODE PRODUK";
+                productIDColumn.ReadOnly = true;
+                productIDColumn.Width = 100;
+                detailRequestOrderDataGridView.Columns.Add(productIDColumn);
+
                 productNameColumn.Name = "productName";
                 productNameColumn.HeaderText = "NAMA PRODUK";
                 productNameColumn.ReadOnly = true;
@@ -543,10 +554,17 @@ namespace RoyalPetz_ADMIN
             }
             else
             {
+                productIDComboColumn.Name = "productID";
+                productIDComboColumn.HeaderText = "KODE PRODUK";
+                productIDComboColumn.DefaultCellStyle.BackColor = Color.LightBlue;
+                productIDComboColumn.Width = 100;
+                detailRequestOrderDataGridView.Columns.Add(productIDComboColumn);
+
                 productNameComboColumn.Name = "productName";
                 productNameComboColumn.HeaderText = "NAMA PRODUK";
+                productNameComboColumn.DefaultCellStyle.BackColor = Color.LightBlue;
                 productNameComboColumn.Width = 300;
-                addDataToProductNameCombo(productNameComboColumn);
+                addDataToProductNameCombo(productNameComboColumn, productIDComboColumn);
 
                 detailRequestOrderDataGridView.Columns.Add(productNameComboColumn);
             }
@@ -554,6 +572,7 @@ namespace RoyalPetz_ADMIN
             qtyColumn.Name = "qty";
             qtyColumn.HeaderText = "QTY";
             qtyColumn.Width = 150;
+            qtyColumn.DefaultCellStyle.BackColor = Color.LightBlue;
             detailRequestOrderDataGridView.Columns.Add(qtyColumn);
 
             hppColumn.Name = "hpp";
@@ -568,11 +587,6 @@ namespace RoyalPetz_ADMIN
             subtotalColumn.ReadOnly = true;
             detailRequestOrderDataGridView.Columns.Add(subtotalColumn);
 
-            productIDColumn.Name = "productID";
-            productIDColumn.HeaderText = "productID";
-            productIDColumn.Width = 100;
-            productIDColumn.Visible = false;
-            detailRequestOrderDataGridView.Columns.Add(productIDColumn);
         }
 
         private bool roInvoiceAvailable()
