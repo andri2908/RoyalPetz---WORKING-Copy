@@ -94,13 +94,17 @@ namespace RoyalPetz_ADMIN
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
             string sqlCommand;
+            string namaProductParam = "";
+            string kodeProductParam = "";
 
             DS.mySqlConnect();
 
-            if (namaProdukTextBox.Text.Equals(""))
-                return;
+            //if (namaProdukTextBox.Text.Equals(""))
+            //    return;
+            namaProductParam = MySqlHelper.EscapeString(namaProdukTextBox.Text);
+            kodeProductParam = MySqlHelper.EscapeString(textBox1.Text);
 
-            sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_ID LIKE '%" + textBox1.Text + "%' AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
+            sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_ID LIKE '%" + kodeProductParam + "%' AND PRODUCT_NAME LIKE '%" + namaProductParam + "%'";
             
             if (originModuleID == globalConstants.STOK_PECAH_BARANG)
             {

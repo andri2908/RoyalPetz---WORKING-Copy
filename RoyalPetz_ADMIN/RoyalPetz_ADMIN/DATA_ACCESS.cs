@@ -165,7 +165,7 @@ namespace RoyalPetz_ADMIN
         public MySqlDataReader getData(string sqlCommand)
         {
             MySqlCommand cmd;
-            MySqlDataReader rdr; 
+            MySqlDataReader rdr;
 
             if (conn.State.ToString() != "Open")
                 mySqlConnect();

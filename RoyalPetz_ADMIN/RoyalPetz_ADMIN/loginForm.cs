@@ -79,6 +79,7 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
 
             userName = gutil.allTrim(userNameTextBox.Text);
+            userName = MySqlHelper.EscapeString(userName);
 
             sqlCommand = "SELECT ID FROM MASTER_USER WHERE USER_NAME = '" + userName + "' AND USER_ACTIVE = '1'";
             result = DS.getDataSingleValue(sqlCommand);
@@ -100,6 +101,7 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
 
             userName = gutil.allTrim(userNameTextBox.Text);
+            userName = MySqlHelper.EscapeString(userName);
 
             sqlCommand = "SELECT ID FROM MASTER_USER WHERE USER_NAME = '" + userName + "'";
             result = DS.getDataSingleValue(sqlCommand);

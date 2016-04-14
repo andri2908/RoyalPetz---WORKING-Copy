@@ -242,12 +242,6 @@
     <Compile Include="importDataCSVForm.Designer.cs">
       <DependentUpon>importDataCSVForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="importDataMutasiForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="importDataMutasiForm.Designer.cs">
-      <DependentUpon>importDataMutasiForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="konversiSatuanForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -612,9 +606,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="importDataCSVForm.resx">
       <DependentUpon>importDataCSVForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="importDataMutasiForm.resx">
-      <DependentUpon>importDataMutasiForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="konversiSatuanForm.resx">
       <DependentUpon>konversiSatuanForm.cs</DependentUpon>

@@ -306,8 +306,9 @@ namespace RoyalPetz_ADMIN
         private bool isNoReturExist()
         {
             bool result = false;
+            string noReturParam = MySqlHelper.EscapeString(noReturTextBox.Text);
 
-            if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM RETURN_PURCHASE_HEADER WHERE RP_ID = '" + noReturTextBox.Text + "'")) > 0)
+            if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM RETURN_PURCHASE_HEADER WHERE RP_ID = '" + noReturParam + "'")) > 0)
                 result = true;
 
             return result;

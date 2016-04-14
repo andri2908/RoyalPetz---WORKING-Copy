@@ -132,13 +132,15 @@ namespace RoyalPetz_ADMIN
         {
             MySqlDataReader rdr;
             string sqlCommand;
-            
+            string namaProductParam = "";
+
             DS.mySqlConnect();
 
             if (namaProdukTextBox.Text.Equals(""))
                 return;
 
-            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_BASE_PRICE, PRODUCT_RETAIL_PRICE, PRODUCT_BULK_PRICE, PRODUCT_WHOLESALE_PRICE FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
+            namaProductParam = MySqlHelper.EscapeString(namaProdukTextBox.Text);
+            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_BASE_PRICE, PRODUCT_RETAIL_PRICE, PRODUCT_BULK_PRICE, PRODUCT_WHOLESALE_PRICE FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProductParam + "%'";
 
             using (rdr = DS.getData(sqlCommand))
             {              
@@ -157,13 +159,16 @@ namespace RoyalPetz_ADMIN
         {
             MySqlDataReader rdr;
             string sqlCommand;
+            string namaProductParam = "";
             
             DS.mySqlConnect();
 
             if (namaProdukTextBox.Text.Equals(""))
                 return;
 
-            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_LIMIT_STOCK FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
+            namaProductParam = MySqlHelper.EscapeString(namaProdukTextBox.Text);
+
+            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_LIMIT_STOCK FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProductParam + "%'";
 
             using (rdr = DS.getData(sqlCommand))
             {
@@ -183,13 +188,16 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
             string kodeRak = "";
             string barisRak = "";
+            string namaProductParam = "";
 
             DS.mySqlConnect();
 
             if (namaProdukTextBox.Text.Equals(""))
                 return;
 
-            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_SHELVES FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProdukTextBox.Text + "%'";
+            namaProductParam = MySqlHelper.EscapeString(namaProdukTextBox.Text);
+
+            sqlCommand = "SELECT ID, PRODUCT_ID, PRODUCT_NAME, PRODUCT_SHELVES FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_NAME LIKE '%" + namaProductParam + "%'";
 
             using (rdr = DS.getData(sqlCommand))
             {

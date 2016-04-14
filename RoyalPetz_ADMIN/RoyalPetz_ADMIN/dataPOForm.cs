@@ -78,6 +78,7 @@ namespace RoyalPetz_ADMIN
             DataTable dt = new DataTable();
             string sqlCommand = "";
             string dateFrom, dateTo;
+            string noPOInvoiceParam = "";
 
             DS.mySqlConnect();
 
@@ -106,7 +107,8 @@ namespace RoyalPetz_ADMIN
             {
                 if (noPOInvoiceTextBox.Text.Length > 0)
                 {
-                    sqlCommand = sqlCommand + " AND PURCHASE_INVOICE LIKE '%" + noPOInvoiceTextBox.Text + "%'";
+                    noPOInvoiceParam = MySqlHelper.EscapeString(noPOInvoiceTextBox.Text);
+                    sqlCommand = sqlCommand + " AND PURCHASE_INVOICE LIKE '%" + noPOInvoiceParam + "%'";
                 }
 
                 dateFrom = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(PODtPicker_1.Value));

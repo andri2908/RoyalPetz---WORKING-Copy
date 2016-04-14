@@ -229,7 +229,7 @@ namespace RoyalPetz_ADMIN
             paymentDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPaymentDate);
             paymentNominal = Convert.ToDouble(paymentMaskedTextBox.Text);
             paymentMethod = paymentCombo.SelectedIndex + 1;
-            paymentDescription = descriptionTextBox.Text;
+            paymentDescription = MySqlHelper.EscapeString(descriptionTextBox.Text);
 
             if (paymentNominal > globalTotalValue)
                 paymentNominal = globalTotalValue;

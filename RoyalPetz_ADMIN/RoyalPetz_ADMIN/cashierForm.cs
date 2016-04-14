@@ -613,16 +613,17 @@ namespace RoyalPetz_ADMIN
             sqlCommand = "SELECT IFNULL(MAX(CONVERT(SUBSTRING(SALES_INVOICE, INSTR(SALES_INVOICE,'-')+1), UNSIGNED INTEGER)),'') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
 
             maxSalesInvoice = DS.getDataSingleValue(sqlCommand).ToString();
-            if (maxSalesInvoice.Length > salesInvPrefix.Length)
-            {
-                maxSalesInvoice = maxSalesInvoice.Substring(salesInvPrefix.Length);
-                maxSalesInvoiceValue = Convert.ToInt32(maxSalesInvoice);
-            }
-            else
-            {
-                maxSalesInvoiceValue = 0;
-            }
+            //if (maxSalesInvoice.Length > salesInvPrefix.Length)
+            //{
+            //    maxSalesInvoice = maxSalesInvoice.Substring(salesInvPrefix.Length);
+            //    maxSalesInvoiceValue = Convert.ToInt32(maxSalesInvoice);
+            //}
+            //else
+            //{
+            //    maxSalesInvoiceValue = 0;
+            //}
 
+            maxSalesInvoiceValue = Convert.ToInt32(maxSalesInvoice);
             if (maxSalesInvoiceValue > 0)
             {
                 maxSalesInvoiceValue += 1;
@@ -1143,5 +1144,6 @@ namespace RoyalPetz_ADMIN
             SetPrinterForm displayedForm = new SetPrinterForm();
             displayedForm.ShowDialog(this);
         }
+
     }
 }

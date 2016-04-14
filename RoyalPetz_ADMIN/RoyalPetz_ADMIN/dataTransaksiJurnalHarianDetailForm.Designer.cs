@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(dataTransaksiJurnalHarianDetailForm));
             this.panel2 = new System.Windows.Forms.Panel();
             this.NamaAkunTextbox = new System.Windows.Forms.TextBox();
@@ -37,7 +37,6 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.errorLabel = new System.Windows.Forms.Label();
-            this.NominalTextbox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.TransaksiAccountGridView = new System.Windows.Forms.DataGridView();
             this.Tanggal = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -63,6 +62,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.NominalTextbox = new System.Windows.Forms.MaskedTextBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TransaksiAccountGridView)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -84,6 +84,7 @@
             this.NamaAkunTextbox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NamaAkunTextbox.Location = new System.Drawing.Point(3, 3);
             this.NamaAkunTextbox.Name = "NamaAkunTextbox";
+            this.NamaAkunTextbox.ReadOnly = true;
             this.NamaAkunTextbox.Size = new System.Drawing.Size(319, 27);
             this.NamaAkunTextbox.TabIndex = 15;
             this.NamaAkunTextbox.TextChanged += new System.EventHandler(this.kodeAkunTextbox_TextChanged);
@@ -94,6 +95,7 @@
             this.DeskripsiAkunTextbox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DeskripsiAkunTextbox.Location = new System.Drawing.Point(201, 43);
             this.DeskripsiAkunTextbox.Name = "DeskripsiAkunTextbox";
+            this.DeskripsiAkunTextbox.ReadOnly = true;
             this.DeskripsiAkunTextbox.Size = new System.Drawing.Size(362, 27);
             this.DeskripsiAkunTextbox.TabIndex = 16;
             // 
@@ -144,15 +146,6 @@
             this.errorLabel.TabIndex = 1;
             this.errorLabel.Text = "   ";
             // 
-            // NominalTextbox
-            // 
-            this.NominalTextbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.NominalTextbox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.NominalTextbox.Location = new System.Drawing.Point(201, 119);
-            this.NominalTextbox.Name = "NominalTextbox";
-            this.NominalTextbox.Size = new System.Drawing.Size(269, 27);
-            this.NominalTextbox.TabIndex = 17;
-            // 
             // label8
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -170,14 +163,14 @@
             this.TransaksiAccountGridView.AllowUserToAddRows = false;
             this.TransaksiAccountGridView.AllowUserToDeleteRows = false;
             this.TransaksiAccountGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TransaksiAccountGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TransaksiAccountGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.TransaksiAccountGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.TransaksiAccountGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Tanggal,
@@ -325,11 +318,11 @@
             this.tableLayoutPanel1.Controls.Add(this.label6, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label7, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label9, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.NominalTextbox, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.label10, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.DeskripsiAkunTextbox, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.carabayarcombobox, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.NominalTextbox, 2, 3);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 82);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
@@ -428,6 +421,16 @@
             this.label10.TabIndex = 7;
             this.label10.Text = ":";
             // 
+            // NominalTextbox
+            // 
+            this.NominalTextbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.NominalTextbox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NominalTextbox.Location = new System.Drawing.Point(201, 119);
+            this.NominalTextbox.Mask = "0000000000";
+            this.NominalTextbox.Name = "NominalTextbox";
+            this.NominalTextbox.Size = new System.Drawing.Size(183, 27);
+            this.NominalTextbox.TabIndex = 23;
+            // 
             // dataTransaksiJurnalHarianDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -471,7 +474,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox NominalTextbox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DataGridView TransaksiAccountGridView;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
@@ -498,5 +500,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn kredit;
         private System.Windows.Forms.DataGridViewTextBoxColumn deskripsi_akun;
         private System.Windows.Forms.DataGridViewTextBoxColumn journal_id;
+        private System.Windows.Forms.MaskedTextBox NominalTextbox;
     }
 }

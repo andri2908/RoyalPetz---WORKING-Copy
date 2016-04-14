@@ -137,8 +137,9 @@ namespace RoyalPetz_ADMIN
         private bool noReturExist()
         {
             bool result = false;
+            string noReturParam = MySqlHelper.EscapeString(noReturTextBox.Text);
 
-            if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM RETURN_SALES_HEADER WHERE RS_INVOICE = '" + noReturTextBox.Text + "'")) > 0)
+            if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM RETURN_SALES_HEADER WHERE RS_INVOICE = '" + noReturParam + "'")) > 0)
                 result = true;
 
             return result;
@@ -417,7 +418,7 @@ namespace RoyalPetz_ADMIN
             
             int selectedCreditID;
 
-            returID = noReturTextBox.Text;
+            returID = MySqlHelper.EscapeString(noReturTextBox.Text);
             customerID = selectedCustomerID;
 
             selectedReturDate = rsDateTimePicker.Value;

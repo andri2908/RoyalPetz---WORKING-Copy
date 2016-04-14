@@ -104,6 +104,7 @@ namespace RoyalPetz_ADMIN
             string sqlCommand;
             string dateFrom;
             string dateTo;
+            string noMutasiParam = "";
 
             DS.mySqlConnect();
 
@@ -119,7 +120,8 @@ namespace RoyalPetz_ADMIN
             {
                 if (noMutasiTextBox.Text.Length > 0)
                 {
-                    sqlCommand = sqlCommand + " AND PM_INVOICE LIKE '%" + noMutasiTextBox.Text + "%'";
+                    noMutasiParam = MySqlHelper.EscapeString(noMutasiTextBox.Text);
+                    sqlCommand = sqlCommand + " AND PM_INVOICE LIKE '%" + noMutasiParam + "%'";
                 }
 
                 dateFrom = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(PMDtPicker_1.Value));

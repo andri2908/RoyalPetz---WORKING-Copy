@@ -343,8 +343,8 @@ namespace RoyalPetz_ADMIN
 
         private void toolStripMenuItem64_Click(object sender, EventArgs e)
         {
-            importDataMutasiForm displayedForm = new importDataMutasiForm();
-            displayedForm.ShowDialog(this);
+        //    importDataMutasiForm displayedForm = new importDataMutasiForm();
+        //    displayedForm.ShowDialog(this);
         }
 
         private void toolStripMenuItem67_Click(object sender, EventArgs e)
