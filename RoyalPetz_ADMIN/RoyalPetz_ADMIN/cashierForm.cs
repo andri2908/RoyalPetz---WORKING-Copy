@@ -12,7 +12,6 @@ using Hotkeys;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Globalization;
-
 using System.Drawing.Printing;
 
 namespace RoyalPetz_ADMIN
@@ -34,7 +33,6 @@ namespace RoyalPetz_ADMIN
 
         private globalUtilities gutil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
-        
         private List<string> salesQty = new List<string>();
         private List<string> disc1 = new List<string>();
         private List<string> disc2 = new List<string>();
@@ -97,7 +95,7 @@ namespace RoyalPetz_ADMIN
         {
             int prevValue = 0;
             bool allowToAdd = true;
-
+                
             if (cashierDataGridView.Rows.Count > 0 )
             {
                 prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["F8"].Value);
@@ -116,7 +114,6 @@ namespace RoyalPetz_ADMIN
                 discRP.Add("0");
 
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
-                //DataGridViewComboBoxCell productIDCmb = (DataGridViewComboBoxCell) cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"];
             }
 
             cashierDataGridView.Focus();
@@ -424,6 +421,15 @@ namespace RoyalPetz_ADMIN
                     return false;
                 }
             }
+            else
+            {
+                // CHECK TEMPO
+                if (tempoMaskedTextBox.Text.Length <= 0)
+                {
+                    errorLabel.Text = "LAMA TEMPO TIDAK BOLEH NOL";
+                    return false;
+                }
+            }
 
             errorLabel.Text = "";
             return true;
@@ -600,6 +606,7 @@ namespace RoyalPetz_ADMIN
                 totalPenjualanTextBox.Focus();
                 if (saveData())
                 {
+                    PrintReceipt();
                     gutil.showSuccess(gutil.INS);
 
                     isLoading = true;
@@ -617,7 +624,6 @@ namespace RoyalPetz_ADMIN
                     globalTotalValue = 0;
                     discValue = 0;
                     totalLabel.Text = "Rp. 0";
-                    PrintReceipt();
                     gutil.ResetAllControls(this);
                 }
             }
@@ -884,7 +890,7 @@ namespace RoyalPetz_ADMIN
                 productID = selectedRow.Cells["productID"].Value.ToString();
 
                 if (gutil.matchRegEx(dataGridViewTextBoxEditingControl.Text, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
-                    && (dataGridViewTextBoxEditingControl.Text.Length > 0)
+                    && (dataGridViewTextBoxEditingControl.Text.Length > 0 && dataGridViewTextBoxEditingControl.Text != ".")
                     )
                 {
                     switch (cashierDataGridView.CurrentCell.OwningColumn.Name)
@@ -1264,23 +1270,43 @@ namespace RoyalPetz_ADMIN
             //pdoc.PrintPage += new PrintPageEventHandler(pdoc_PrintPage);
             //    PrintPreviewDialog pp = new PrintPreviewDialog();
             //Font font = new Font("Courier New", 15);
-           
-            //width, height
-            PaperSize psize = new PaperSize("Custom", 320, 820);
 
-            printDocument1.DefaultPageSettings.PaperSize = psize;
-            DialogResult result;
-            printPreviewDialog1.Width = 512;
-            printPreviewDialog1.Height = 768;
-            result = printPreviewDialog1.ShowDialog();
-            if (result == DialogResult.OK)
+            //cek paper mode
+            int papermode = gutil.getPaper();
+            if (papermode == 0) //kertas POS
             {
-                printDocument1.Print();
+                //width, height
+                PaperSize psize = new PaperSize("Custom", 320, 820);
+                printDocument1.DefaultPageSettings.PaperSize = psize;
+                DialogResult result;
+                printPreviewDialog1.Width = 512;
+                printPreviewDialog1.Height = 768;
+                result = printPreviewDialog1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    printDocument1.Print();
+                }
+            } else
+            {
+                //kertas 1/2 kwarto atau kwarto using crystal report
+                //preview laporan
+                DS.mySqlConnect();
+                string sqlCommandx = "SELECT SD.ID, SH.SALES_DATE AS 'DATE', SD.SALES_INVOICE AS 'INVOICE', MC.CUSTOMER_FULL_NAME AS 'CUSTOMER', M.PRODUCT_NAME AS 'PRODUCT', PRODUCT_QTY AS 'QTY', " +
+                    "PRODUCT_SALES_PRICE AS 'PRICE', ROUND((PRODUCT_QTY * PRODUCT_SALES_PRICE) - SALES_SUBTOTAL, 2) AS 'POTONGAN', SALES_SUBTOTAL AS 'SUBTOTAL', SH.SALES_PAYMENT AS 'PAYMENT', SH.SALES_PAYMENT_CHANGE AS 'CHANGE' " +
+                    "FROM SALES_HEADER SH, SALES_DETAIL SD, MASTER_PRODUCT M, MASTER_CUSTOMER MC WHERE SD.PRODUCT_ID = M.PRODUCT_ID AND SD.SALES_INVOICE = SH.SALES_INVOICE AND SH.CUSTOMER_ID = MC.CUSTOMER_ID AND SH.SALES_INVOICE='" + selectedsalesinvoice + "'" +
+                    "UNION " +
+                    "SELECT SD.ID, SH.SALES_DATE AS 'DATE', SD.SALES_INVOICE AS 'INVOICE', '' AS 'CUSTOMER', M.PRODUCT_NAME AS 'PRODUCT', PRODUCT_QTY AS 'QTY', PRODUCT_SALES_PRICE AS 'PRICE', " +
+                    "ROUND((PRODUCT_QTY * PRODUCT_SALES_PRICE) - SALES_SUBTOTAL, 2) AS 'POTONGAN', SALES_SUBTOTAL AS 'SUBTOTAL', SH.SALES_PAYMENT AS 'PAYMENT', SH.SALES_PAYMENT_CHANGE AS 'CHANGE' " +
+                    "FROM SALES_HEADER SH, SALES_DETAIL SD, MASTER_PRODUCT M WHERE SD.PRODUCT_ID = M.PRODUCT_ID AND SD.SALES_INVOICE = SH.SALES_INVOICE AND SH.CUSTOMER_ID = 0 AND SH.SALES_INVOICE='" + selectedsalesinvoice + "'";
+                DS.writeXML(sqlCommandx, globalConstants.SalesReceiptXML);
+                SalesReceiptForm displayedform = new SalesReceiptForm();
+                displayedform.ShowDialog(this);
             }
 
            
         }
        
+
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
             String ucapan = "";
