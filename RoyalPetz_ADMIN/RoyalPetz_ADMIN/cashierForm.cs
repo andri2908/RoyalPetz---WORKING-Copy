@@ -13,10 +13,13 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Globalization;
 
+using System.Drawing.Printing;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class cashierForm : Form
     {
+        private string selectedsalesinvoice = "";
         public static int objCounter = 1;
         private DateTime localDate = DateTime.Now;
         private double globalTotalValue = 0;
@@ -24,11 +27,14 @@ namespace RoyalPetz_ADMIN
         private int selectedPelangganID = 0;
         private int selectedPaymentMethod = 0;
         private bool isLoading = false;
+        private double bayarAmount = 0;
+        private double sisaBayar = 0;
 
         private Data_Access DS = new Data_Access();
 
         private globalUtilities gutil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
+        
         private List<string> salesQty = new List<string>();
         private List<string> disc1 = new List<string>();
         private List<string> disc2 = new List<string>();
@@ -91,7 +97,7 @@ namespace RoyalPetz_ADMIN
         {
             int prevValue = 0;
             bool allowToAdd = true;
-                
+
             if (cashierDataGridView.Rows.Count > 0 )
             {
                 prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["F8"].Value);
@@ -110,7 +116,11 @@ namespace RoyalPetz_ADMIN
                 discRP.Add("0");
 
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
+                //DataGridViewComboBoxCell productIDCmb = (DataGridViewComboBoxCell) cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"];
             }
+
+            cashierDataGridView.Focus();
+
         }
 
         private void captureAll(Keys key)
@@ -328,7 +338,7 @@ namespace RoyalPetz_ADMIN
                     if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM CUSTOMER_PRODUCT_DISC WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + productID + "'")) > 0)
                     {
                         // DATA EXIST, LOAD DISC VALUE
-                        using (rdr = DS.getData("SELECT * FROM CUSTOMER_PRODUCT_DISC CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + productID + "'"))
+                        using (rdr = DS.getData("SELECT * FROM CUSTOMER_PRODUCT_DISC WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + productID + "'"))
                         {
                             if (rdr.HasRows)
                             {
@@ -343,10 +353,22 @@ namespace RoyalPetz_ADMIN
                                 cashierDataGridView.Rows[i].Cells["discRP"].Value = rdr.GetString("DISC_RP");
                                 discRP[i] = rdr.GetString("DISC_RP");
                             }
+                            
                             rdr.Close();
                         }
                     }
-                    
+                    else
+                    {
+                        cashierDataGridView.Rows[i].Cells["disc1"].Value = 0;
+                        disc1[i] = "0";
+
+                        cashierDataGridView.Rows[i].Cells["disc2"].Value = 0;
+                        disc2[i] = "0";
+
+                        cashierDataGridView.Rows[i].Cells["discRP"].Value = 0;
+                        discRP[i] = "0";
+                    }
+
                     cashierDataGridView.Rows[i].Cells["jumlah"].Value = calculateSubTotal(i, productPrice);
                 }
             }
@@ -392,6 +414,16 @@ namespace RoyalPetz_ADMIN
             if (selectedPelangganID == 0)
                 if (DialogResult.No == MessageBox.Show("PELANGGAN KOSONG, LANJUTKAN ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                     return false;
+
+            if (cashRadioButton.Checked)
+            {
+                // CHECK PAYMENT AMOUNT FOR CASH PAYMENT
+                if (bayarTextBox.Text.Length <= 0)
+                {
+                    errorLabel.Text = "JUMLAH PEMBAYARAN 0";
+                    return false;
+                }
+            }
 
             errorLabel.Text = "";
             return true;
@@ -445,11 +477,12 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                 salesInvoice = getSalesInvoiceID();
-
+                //pass thru to receipt generator
+                selectedsalesinvoice = salesInvoice;
                 // SAVE HEADER TABLE
-                sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID) " +
+                sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE) " +
                                     "VALUES " +
-                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + globalTotalValue + ", " + salesDiscountFinal + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ")";
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ")";
                 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
@@ -467,7 +500,7 @@ namespace RoyalPetz_ADMIN
                         sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
                                             "VALUES " +
                                             "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
-                                            Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) + ", " + disc1 + ", " + disc2 + ", " + discRP + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value) + ")";
+                                            gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value)) + ", " + gutil.validateDecimalNumericInput(disc1) + ", " + gutil.validateDecimalNumericInput(disc2) + ", " + gutil.validateDecimalNumericInput(discRP) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value)) + ")";
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
@@ -485,13 +518,13 @@ namespace RoyalPetz_ADMIN
                             if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM CUSTOMER_PRODUCT_DISC WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + cashierDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'"))>0)
                             {
                                 // UPDATE VALUE
-                                sqlCommand = "UPDATE CUSTOMER_PRODUCT_DISC SET DISC_1 = " + disc1 + ", DISC_2 = " + disc2 + ", DISC_RP = " + discRP + " WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + productID + "'";
+                                sqlCommand = "UPDATE CUSTOMER_PRODUCT_DISC SET DISC_1 = " + gutil.validateDecimalNumericInput(disc1) + ", DISC_2 = " + gutil.validateDecimalNumericInput(disc2) + ", DISC_RP = " + gutil.validateDecimalNumericInput(discRP) + " WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + productID + "'";
                             }
                             else
                             {
                                 // INSERT VALUE
                                 sqlCommand = "INSERT INTO CUSTOMER_PRODUCT_DISC (CUSTOMER_ID, PRODUCT_ID, DISC_1, DISC_2 , DISC_RP) VALUES " +
-                                                    "(" + selectedPelangganID + ", '" + productID + "', " + disc1 + ", " + disc2 + ", " + discRP + ")";
+                                                    "(" + selectedPelangganID + ", '" + productID + "', " + gutil.validateDecimalNumericInput(disc1) + ", " + gutil.validateDecimalNumericInput(disc2) + ", " + gutil.validateDecimalNumericInput(discRP) + ")";
                             }
 
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
@@ -504,7 +537,7 @@ namespace RoyalPetz_ADMIN
 
                 // SAVE TO CREDIT TABLE
                 sqlCommand = "INSERT INTO CREDIT (SALES_INVOICE, CREDIT_DUE_DATE, CREDIT_NOMINAL, CREDIT_PAID) VALUES " +
-                                    "('" + salesInvoice + "', STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + globalTotalValue + ", " + salesPaid + ")";
+                                    "('" + salesInvoice + "', STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + salesPaid + ")";
 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
@@ -515,7 +548,7 @@ namespace RoyalPetz_ADMIN
                     // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
                     // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
                     sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
-                                                   "VALUES (1, STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y')" + ", " + globalTotalValue + ", 'PEMBAYARAN " + salesInvoice + "', '" + gutil.getUserID() + "', 1)";
+                                                   "VALUES (1, STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y')" + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + ", 'PEMBAYARAN " + salesInvoice + "', '" + gutil.getUserID() + "', 1)";
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
@@ -584,7 +617,7 @@ namespace RoyalPetz_ADMIN
                     globalTotalValue = 0;
                     discValue = 0;
                     totalLabel.Text = "Rp. 0";
-
+                    PrintReceipt();
                     gutil.ResetAllControls(this);
                 }
             }
@@ -610,7 +643,7 @@ namespace RoyalPetz_ADMIN
 
             salesInvPrefix = getNoFaktur() + "-";//String.Format(culture, "{0:yyyyMMdd}", localDate);
 
-            sqlCommand = "SELECT IFNULL(MAX(CONVERT(SUBSTRING(SALES_INVOICE, INSTR(SALES_INVOICE,'-')+1), UNSIGNED INTEGER)),'') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
+            sqlCommand = "SELECT IFNULL(MAX(CONVERT(SUBSTRING(SALES_INVOICE, INSTR(SALES_INVOICE,'-')+1), UNSIGNED INTEGER)),'0') AS SALES_INVOICE FROM SALES_HEADER WHERE SALES_INVOICE LIKE '" + salesInvPrefix + "%'";
 
             maxSalesInvoice = DS.getDataSingleValue(sqlCommand).ToString();
             //if (maxSalesInvoice.Length > salesInvPrefix.Length)
@@ -647,7 +680,7 @@ namespace RoyalPetz_ADMIN
             double result = 0;
             string priceType = "";
 
-            DS.mySqlConnect();
+            //DS.mySqlConnect();
 
             if (customerType == 0)
                 priceType = "PRODUCT_RETAIL_PRICE";
@@ -806,8 +839,20 @@ namespace RoyalPetz_ADMIN
                             selectedRow.Cells["discRP"].Value = rdr.GetString("DISC_RP");
                             discRP[rowSelectedIndex] = rdr.GetString("DISC_RP");
                         }
+                  
                         rdr.Close();
                     }
+                }
+                else
+                {
+                    selectedRow.Cells["disc1"].Value = 0;
+                    disc1[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells["disc2"].Value = 0;
+                    disc2[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells["discRP"].Value = 0;
+                    discRP[rowSelectedIndex] = "0";
                 }
             }
 
@@ -1058,7 +1103,9 @@ namespace RoyalPetz_ADMIN
         private void calculateTotal()
         {
             double total = 0;
-
+            double discJual = 0;
+            double totalAfterDisc = 0;
+            
             for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
             {
                 if ( null != cashierDataGridView.Rows[i].Cells["jumlah"].Value )
@@ -1066,9 +1113,36 @@ namespace RoyalPetz_ADMIN
             }
 
             globalTotalValue = total;
-            totalLabel.Text = total.ToString("C", culture);
+            totalAfterDisc = total;
+            totalLabel.Text = total.ToString("c2", culture);
 
-            totalPenjualanTextBox.Text = total.ToString("C", culture);
+            totalPenjualanTextBox.Text = total.ToString("c2", culture);
+
+            if (discJualMaskedTextBox.Text.Length > 0)
+            {
+                discJual = Convert.ToDouble(discJualMaskedTextBox.Text);
+                totalAfterDisc = Math.Round(totalAfterDisc - discJual, 2);
+            }
+
+            totalAfterDiscTextBox.Text = totalAfterDisc.ToString("c2", culture);
+
+            calculateChangeValue();
+        }
+
+        private void calculateChangeValue()
+        {
+            double totalAfterDisc = 0;
+            if (bayarTextBox.Text.Length > 0)
+            {
+                bayarAmount = Convert.ToDouble(bayarTextBox.Text);
+                totalAfterDisc = globalTotalValue - discValue;
+                if (bayarAmount > totalAfterDisc)
+                    sisaBayar = bayarAmount - totalAfterDisc;
+                else
+                    sisaBayar = 0;
+
+                uangKembaliTextBox.Text = sisaBayar.ToString("C2", culture);
+            }
         }
 
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
@@ -1118,20 +1192,7 @@ namespace RoyalPetz_ADMIN
 
         private void bayarTextBox_TextChanged(object sender, EventArgs e)
         {
-            double bayarAmount = 0;
-            double sisaBayar = 0;
-            double totalAfterDisc = 0;
-            if (bayarTextBox.Text.Length > 0)
-            {
-                bayarAmount = Convert.ToDouble(bayarTextBox.Text);
-                totalAfterDisc = globalTotalValue - discValue;
-                if (bayarAmount > totalAfterDisc)
-                    sisaBayar = bayarAmount - totalAfterDisc;
-                else
-                    sisaBayar = 0;
-
-                uangKembaliTextBox.Text = sisaBayar.ToString("C", culture);
-            }
+            calculateChangeValue();
         }
 
         private void paymentComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1145,5 +1206,348 @@ namespace RoyalPetz_ADMIN
             displayedForm.ShowDialog(this);
         }
 
+        private void loadInfoToko(int opt, out string namatoko, out string almt, out string telepon, out string email)
+        {
+            MySqlDataReader rdr;
+            DataTable dt = new DataTable();
+            namatoko = ""; almt = ""; telepon = ""; email = "";
+            DS.mySqlConnect();
+            //1 load default 2 setting user
+            using (rdr = DS.getData("SELECT IFNULL(BRANCH_ID,0) AS 'BRANCH_ID', IFNULL(HQ_IP4,'') AS 'IP', IFNULL(STORE_NAME,'') AS 'NAME', IFNULL(STORE_ADDRESS,'') AS 'ADDRESS', IFNULL(STORE_PHONE,'') AS 'PHONE', IFNULL(STORE_EMAIL,'') AS 'EMAIL' FROM SYS_CONFIG WHERE ID =  " + opt))
+            {
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        if (!String.IsNullOrEmpty(rdr.GetString("NAME")))
+                        {
+                            namatoko = rdr.GetString("NAME");
+                        }
+                        if (!String.IsNullOrEmpty(rdr.GetString("ADDRESS")))
+                        {
+                            almt = rdr.GetString("ADDRESS");
+                        }
+                        if (!String.IsNullOrEmpty(rdr.GetString("PHONE")))
+                        {
+                            telepon = rdr.GetString("PHONE");
+                        }
+                        if (!String.IsNullOrEmpty(rdr.GetString("EMAIL")))
+                        {
+                            email = rdr.GetString("EMAIL");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void loadNamaUser(int user_id, out string nama)
+        {
+            nama = "";
+            MySqlDataReader rdr;
+            DataTable dt = new DataTable();
+            DS.mySqlConnect();
+            //1 load default 2 setting user
+            using (rdr = DS.getData("SELECT USER_NAME AS 'NAME' FROM MASTER_USER WHERE ID="+user_id))
+            {
+                if (rdr.HasRows)
+                {
+                    rdr.Read();
+                    nama = rdr.GetString("NAME");
+                }
+            }
+        }
+
+        private void PrintReceipt()
+        {
+            //pdoc = new PrintDocument();
+            //pd.Document = pdoc;
+            //pdoc.PrintPage += new PrintPageEventHandler(pdoc_PrintPage);
+            //    PrintPreviewDialog pp = new PrintPreviewDialog();
+            //Font font = new Font("Courier New", 15);
+           
+            //width, height
+            PaperSize psize = new PaperSize("Custom", 320, 820);
+
+            printDocument1.DefaultPageSettings.PaperSize = psize;
+            DialogResult result;
+            printPreviewDialog1.Width = 512;
+            printPreviewDialog1.Height = 768;
+            result = printPreviewDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                printDocument1.Print();
+            }
+
+           
+        }
+       
+        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            String ucapan = "";
+            string nm, almt, tlpn, email;
+
+            //event printing
+
+            Graphics graphics = e.Graphics;
+            Font font = new Font("Courier New", 10);
+            float fontHeight = font.GetHeight();
+            int startX = 10;
+            int startY = 10;
+            int Offset = 15;
+
+            //HEADER
+
+            //set allignemnt
+            StringFormat sf = new StringFormat();
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+
+            //set printing area
+            System.Drawing.RectangleF rect = new System.Drawing.RectangleF(startX, startY + Offset, 300, 20);
+
+            loadInfoToko(2,out nm, out almt, out tlpn, out email);
+
+            graphics.DrawString(nm, new Font("Courier New", 9),
+                                new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 12;
+            rect.Y = startY + Offset;
+            graphics.DrawString(almt,
+                     new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 10;
+            rect.Y = startY + Offset;
+            graphics.DrawString(tlpn,
+                     new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            if (!email.Equals(""))
+            {
+                Offset = Offset + 10;
+                rect.Y = startY + Offset;
+                graphics.DrawString(email,
+                         new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+            }
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            String underLine = "-----------------------------------";
+            graphics.DrawString(underLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
+            //end of header
+
+            //start of content
+            MySqlDataReader rdr;
+            DataTable dt = new DataTable();
+
+            DS.mySqlConnect();
+            //load customer id
+            string customer = "";
+            string tgl="";
+            string group = "";
+            double total = 0;
+            using (rdr = DS.getData("SELECT S.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE',S.SALES_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM SALES_HEADER S,MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = C.CUSTOMER_ID AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
+                " UNION " +
+                "SELECT S.SALES_INVOICE AS 'INVOICE', 'P-UMUM' AS 'CUSTOMER', DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE', S.SALES_TOTAL AS 'TOTAL', 'RETAIL' AS 'GROUP' FROM SALES_HEADER S, MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = 0 AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
+                "ORDER BY DATE ASC"))
+            {
+                if (rdr.HasRows) 
+                {
+                    rdr.Read();
+                    customer = rdr.GetString("CUSTOMER");
+                    tgl = rdr.GetString("DATE");
+                    total = rdr.GetDouble("TOTAL");
+                    group = rdr.GetString("GROUP");
+                }
+            }
+            DS.mySqlClose();
+
+            //1. PAYMENT METHOD
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 280;
+            //SET TO LEFT MARGIN
+            sf.LineAlignment = StringAlignment.Near;
+            sf.Alignment = StringAlignment.Near;
+            if (creditRadioButton.Checked)
+            {
+                ucapan = "JUAL CREDIT KEPADA";
+            } else
+            {
+                ucapan = "JUAL TUNAI KEPADA";
+            }
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            //2. CUSTOMER NAME
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            ucapan = "PELANGGAN : " + customer + " [" + group + "]";
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX;
+            rect.Width = 300;
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+            graphics.DrawString(underLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.Width = 300;
+            ucapan = "BUKTI PEMBAYARAN";
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+            
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 280;
+            sf.LineAlignment = StringAlignment.Near;
+            sf.Alignment = StringAlignment.Near;
+            ucapan = "NO. NOTA : " + selectedsalesinvoice;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            ucapan = "TANGGAL  : "+ tgl;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            string nama = "";
+            loadNamaUser(gutil.getUserID(), out nama);
+            ucapan = "OPERATOR : " +  nama;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX;
+            rect.Width = 300;
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+            graphics.DrawString(underLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            //DETAIL PENJUALAN
+            sf.LineAlignment = StringAlignment.Near;
+            sf.Alignment = StringAlignment.Near;
+            //read sales_detail
+
+            DS.mySqlConnect();
+            string product_id = "";
+            string product_name = "";
+            double total_qty = 0;
+            double product_qty = 0;
+            double product_price = 0;
+            using (rdr = DS.getData("SELECT SUM(S.PRODUCT_QTY) AS 'TOTAL', S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='"+selectedsalesinvoice+"'"+ "group by s.product_id"))
+            {
+                if (rdr.HasRows)
+                {
+                    while(rdr.Read())
+                    {
+                        product_id = rdr.GetString("P-ID");
+                        product_name = rdr.GetString("NAME");
+                        total_qty = rdr.GetDouble("TOTAL");
+                        product_qty = rdr.GetDouble("QTY");
+                        product_price = rdr.GetDouble("PRICE");
+                        Offset = Offset + 15;
+                        rect.Y = startY + Offset;
+                        rect.X = startX + 15;
+                        rect.Width = 280;
+                        ucapan = product_id + " " + product_name + " X" + product_qty + " Rp." + product_price;
+                        graphics.DrawString(ucapan, new Font("Courier New", 7),
+                                 new SolidBrush(Color.Black), rect, sf);
+                    }
+                }
+            }
+            DS.mySqlClose();
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX;
+            rect.Width = 300;
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+            graphics.DrawString(underLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 260;
+            sf.LineAlignment = StringAlignment.Near;
+            sf.Alignment = StringAlignment.Near;
+            ucapan = "               JUMLAH  : Rp." + total;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 260;
+            ucapan = "               TUNAI   : Rp." + bayarTextBox.Text;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 260;
+            ucapan = "               KEMBALI : " + uangKembaliTextBox.Text;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 25;
+            rect.Y = startY + Offset;
+            rect.X = startX + 15;
+            rect.Width = 280;
+            sf.LineAlignment = StringAlignment.Near;
+            sf.Alignment = StringAlignment.Near;
+            ucapan = "TOTAL BARANG : " + total_qty;
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+            //eNd of content
+
+            //FOOTER
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            rect.X = startX;
+            rect.Width = 300;
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+            graphics.DrawString(underLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            ucapan = "TERIMA KASIH ATAS KUNJUNGAN ANDA";
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            ucapan = "MAAF BARANG YANG SUDAH DIBELI";
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+
+            Offset = Offset + 15;
+            rect.Y = startY + Offset;
+            ucapan = "TIDAK DAPAT DITUKAR/ DIKEMBALIKKAN";
+            graphics.DrawString(ucapan, new Font("Courier New", 7),
+                     new SolidBrush(Color.Black), rect, sf);
+            //end of footer
+
+        }
     }
 }
