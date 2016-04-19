@@ -85,6 +85,7 @@ namespace RoyalPetz_ADMIN
             //branchCombobox.Items.Add(new { Text = "PUSAT", Value = "0" });
             branchCombobox.SelectedValue = branchCombobox.Items.Count;
         }
+
         private void saveButton_Click(object sender, EventArgs e)
         {
             //addto datagridview
@@ -431,13 +432,22 @@ namespace RoyalPetz_ADMIN
                             String nmakun = NamaAkunTextbox.Text;
                             int pm_id = rdr.GetInt32("PM_ID");
                             carabayarcombobox.SelectedValue = pm_id;
+
+                            String cabang;
                             int branch_id = rdr.GetInt32("BRANCH_ID");
                             branchCombobox.SelectedValue = branch_id;
+                            cabang = branchCombobox.GetItemText(branchCombobox.SelectedItem);
+
+                            //if (branch_id > 0)
+                            //{
+                            //}
+                            //else
+                            //    cabang = "";
+
                             String deskripsiakun = rdr.GetString("JOURNAL_DESCRIPTION");
                             DeskripsiAkunTextbox.Text = deskripsiakun;
                             Double nominalakun = 0;
                             String pembayaran = carabayarcombobox.GetItemText(carabayarcombobox.SelectedItem);
-                            String cabang = branchCombobox.GetItemText(branchCombobox.SelectedItem);
                             nominalakun = rdr.GetDouble("JOURNAL_NOMINAL");
                             //check debet/credit
                             Double debet = nominalakun;

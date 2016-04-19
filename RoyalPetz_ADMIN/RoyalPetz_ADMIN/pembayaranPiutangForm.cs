@@ -91,7 +91,6 @@ namespace RoyalPetz_ADMIN
             return result;
         }
 
-
         private void loadDataDetailSO()
         {
             MySqlDataReader rdr;
@@ -168,31 +167,36 @@ namespace RoyalPetz_ADMIN
         private void calculateTotalCredit(bool globalCalculation = false)
         {
             double totalPayment = 0;
-            
-            if (globalCalculation)
-            {
-                globalTotalValue = Convert.ToDouble(DS.getDataSingleValue("SELECT SALES_TOTAL FROM SALES_HEADER WHERE SALES_INVOICE = '" + selectedSOInvoice+"'"));
-            }
-            
-            totalPayment = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 AND CREDIT_ID = " + selectedCreditID));
+            int creditPaid = 0;
 
-            globalTotalValue = globalTotalValue - totalPayment;
+            creditPaid = Convert.ToInt32(DS.getDataSingleValue("SELECT CREDIT_PAID FROM CREDIT WHERE SALES_INVOICE = '" + selectedSOInvoice + "'"));
+
+            if (creditPaid == 0)
+            { 
+                if (globalCalculation)
+                {
+                    globalTotalValue = Convert.ToDouble(DS.getDataSingleValue("SELECT SALES_TOTAL FROM SALES_HEADER WHERE SALES_INVOICE = '" + selectedSOInvoice+"'"));
+                }
+            
+                totalPayment = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PAYMENT_NOMINAL), 0) AS PAYMENT FROM PAYMENT_CREDIT WHERE PAYMENT_INVALID = 0 AND CREDIT_ID = " + selectedCreditID));
+
+                globalTotalValue = globalTotalValue - totalPayment;
+            }
+            else
+            {
+                globalTotalValue = 0;
+            }
 
             totalLabel.Text = globalTotalValue.ToString("C2", culture);
 
             if (globalTotalValue <= 0)
                 saveButton.Enabled = false;
+            
         }
 
         private bool dataValidated()
         {
             double nominalPayment;
-
-            if ( 0 == getBranchID())
-            {
-                errorLabel.Text = "BRANCH ID BELUM DISET";
-                return false;
-            }
 
             nominalPayment = Convert.ToDouble(paymentMaskedTextBox.Text);
             if (nominalPayment > globalTotalValue)
@@ -262,7 +266,7 @@ namespace RoyalPetz_ADMIN
 
                 // SAVE HEADER TABLE
                 sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE) VALUES " +
-                                    "(" + selectedCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), " + paymentMethod + ", " + paymentNominal + ", '" + paymentDescription + "', " + paymentConfirmed + ", STR_TO_DATE('" + paymentDueDateTime + "', '%d-%m-%Y'))";
+                                    "(" + selectedCreditID + ", STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y'), " + paymentMethod + ", " + gutil.validateDecimalNumericInput(paymentNominal) + ", '" + paymentDescription + "', " + paymentConfirmed + ", STR_TO_DATE('" + paymentDueDateTime + "', '%d-%m-%Y'))";
 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
@@ -288,8 +292,8 @@ namespace RoyalPetz_ADMIN
                 {
                     // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
                     // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
-                    sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
-                                                   "VALUES (1, STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')" + ", " + paymentNominal + ", 'PEMBAYARAN PIUTANG " + selectedSOInvoice + "', '" + gutil.getUserID() + "', 1)";
+                    sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, BRANCH_ID, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
+                                                   "VALUES (1, STR_TO_DATE('" + paymentDateTime + "', '%d-%m-%Y')" + ", " + gutil.validateDecimalNumericInput(paymentNominal) + ", " + branchID + ", 'PEMBAYARAN PIUTANG " + selectedSOInvoice + "', '" + gutil.getUserID() + "', 1)";
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
