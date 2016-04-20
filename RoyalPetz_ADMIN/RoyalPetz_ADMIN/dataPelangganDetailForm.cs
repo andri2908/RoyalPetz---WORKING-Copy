@@ -274,6 +274,8 @@ namespace RoyalPetz_ADMIN
 
         private void custTotalSalesTextBox_TextChanged(object sender, EventArgs e)
         {
+            if (previousInput == "0")
+
             if (gUtil.matchRegEx(custTotalSalesTextBox.Text, globalUtilities.REGEX_NUMBER_ONLY))
             {
                 previousInput = custTotalSalesTextBox.Text;
