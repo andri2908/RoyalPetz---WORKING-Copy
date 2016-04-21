@@ -10,17 +10,11 @@ using System.Windows.Forms;
 
 namespace RoyalPetz_ADMIN
 {
-    public partial class IPPusatForm : Form
+    public partial class pleaseWaitForm : Form
     {
-        private globalUtilities gutil = new globalUtilities();
-        public IPPusatForm()
+        public pleaseWaitForm()
         {
             InitializeComponent();
-        }
-
-        private void IPPusatForm_Load(object sender, EventArgs e)
-        {
-            gutil.reArrangeTabOrder(this);
         }
     }
 }

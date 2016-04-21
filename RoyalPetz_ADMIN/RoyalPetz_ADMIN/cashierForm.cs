@@ -560,20 +560,6 @@ namespace RoyalPetz_ADMIN
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 
-                //creditID = Convert.ToInt32(DS.getDataSingleValue("SELECT LAST_INSERT_ID()"));
-
-                //if (salesPaid == 1)
-                //{
-                    
-                //    // TRANSACTION IS FULLY PAID, INSERT AN ENTRY TO THE PAYMENT CREDIT TABLE TO KEEP TRACK OF PAYMENT 
-                //    sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_CONFIRMED, PAYMENT_CONFIRMED_DATE) VALUES " +
-                //                    "("+creditID+", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + paymentMethod + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + ", 1, STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'))";
-
-                //    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
-                //        throw internalEX;
-                //}
-
-
                 if (selectedPaymentMethod == 0)
                 {
                     // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER

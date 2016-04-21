@@ -90,6 +90,7 @@ namespace RoyalPetz_ADMIN
         private void dataPelangganDetailForm_Load(object sender, EventArgs e)
         {
             int userAccessOption;
+            Button[] arrButton = new Button[2];
 
             dateJoinedDateTimePicked.Format = DateTimePickerFormat.Custom;
             dateJoinedDateTimePicked.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
@@ -110,6 +111,10 @@ namespace RoyalPetz_ADMIN
                     gUtil.setReadOnlyAllControls(this);
                 }
             }
+
+            arrButton[0] = saveButton;
+            arrButton[1] = resetbutton;
+            gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
 
             gUtil.reArrangeTabOrder(this);
         }
@@ -274,8 +279,6 @@ namespace RoyalPetz_ADMIN
 
         private void custTotalSalesTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (previousInput == "0")
-
             if (gUtil.matchRegEx(custTotalSalesTextBox.Text, globalUtilities.REGEX_NUMBER_ONLY))
             {
                 previousInput = custTotalSalesTextBox.Text;
