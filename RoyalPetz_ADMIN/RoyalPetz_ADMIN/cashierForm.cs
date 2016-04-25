@@ -464,7 +464,14 @@ namespace RoyalPetz_ADMIN
             double discRP = 0;
             string productID = "";
             int paymentMethod = 0;
-            int creditID = 0;
+
+            double currentTaxTotal = 0;
+            double currentSalesTotal = 0;
+            double taxLimitValue = 0;
+            double parameterCalculation = 0;
+            int taxLimitType = 0; // 0 - percentage, 1 - amount
+            string salesDateValue = "";
+            bool addToTaxTable = false;
 
             SODateTime = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now);
 
@@ -488,6 +495,42 @@ namespace RoyalPetz_ADMIN
                 SODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", SODueDateTimeValue);
             }
 
+            // TAX LIMIT CALCULATION
+            // ----------------------------------------------------------------------
+            salesDateValue = String.Format(culture, "{0:yyyyMMdd}", DateTime.Now);
+            currentTaxTotal = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(SALES_TOTAL), 0) AS TOTAL FROM SALES_HEADER_TAX WHERE DATE_FORMAT(SALES_DATE, '%Y%m%d') = '" + salesDateValue + "'"));
+            currentSalesTotal = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(SALES_TOTAL), 0) AS TOTAL FROM SALES_HEADER WHERE DATE_FORMAT(SALES_DATE, '%Y%m%d') = '" + salesDateValue + "'"));
+
+            // CHECK WHETHER THE PARAMETER FOR TAX CALCULATION HAS BEEN SET
+            taxLimitValue = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(PERSENTASE_PENJUALAN, 0) FROM SYS_CONFIG_TAX WHERE ID = 1"));
+            if (taxLimitValue == 0)
+            {
+                taxLimitType = 1;
+                taxLimitValue = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(AVERAGE_PENJUALAN_HARIAN, 0) FROM SYS_CONFIG_TAX WHERE ID = 1"));
+
+                if (taxLimitValue != 0)
+                    addToTaxTable = true;
+            }
+            else
+                addToTaxTable = true;
+
+            // CHECK WHETHER THE PARAMETER HAS BEEN FULFILLED
+            if (addToTaxTable)
+            {
+                if (taxLimitType == 0) // PERCENTAGE CALCULATION
+                {
+                    parameterCalculation = currentSalesTotal * taxLimitValue / 100;
+                    if (currentTaxTotal > parameterCalculation)
+                        addToTaxTable = false;
+                }
+                else // AMOUNT CALCULATION
+                {
+                    if (currentTaxTotal > taxLimitValue)
+                        addToTaxTable = false;
+                }
+            }
+            // ----------------------------------------------------------------------
+
             DS.beginTransaction();
 
             try
@@ -504,6 +547,16 @@ namespace RoyalPetz_ADMIN
                 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
+
+                if (addToTaxTable)
+                {
+                    sqlCommand = "INSERT INTO SALES_HEADER_TAX (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE) " +
+                                    "VALUES " +
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ")";
+
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
+                }
 
                 // SAVE DETAIL TABLE
                 for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
@@ -522,6 +575,17 @@ namespace RoyalPetz_ADMIN
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
+
+                        if (addToTaxTable)
+                        {
+                            sqlCommand = "INSERT INTO SALES_DETAIL_TAX (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
+                                                "VALUES " +
+                                                "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
+                                                gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value)) + ", " + gutil.validateDecimalNumericInput(disc1) + ", " + gutil.validateDecimalNumericInput(disc2) + ", " + gutil.validateDecimalNumericInput(discRP) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value)) + ")";
+
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
+                        }
 
                         // REDUCE STOCK QTY AT MASTER PRODUCT
                         sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY - " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value) +
@@ -1065,6 +1129,7 @@ namespace RoyalPetz_ADMIN
         {
             MySqlDataReader rdr;
             string sqlCommand = "";
+            int userAccessOption = 0;
 
             DataGridViewTextBoxColumn F8Column = new DataGridViewTextBoxColumn();
             DataGridViewComboBoxColumn productIdColumn = new DataGridViewComboBoxColumn();
@@ -1110,7 +1175,12 @@ namespace RoyalPetz_ADMIN
             productPriceColumn.HeaderText = "HARGA";
             productPriceColumn.Name = "productPrice";
             productPriceColumn.Width = 200;
-            productPriceColumn.ReadOnly = true;
+
+            // USER WHO HAS ACCESS TO PENGATURAN HARGA CAN EDIT THE PRODUCT PRICE MANUALLY
+            userAccessOption = DS.getUserAccessRight(globalConstants.MENU_PENGATURAN_HARGA, gutil.getUserGroupID());
+            if (userAccessOption != 1)
+                productPriceColumn.ReadOnly = true;
+
             cashierDataGridView.Columns.Add(productPriceColumn);
 
             stockQtyColumn.HeaderText = "QTY";

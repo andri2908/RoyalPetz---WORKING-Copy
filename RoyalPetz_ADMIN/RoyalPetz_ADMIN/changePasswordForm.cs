@@ -158,6 +158,7 @@ namespace RoyalPetz_ADMIN
         {
             gutil.ResetAllControls(this);
         }
+
         private void changePasswordForm_Activated(object sender, EventArgs e)
         {
             errorLabel.Text = "";
