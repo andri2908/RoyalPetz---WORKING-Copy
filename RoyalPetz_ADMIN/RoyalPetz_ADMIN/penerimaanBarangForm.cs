@@ -100,7 +100,7 @@ namespace RoyalPetz_ADMIN
             switch (originModuleId)
             {
                 case globalConstants.PENERIMAAN_BARANG_DARI_MUTASI:
-                    labelNo.Text = "NO MUTASI";
+                    //labelNo.Text = "NO MUTASI";
                     //labelTanggal.Text = "TANGGAL MUTASI";
                     labelTujuan.Text = "TUJUAN MUTASI";
 

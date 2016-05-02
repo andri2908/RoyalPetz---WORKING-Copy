@@ -919,6 +919,17 @@ namespace RoyalPetz_ADMIN
             selectedSupplierID = Convert.ToInt32(supplierHiddenCombo.Items[supplierCombo.SelectedIndex]);
         }
 
+        private void printOutPurchaseOrder()
+        {
+            string PONo = POinvoiceTextBox.Text;
+
+            string sqlCommandx = "SELECT PH.PURCHASE_INVOICE, MS.SUPPLIER_FULL_NAME, PURCHASE_DATETIME, IF(PURCHASE_TERM_OF_PAYMENT = 0, 'TUNAI', 'KREDIT') AS TOP, PURCHASE_TERM_OF_PAYMENT_DURATION, " +
+                                          "MP.PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_QTY, PURCHASE_SUBTOTAL " +
+                                          "FROM PURCHASE_HEADER PH, MASTER_SUPPLIER MS, PURCHASE_DETAIL PD, MASTER_PRODUCT MP " +
+                                          "WHERE PH.PURCHASE_INVOICE = '" + PONo + "' AND PH.SUPPLIER_ID = MS.SUPPLIER_ID AND PD.PURCHASE_INVOICE = PH.PURCHASE_INVOICE AND PD.PRODUCT_ID = MP.PRODUCT_ID";
+            DS.writeXML(sqlCommandx, globalConstants.purchaseOrderXML);
+        }
+
         private void generateButton_Click(object sender, EventArgs e)
         {
             originModuleID = globalConstants.PRINTOUT_PURCHASE_ORDER;
@@ -933,6 +944,8 @@ namespace RoyalPetz_ADMIN
                 durationTextBox.ReadOnly = true;
                 detailPODataGridView.ReadOnly = true;
                 detailPODataGridView.AllowUserToAddRows = false;
+
+                printOutPurchaseOrder();
 
                 gUtil.showSuccess(gUtil.INS);
             }

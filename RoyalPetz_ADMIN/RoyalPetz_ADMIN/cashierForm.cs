@@ -91,7 +91,7 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Rows[i].Cells["F8"].Value = i + 1;
         }
 
-        private void addNewRow()
+        private void addNewRow(bool isActive = true)
         {
             int prevValue = 0;
             bool allowToAdd = true;
@@ -116,8 +116,60 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
             }
 
-            cashierDataGridView.Focus();
+            if (isActive)
+                cashierDataGridView.Focus();
 
+        }
+
+        public void addNewRowFromBarcode(string productName)
+        {
+            int i = 0;
+            bool found = false;
+            int rowSelectedIndex = 0;
+            double currQty;
+
+            // CHECK FOR EXISTING SELECTED ITEM
+            for (i = 0;i<cashierDataGridView.Rows.Count && !found;i++)
+            {
+                if (cashierDataGridView.Rows[i].Cells["productName"].Value.ToString() == productName)
+                { 
+                    found = true;
+                    rowSelectedIndex = i;
+                }
+            }
+
+            if (!found)
+            {
+                addNewRow(false);
+                rowSelectedIndex = cashierDataGridView.Rows.Count - 1;
+            }
+
+            DataGridViewComboBoxCell productNameComboCell = (DataGridViewComboBoxCell)cashierDataGridView.Rows[rowSelectedIndex].Cells["productName"];
+            DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
+
+            for (i =0;i<productNameComboCell.Items.Count;i++)
+            {
+                if (productName == productNameComboCell.Items[i].ToString())
+                {
+                    productNameComboCell.Value = productNameComboCell.Items[i];
+                    break;
+                }
+            }
+
+            if (!found)
+            { 
+                cashierDataGridView.Rows[rowSelectedIndex].Cells["qty"].Value = 1;
+                salesQty[rowSelectedIndex] = "1";
+            }
+            else
+            {
+                currQty = Convert.ToDouble(salesQty[rowSelectedIndex]) + 1;
+
+                cashierDataGridView.Rows[rowSelectedIndex].Cells["qty"].Value = currQty;
+                salesQty[rowSelectedIndex] = currQty.ToString();
+            }
+
+            comboSelectedIndexChangeMethod(rowSelectedIndex, i, selectedRow);
         }
 
         private void captureAll(Keys key)
@@ -143,13 +195,18 @@ namespace RoyalPetz_ADMIN
                     saveAndPrintOutInvoice();
                     break;
 
-                
-                
+                case Keys.F2:
+                    barcodeForm displayBarcodeForm = new barcodeForm(this);
+
+                    displayBarcodeForm.Top = this.Top - displayBarcodeForm.Height;
+                    displayBarcodeForm.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+
+                    displayBarcodeForm.ShowDialog(this);
+                    break;
+
+
                 case Keys.F1:
                     MessageBox.Show("F1");
-                    break;
-                case Keys.F2:
-                    MessageBox.Show("F2");
                     break;
                 case Keys.F5:
                     MessageBox.Show("F5");
@@ -226,21 +283,21 @@ namespace RoyalPetz_ADMIN
 
             ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
             ghk_F9.Register();
-            
-            
+
+            ghk_F2 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F2, this);
+            ghk_F2.Register();
+
             //ghk_F1 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F1, this);
             //ghk_F1.Register();
-            
-            //ghk_F2 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F2, this);
-            //ghk_F2.Register();
-            
+
+
             //ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
             //ghk_F5.Register();
 
             //ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
             //ghk_F7.Register();
-            
-            
+
+
             //ghk_F10 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F10, this);
             //ghk_F10.Register();
 
@@ -271,12 +328,13 @@ namespace RoyalPetz_ADMIN
             ghk_F4.Unregister();
             ghk_F8.Unregister();
             ghk_F9.Unregister();
+            ghk_F2.Unregister();
 
             //ghk_F1.Unregister();
-            //ghk_F2.Unregister();
+
             //ghk_F5.Unregister();
             //ghk_F7.Unregister();
-            
+
             //ghk_F10.Unregister();
             //ghk_F11.Unregister();
             ////ghk_F12.Unregister();
@@ -463,7 +521,7 @@ namespace RoyalPetz_ADMIN
             double disc2 = 0;
             double discRP = 0;
             string productID = "";
-            int paymentMethod = 0;
+            //int paymentMethod = 0;
 
             double currentTaxTotal = 0;
             double currentSalesTotal = 0;
@@ -473,7 +531,7 @@ namespace RoyalPetz_ADMIN
             string salesDateValue = "";
             bool addToTaxTable = false;
 
-            SODateTime = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now);
+            SODateTime = String.Format(culture, "{0:dd-MM-yyyy HH:mm}", DateTime.Now);
 
             if (discJualMaskedTextBox.Text.Length > 0)
                 salesDiscountFinal = discJualMaskedTextBox.Text;
@@ -482,8 +540,8 @@ namespace RoyalPetz_ADMIN
             {
                 salesTop = 1;
                 salesPaid = 1;
-                SODueDateTime = SODateTime;
-                paymentMethod = paymentComboBox.SelectedIndex + 1;
+                SODueDateTime = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now); ;
+                //paymentMethod = paymentComboBox.SelectedIndex;
             }
             else
             { 
@@ -541,18 +599,18 @@ namespace RoyalPetz_ADMIN
                 //pass thru to receipt generator
                 selectedsalesinvoice = salesInvoice;
                 // SAVE HEADER TABLE
-                sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE) " +
+                sqlCommand = "INSERT INTO SALES_HEADER (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE, SALES_PAYMENT_METHOD) " +
                                     "VALUES " +
-                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ")";
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y %H:%i'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ", " + selectedPaymentMethod + ")";
                 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 
                 if (addToTaxTable)
                 {
-                    sqlCommand = "INSERT INTO SALES_HEADER_TAX (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE) " +
+                    sqlCommand = "INSERT INTO SALES_HEADER_TAX (SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE, SALES_PAYMENT_METHOD) " +
                                     "VALUES " +
-                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ")";
+                                    "('" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y %H:%i'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ", " + selectedPaymentMethod + ")";
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
@@ -629,7 +687,7 @@ namespace RoyalPetz_ADMIN
                     // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
                     // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
                     sqlCommand = "INSERT INTO DAILY_JOURNAL (ACCOUNT_ID, JOURNAL_DATETIME, JOURNAL_NOMINAL, JOURNAL_DESCRIPTION, USER_ID, PM_ID) " +
-                                                   "VALUES (1, STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y')" + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + ", 'PEMBAYARAN " + salesInvoice + "', '" + gutil.getUserID() + "', 1)";
+                                                   "VALUES (1, STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y %H:%i')" + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + ", 'PEMBAYARAN " + salesInvoice + "', '" + gutil.getUserID() + "', 1)";
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
@@ -854,6 +912,70 @@ namespace RoyalPetz_ADMIN
             return result;
         }
 
+        private void comboSelectedIndexChangeMethod(int rowSelectedIndex, int selectedIndex, DataGridViewRow selectedRow)
+        {
+            string selectedProductID = "";
+            double hpp = 0;
+            double subTotal = 0;
+            MySqlDataReader rdr;
+
+            if (isLoading)
+                return;
+
+            DataGridViewComboBoxCell productIDComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productID"];
+            DataGridViewComboBoxCell productNameComboCell = (DataGridViewComboBoxCell)selectedRow.Cells["productName"];
+
+            selectedProductID = productIDComboCell.Items[selectedIndex].ToString();
+            productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
+
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
+
+            selectedRow.Cells["productPrice"].Value = hpp;
+            selectedRow.Cells["productId"].Value = selectedProductID;
+
+            if (selectedPelangganID != 0)
+            {
+                if (Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM CUSTOMER_PRODUCT_DISC WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + selectedProductID + "'")) > 0)
+                {
+                    // DATA EXIST, LOAD DISC VALUE
+                    using (rdr = DS.getData("SELECT * FROM CUSTOMER_PRODUCT_DISC WHERE CUSTOMER_ID = " + selectedPelangganID + " AND PRODUCT_ID = '" + selectedProductID + "'"))
+                    {
+                        if (rdr.HasRows)
+                        {
+                            rdr.Read();
+
+                            selectedRow.Cells["disc1"].Value = rdr.GetString("DISC_1");
+                            disc1[rowSelectedIndex] = rdr.GetString("DISC_1");
+
+                            selectedRow.Cells["disc2"].Value = rdr.GetString("DISC_2");
+                            disc2[rowSelectedIndex] = rdr.GetString("DISC_2");
+
+                            selectedRow.Cells["discRP"].Value = rdr.GetString("DISC_RP");
+                            discRP[rowSelectedIndex] = rdr.GetString("DISC_RP");
+                        }
+
+                        rdr.Close();
+                    }
+                }
+                else
+                {
+                    selectedRow.Cells["disc1"].Value = 0;
+                    disc1[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells["disc2"].Value = 0;
+                    disc2[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells["discRP"].Value = 0;
+                    discRP[rowSelectedIndex] = "0";
+                }
+            }
+
+            subTotal = calculateSubTotal(rowSelectedIndex, hpp);
+            selectedRow.Cells["jumlah"].Value = subTotal;
+
+            calculateTotal();
+        }
+
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = 0;
@@ -867,6 +989,7 @@ namespace RoyalPetz_ADMIN
                 return;
 
             DataGridViewComboBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewComboBoxEditingControl;
+
             selectedIndex = dataGridViewComboBoxEditingControl.SelectedIndex;
             rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
             DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
@@ -878,21 +1001,8 @@ namespace RoyalPetz_ADMIN
             productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
             productNameComboCell.Value = productNameComboCell.Items[selectedIndex];
 
-
-            //selectedProductID = productComboHidden.Items[selectedIndex].ToString();//getProductID(selectedIndex);
-
-            //if(cashierDataGridView.CurrentCell.OwningColumn.Name == "productID")
-            //{
-            //    selectedRow.Cells["productName"].Value = productNameHidden.Items[selectedIndex].ToString();
-            //}
-            //else
-            //{
-            //    selectedRow.Cells["productID"].Value = productComboHidden.Items[selectedIndex].ToString();
-            //}
-
             hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
             
-
             selectedRow.Cells["productPrice"].Value = hpp;
 
             if (null == selectedRow.Cells["qty"].Value)
@@ -938,6 +1048,7 @@ namespace RoyalPetz_ADMIN
             }
 
             subTotal = calculateSubTotal(rowSelectedIndex, hpp);
+            selectedRow.Cells["jumlah"].Value = subTotal;
 
             calculateTotal();
         }
@@ -1066,7 +1177,7 @@ namespace RoyalPetz_ADMIN
 
         private void cashierForm_Shown(object sender, EventArgs e)
         {
-            registerGlobalHotkey();
+            //registerGlobalHotkey();
         }
 
         private void cashierForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -1096,6 +1207,8 @@ namespace RoyalPetz_ADMIN
 
         private void cashierForm_Load(object sender, EventArgs e)
         {
+            registerGlobalHotkey();
+
             loadNoFaktur();
             addColumnToDataGrid();
 
@@ -1111,6 +1224,8 @@ namespace RoyalPetz_ADMIN
         private void cashierForm_Activated(object sender, EventArgs e)
         {
             //if need something
+            registerGlobalHotkey();
+
             updateLabel();
             timer1.Start();
         }
@@ -1118,6 +1233,7 @@ namespace RoyalPetz_ADMIN
         private void cashierForm_Deactivate(object sender, EventArgs e)
         {
             timer1.Stop();
+            unregisterGlobalHotkey();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -1404,10 +1520,12 @@ namespace RoyalPetz_ADMIN
 
             //cek paper mode
             int papermode = gutil.getPaper();
+            int paperLength = 0;
             if (papermode == 0) //kertas POS
             {
                 //width, height
-                PaperSize psize = new PaperSize("Custom", 320, 820);
+                paperLength = calculatePageLength();
+                PaperSize psize = new PaperSize("Custom", 320, paperLength);//820);
                 printDocument1.DefaultPageSettings.PaperSize = psize;
                 DialogResult result;
                 printPreviewDialog1.Width = 512;
@@ -1437,6 +1555,86 @@ namespace RoyalPetz_ADMIN
            
         }
        
+        private int calculatePageLength()
+        {
+            int startY = 10;
+            int Offset = 15;
+            int totalLengthPage = startY + Offset;
+            string nm, almt, tlpn, email;
+
+            loadInfoToko(2, out nm, out almt, out tlpn, out email);
+
+            //set printing area
+            Offset = Offset + 12;
+
+            Offset = Offset + 10;
+
+            if (!email.Equals(""))
+                Offset = Offset + 10;
+
+            Offset = Offset + 15;
+            //end of header
+
+            //start of content
+
+            //1. PAYMENT METHOD
+            Offset = Offset + 15;
+
+            //2. CUSTOMER NAME
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            //DETAIL PENJUALAN
+            
+            DS.mySqlConnect();
+            MySqlDataReader rdr;
+            using (rdr = DS.getData("SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoice + "'"))//+ "group by s.product_id") )
+            {
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                        Offset = Offset + 15;
+                }
+            }
+            DS.mySqlClose();
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 25;
+            //eNd of content
+
+            //FOOTER
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+
+            Offset = Offset + 15;
+            //end of footer
+
+            totalLengthPage = totalLengthPage + Offset + 15;
+            
+            return totalLengthPage;
+        }
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
@@ -1451,7 +1649,7 @@ namespace RoyalPetz_ADMIN
             int startX = 10;
             int startY = 10;
             int Offset = 15;
-
+            int totalLengthPage = startY+ Offset;
             //HEADER
 
             //set allignemnt
@@ -1466,33 +1664,35 @@ namespace RoyalPetz_ADMIN
 
             graphics.DrawString(nm, new Font("Courier New", 9),
                                 new SolidBrush(Color.Black), rect, sf);
-
+            
             Offset = Offset + 12;
             rect.Y = startY + Offset;
             graphics.DrawString(almt,
                      new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
-
+            
             Offset = Offset + 10;
             rect.Y = startY + Offset;
             graphics.DrawString(tlpn,
                      new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
-
+            
             if (!email.Equals(""))
             {
                 Offset = Offset + 10;
+
                 rect.Y = startY + Offset;
                 graphics.DrawString(email,
                          new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
             }
-
+            
             Offset = Offset + 15;
             rect.Y = startY + Offset;
             String underLine = "-----------------------------------";
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
+            
             //end of header
 
             //start of content
@@ -1706,6 +1906,11 @@ namespace RoyalPetz_ADMIN
                      new SolidBrush(Color.Black), rect, sf);
             //end of footer
 
+            totalLengthPage = totalLengthPage + Offset + 15;
+            rect.Y = totalLengthPage; 
+            String tempLine = "#######";
+            graphics.DrawString(tempLine, new Font("Courier New", 9),
+                     new SolidBrush(Color.Black), rect, sf);
         }
 
         private void tempoMaskedTextBox_Enter(object sender, EventArgs e)
