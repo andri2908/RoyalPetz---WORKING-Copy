@@ -128,7 +128,6 @@ namespace RoyalPetz_ADMIN
 
             
             activateUserAccessRight();
-            registerGlobalHotkey();
         }
 
         public void setNewMessageFormExist(bool value)
@@ -186,8 +185,6 @@ namespace RoyalPetz_ADMIN
         private void adminForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             timer1.Stop();
-            unregisterGlobalHotkey();
-
             //write paper size settings last change to DB
         }
 
@@ -588,12 +585,15 @@ namespace RoyalPetz_ADMIN
         private void adminForm_Deactivate(object sender, EventArgs e)
         {
             //timer1.Stop();
+            unregisterGlobalHotkey();
         }
 
         private void adminForm_Activated(object sender, EventArgs e)
         {
             updateLabel();
             timer1.Start();
+
+            registerGlobalHotkey();
         }
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
@@ -999,6 +999,18 @@ namespace RoyalPetz_ADMIN
                 Application.DoEvents();
 
             }
+        }
+
+        private void summaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportSalesSummarySearchForm displayedForm = new ReportSalesSummarySearchForm(globalConstants.REPORT_SALES_SUMMARY);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void detailedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportSalesSummarySearchForm displayedForm = new ReportSalesSummarySearchForm(globalConstants.REPORT_SALES_DETAILED);
+            displayedForm.ShowDialog(this);
         }
     }
 }

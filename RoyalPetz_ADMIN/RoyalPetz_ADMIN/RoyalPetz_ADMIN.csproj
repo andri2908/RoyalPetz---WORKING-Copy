@@ -350,6 +350,18 @@
     <Compile Include="pleaseWaitForm.Designer.cs">
       <DependentUpon>pleaseWaitForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PrintBarcode.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PrintBarcodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PrintBarcodeForm.designer.cs">
+      <DependentUpon>PrintBarcodeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="dataProdukDetailForm.cs">
@@ -460,6 +472,36 @@
     <Compile Include="ReportProductForm.Designer.cs">
       <DependentUpon>ReportProductForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReportSalesDetailed.cs">
+      <DependentUpon>ReportSalesDetailed.rpt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportSalesDetailedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportSalesDetailedForm.Designer.cs">
+      <DependentUpon>ReportSalesDetailedForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportSalesSummary.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportSalesSummary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportSalesSummaryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportSalesSummaryForm.Designer.cs">
+      <DependentUpon>ReportSalesSummaryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportSalesSummarySearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportSalesSummarySearchForm.Designer.cs">
+      <DependentUpon>ReportSalesSummarySearchForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ReportSupplier.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -507,6 +549,18 @@
     </Compile>
     <Compile Include="SalesReceiptForm.Designer.cs">
       <DependentUpon>SalesReceiptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SalesReceiptKuarto.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SalesReceiptKuarto.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SalesReceiptKuartoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SalesReceiptKuartoForm.Designer.cs">
+      <DependentUpon>SalesReceiptKuartoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SetApplicationForm.cs">
       <SubType>Form</SubType>
@@ -712,6 +766,13 @@
     <EmbeddedResource Include="pleaseWaitForm.resx">
       <DependentUpon>pleaseWaitForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PrintBarcode.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PrintBarcodeForm.resx">
+      <DependentUpon>PrintBarcodeForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -783,6 +844,23 @@
     <EmbeddedResource Include="ReportProductForm.resx">
       <DependentUpon>ReportProductForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ReportSalesDetailed.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportSalesDetailed.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSalesDetailedForm.resx">
+      <DependentUpon>ReportSalesDetailedForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSalesSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportSalesSummary.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSalesSummaryForm.resx">
+      <DependentUpon>ReportSalesSummaryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportSalesSummarySearchForm.resx">
+      <DependentUpon>ReportSalesSummarySearchForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ReportSupplier.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>ReportSupplier.cs</LastGenOutput>
@@ -810,6 +888,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SalesReceiptForm.resx">
       <DependentUpon>SalesReceiptForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SalesReceiptKuarto.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SalesReceiptKuarto.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SalesReceiptKuartoForm.resx">
+      <DependentUpon>SalesReceiptKuartoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SetApplicationForm.resx">
       <DependentUpon>SetApplicationForm.cs</DependentUpon>

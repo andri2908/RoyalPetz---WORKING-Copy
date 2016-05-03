@@ -12,14 +12,15 @@ using CrystalDecisions.ReportSource;
 using CrystalDecisions.CrystalReports.Engine;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Globalization;
 
 namespace RoyalPetz_ADMIN
 {
-    public partial class SalesReceiptForm : Form
+    public partial class ReportSalesSummaryForm : Form
     {
         private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
-        public SalesReceiptForm()
+        public ReportSalesSummaryForm()
         {
             InitializeComponent();
         }
@@ -41,27 +42,22 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private void SalesReceiptForm_Load(object sender, EventArgs e)
+        private void ReportSalesSummaryForm_Load(object sender, EventArgs e)
         {
-            /*
-            if (gutil.getPaper() == 2) // kuarto
-            {
-                SalesReceipt1.PrintOptions.PaperSize = CrystalDecisions.Shared.PaperSize.PaperLetter;                
-            }
-            */
             DataSet dsTempReport = new DataSet();
             try
             {
-                string appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.SalesReceiptXML;
+                string appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.SalesSummaryXML;
                 dsTempReport.ReadXml(@appPath);
 
                 //prepare report for preview
-                SalesReceipt rptXMLReport = new SalesReceipt();
-                CrystalDecisions.CrystalReports.Engine.TextObject txtReportHeader1, txtReportHeader2, txtReportHeader3, txtReportHeader4;
+                ReportSalesSummary rptXMLReport = new ReportSalesSummary();
+                //CrystalDecisions.CrystalReports.Engine.TextObject txtReportHeader1, txtReportHeader2, txtReportHeader3, txtReportHeader4;
+                CrystalDecisions.CrystalReports.Engine.TextObject txtReportHeader1, txtReportHeader2;
                 txtReportHeader1 = rptXMLReport.ReportDefinition.ReportObjects["NamaTokoLabel"] as TextObject;
                 txtReportHeader2 = rptXMLReport.ReportDefinition.ReportObjects["InfoTokoLabel"] as TextObject;
-                txtReportHeader3 = rptXMLReport.ReportDefinition.ReportObjects["UserLabel"] as TextObject;
-                txtReportHeader4 = rptXMLReport.ReportDefinition.ReportObjects["BranchLabel"] as TextObject;
+                //txtReportHeader3 = rptXMLReport.ReportDefinition.ReportObjects["UserLabel"] as TextObject;
+                //txtReportHeader4 = rptXMLReport.ReportDefinition.ReportObjects["BranchLabel"] as TextObject;
                 //baca database untuk nama toko
                 String nama, alamat, telepon, email, namauser;
                 loadNamaUser(gutil.getUserID(), out namauser);
@@ -78,10 +74,10 @@ namespace RoyalPetz_ADMIN
                 }
                 txtReportHeader1.Text = nama;
                 txtReportHeader2.Text = alamat + Environment.NewLine + telepon + Environment.NewLine + email;
-                txtReportHeader3.Text = namauser;
-                string namacabang = "";
-                int branch_id = gutil.loadbranchID(2, out namacabang);
-                txtReportHeader4.Text = namacabang;
+                //txtReportHeader3.Text = namauser;
+                //string namacabang = "";
+                //int branch_id = gutil.loadbranchID(2, out namacabang);
+                //txtReportHeader4.Text = namacabang;
                 rptXMLReport.Database.Tables[0].SetDataSource(dsTempReport.Tables[0]);
                 crystalReportViewer1.ReportSource = rptXMLReport;
                 crystalReportViewer1.Refresh();
