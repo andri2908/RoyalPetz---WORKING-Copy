@@ -138,6 +138,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gutil.saveUserChangeLog(0, globalConstants.CHANGE_LOG_UPDATE, "USER CHANGE PASSWORD");
                 gutil.showSuccess(gutil.UPD);
                 gutil.ResetAllControls(this);                
             }

@@ -425,6 +425,7 @@ namespace RoyalPetz_ADMIN
             }
             if (success1 && success2)
             {
+                gutil.saveUserChangeLog(globalConstants.MENU_SINKRONISASI_INFORMASI, globalConstants.CHANGE_LOG_UPDATE, "UPDATE DATA APLIKASI");
                 gutil.showSuccess(options);
             } else
             {

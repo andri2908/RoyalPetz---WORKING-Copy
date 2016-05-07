@@ -159,6 +159,19 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                switch(originModuleID)
+                {
+                    case globalConstants.NEW_UNIT:
+                        gutil.saveUserChangeLog(globalConstants.MENU_SATUAN, globalConstants.CHANGE_LOG_INSERT, "INSERT NEW SATUAN [" + unitNameTextBox.Text + "]");
+                        break;
+                    case globalConstants.EDIT_UNIT:
+                        if (nonAktifCheckbox.Checked == true)
+                            gutil.saveUserChangeLog(globalConstants.MENU_SATUAN, globalConstants.CHANGE_LOG_UPDATE, "UPDATE SATUAN [" + unitNameTextBox.Text + "] STATUS UNIT NON-AKTIF");
+                        else
+                            gutil.saveUserChangeLog(globalConstants.MENU_SATUAN, globalConstants.CHANGE_LOG_UPDATE, "UPDATE SATUAN [" + unitNameTextBox.Text + "] STATUS UNIT AKTIF");
+                        break;
+                }
+
                 gutil.showSuccess(options);
                 gutil.ResetAllControls(this);
             }

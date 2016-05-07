@@ -193,6 +193,18 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                switch (originModuleID)
+                {
+                    case globalConstants.NEW_CATEGORY:
+                        gutil.saveUserChangeLog(globalConstants.MENU_KATEGORI, globalConstants.CHANGE_LOG_INSERT, "INSERT NEW CATEGORY [" + categoryNameTextBox.Text + "]");
+                        break;
+                    case globalConstants.EDIT_CATEGORY:
+                        if (nonAktifCheckbox.Checked == true)
+                            gutil.saveUserChangeLog(globalConstants.MENU_KATEGORI, globalConstants.CHANGE_LOG_UPDATE, "UPDATE CATEGORY [" + categoryNameTextBox.Text + "] STATUS CATEGORY NON-AKTIF");
+                        else
+                            gutil.saveUserChangeLog(globalConstants.MENU_KATEGORI, globalConstants.CHANGE_LOG_UPDATE, "UPDATE CATEGORY [" + categoryNameTextBox.Text + "] STATUS CATEGORY AKTIF");
+                        break;
+                }
                 gutil.showSuccess(options);
                 gutil.ResetAllControls(this);
             }

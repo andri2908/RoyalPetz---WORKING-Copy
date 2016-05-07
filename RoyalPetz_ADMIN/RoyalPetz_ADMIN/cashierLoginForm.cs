@@ -137,6 +137,8 @@ namespace RoyalPetz_ADMIN
             { 
                 this.Hide();
 
+                gUtil.saveUserChangeLog(0, globalConstants.CHANGE_LOG_CASHIER_LOGIN, "CASHIER LOGIN");
+
                 if (loginState == 0 || loginState == 2)
                 {
                     adminForm displayAdminForm = new adminForm(gUtil.getUserID(), gUtil.getUserGroupID());
@@ -153,7 +155,10 @@ namespace RoyalPetz_ADMIN
                     this.Show();
                 }
                 else
+                {
+                    gUtil.saveUserChangeLog(0, globalConstants.CHANGE_LOG_CASHIER_LOGOUT, "CASHIER LOGOUT");
                     this.Close();
+                }
 
             }
         }

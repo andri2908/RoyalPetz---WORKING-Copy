@@ -450,5 +450,23 @@ namespace RoyalPetz_ADMIN
 
             DialogResult res1 = MessageBox.Show(errormessage, errorcaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        public void saveUserChangeLog(int moduleID, int changeID, string changeDescription)
+        {
+            string sqlCommand = "";
+            string dateTimeNow = String.Format(culture, "{0:dd-M-yyyy HH:mm}", DateTime.Now);
+
+            DS.beginTransaction();
+
+            try
+            { 
+                sqlCommand = "INSERT INTO CASHIER_CHANGE_LOG (USER_ID, MODULE_ID, CHANGE_ID, CHANGE_DATETIME, CHANGE_DESCRIPTION) VALUES (" + getUserID() + ", " +moduleID + ", " + changeID + ", STR_TO_DATE('" + dateTimeNow + "', '%d-%m-%Y %H:%i'), '" + changeDescription + "')";
+                DS.executeNonQueryCommand(sqlCommand);
+
+                DS.commit();
+            }
+            catch(Exception ex)
+            {}
+        }
     }
 }

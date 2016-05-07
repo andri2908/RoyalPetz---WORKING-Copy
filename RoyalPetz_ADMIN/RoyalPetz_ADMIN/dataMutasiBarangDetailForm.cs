@@ -836,7 +836,7 @@ namespace RoyalPetz_ADMIN
 
                         // INSERT CREDIT TABLE FOR THAT PARTICULAR BRANCH
                         sqlCommand = "INSERT INTO CREDIT (PM_INVOICE, CREDIT_DUE_DATE, CREDIT_NOMINAL, CREDIT_PAID) VALUES " +
-                                            "('" + noMutasi + "', STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", 0)"; 
+                                                "('" + noMutasi + "', STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", 0)"; 
                     
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
@@ -935,6 +935,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "APPROVE MUTASI BARANG TGL MUTASI [" + PMDateTimePicker.Text + "], NO PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
                 //MessageBox.Show("SUCCESS");
                 gUtil.showSuccess(gUtil.INS);
 
@@ -984,6 +985,7 @@ namespace RoyalPetz_ADMIN
             {
                 totalApproved.Text = "Rp. 0";
 
+                gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_UPDATE, "REJECT PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
                 MessageBox.Show("PERMINTAAN DITOLAK, SEGERA HUBUNGI CABANG");
 
                 //noMutasiTextBox.ReadOnly = true;
@@ -1237,6 +1239,7 @@ namespace RoyalPetz_ADMIN
         {
             if (setReceived())
             {
+                gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_UPDATE, "MUTASI [" + selectedPMInvoice + "] SUDAH DITERIMA");
                 MessageBox.Show("MUTASI DITERIMA");
                 acceptedButton.Visible = false;
                 exportButton.Visible = false;

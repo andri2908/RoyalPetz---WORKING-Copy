@@ -735,6 +735,19 @@ namespace RoyalPetz_ADMIN
                     this.Close();
                 }
 
+                switch (originModuleID)
+                {
+                    case globalConstants.NEW_PRODUK:
+                        gUtil.saveUserChangeLog(globalConstants.MENU_PRODUK, globalConstants.CHANGE_LOG_INSERT, "INSERT NEW PRODUK [" + namaProdukTextBox.Text + "]");
+                        break;
+                    case globalConstants.EDIT_PRODUK:
+                        if (nonAktifCheckbox.Checked == true)
+                            gUtil.saveUserChangeLog(globalConstants.MENU_PRODUK, globalConstants.CHANGE_LOG_UPDATE, "UPDATE PRODUK [" + namaProdukTextBox.Text + "] STATUS PRODUK NON-AKTIF");
+                        else
+                            gUtil.saveUserChangeLog(globalConstants.MENU_PRODUK, globalConstants.CHANGE_LOG_UPDATE, "UPDATE PRODUK [" + namaProdukTextBox.Text + "] STATUS PRODUK AKTIF");
+                        break;
+                }
+
                 gUtil.ResetAllControls(this);
 
                 stokAwalTextBox.Text = "0";

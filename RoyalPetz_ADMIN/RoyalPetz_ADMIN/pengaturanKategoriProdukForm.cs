@@ -242,6 +242,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gutil.saveUserChangeLog(globalConstants.MENU_PENGATURAN_KATEGORI_PRODUK, globalConstants.CHANGE_LOG_UPDATE, "PENGATURAN KATEGORI PRODUK [" + namaKategoriTextbox.Text + "]");
                 //MessageBox.Show("SUCCESS");
                 gutil.showSuccess(gutil.UPD);
                 //gutil.ResetAllControls(this); //notneeded?

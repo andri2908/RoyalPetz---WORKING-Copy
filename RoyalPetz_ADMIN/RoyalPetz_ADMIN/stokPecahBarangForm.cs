@@ -360,6 +360,8 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gUtil.saveUserChangeLog(globalConstants.MENU_PECAH_SATUAN_PRODUK, globalConstants.CHANGE_LOG_UPDATE, "PECAH SATUAN PRODUK [" + productIDTextBox.Text + "/" + numberOfProductTextBox.Text + "] -> [" + newProductIDTextBox.Text + "/" + actualQtyTextBox.Text + "]");
+
                 //MessageBox.Show("SUCCESS");
                 gUtil.showSuccess(gUtil.UPD);
                 stockTextBox.Text = currentStockQty.ToString();

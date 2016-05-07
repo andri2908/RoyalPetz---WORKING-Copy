@@ -740,6 +740,7 @@ namespace RoyalPetz_ADMIN
                 totalPenjualanTextBox.Focus();
                 if (saveData())
                 {
+                    gutil.saveUserChangeLog(globalConstants.MENU_PENJUALAN, globalConstants.CHANGE_LOG_INSERT, "NEW TRANSAKSI PENJUALAN [" + selectedsalesinvoice + "]");
                     PrintReceipt();
                     gutil.showSuccess(gutil.INS);
 

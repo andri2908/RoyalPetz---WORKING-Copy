@@ -117,6 +117,7 @@ namespace RoyalPetz_ADMIN
             {
                 //restore database from file
                 restoreDatabase(fileNameTextbox.Text);
+                gUtil.saveUserChangeLog(globalConstants.MENU_SINKRONISASI_INFORMASI, globalConstants.CHANGE_LOG_UPDATE, "RESTORE DATABASE FROM LOCAL BACKUP");
             }
             else
             {

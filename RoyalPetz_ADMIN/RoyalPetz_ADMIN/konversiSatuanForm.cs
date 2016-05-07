@@ -220,6 +220,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gUtil.saveUserChangeLog(globalConstants.MENU_SATUAN, globalConstants.CHANGE_LOG_UPDATE, "SET KONVERSI SATUAN [" + unit1Combo.Text + " = " + convertValueTextBox.Text + " " + unit2Combo.Text + "]");
                 //MessageBox.Show("SUCCESS");
                 gUtil.showSuccess(gUtil.UPD);
                 displayCurrentSavedConversion(selectedUnit1_ID);

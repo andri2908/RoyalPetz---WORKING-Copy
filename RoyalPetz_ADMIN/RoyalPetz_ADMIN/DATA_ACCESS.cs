@@ -14,11 +14,14 @@ namespace RoyalPetz_ADMIN
     class Data_Access
     {
         private MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection();
-        
+        private MySqlConnection HQ_conn = new MySql.Data.MySqlClient.MySqlConnection();
+
         private MySqlTransaction myTrans;
         private MySqlCommand myTransCommand;
         public bool connectToLive = true;
         private static string configFileConnectionString = "";
+        private static string HQconfigFileConnectionString = "";
+
         private static string ipServer = "";
         //private string myConnectionString = "server=127.0.0.1;uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
         private string configFile = "pos.cfg";
@@ -52,6 +55,41 @@ namespace RoyalPetz_ADMIN
         public string getIPServer()
         {
             return ipServer;
+        }
+
+        public string getHQ_IPServer()
+        {
+            string HQ_Ip = "";
+
+            HQ_Ip = getDataSingleValue("SELECT IFNULL(HQ_IP4, '') FROM SYS_CONFIG WHERE ID = 2").ToString();
+
+            return HQ_Ip;
+        }
+
+        public bool HQ_mySQLConnect()
+        {
+            string HQconnectionString = "";
+            string HQ_IP = getHQ_IPServer(); 
+
+            if (HQ_IP.Length > 0)
+            { 
+                HQconnectionString = "server=" + HQ_IP + ";uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
+
+                try
+                {
+                    HQ_conn.ConnectionString = HQconnectionString;//myConnectionString;
+                    HQ_conn.Open();
+
+                    HQconfigFileConnectionString = HQconnectionString;
+                    return true;
+                }
+                catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         public void setConfigFileConnectionString(string ipAddress)
@@ -162,15 +200,26 @@ namespace RoyalPetz_ADMIN
             return rslt;
         }
 
-        public MySqlDataReader getData(string sqlCommand)
+        public MySqlDataReader getData(string sqlCommand, bool isHQConnection = false)
         {
             MySqlCommand cmd;
             MySqlDataReader rdr;
 
-            if (conn.State.ToString() != "Open")
-                mySqlConnect();
+            if (!isHQConnection)
+            {
+                if (conn.State.ToString() != "Open")
+                    mySqlConnect();
 
-            cmd  = new MySqlCommand(sqlCommand, conn);
+                cmd = new MySqlCommand(sqlCommand, conn);
+            }
+            else
+            {
+                if (HQ_conn.State.ToString() != "Open")
+                    HQ_mySQLConnect();
+
+                cmd = new MySqlCommand(sqlCommand, HQ_conn);
+            }
+
             rdr = cmd.ExecuteReader();
 
             return rdr;
@@ -254,13 +303,17 @@ namespace RoyalPetz_ADMIN
             }
         }
     
-        public void beginTransaction()
+        public void beginTransaction(bool isHQConnection = false)
         {
             //myConnectionString = Properties.Settings.Default.connectionString;
 
             //transConnection = new MySqlConnection(myConnectionString);
             //setConfigFileConnectionFromTable();
-            transConnection = new MySqlConnection(configFileConnectionString);
+            if (!isHQConnection)
+                transConnection = new MySqlConnection(configFileConnectionString);
+            else
+                transConnection = new MySqlConnection(HQconfigFileConnectionString);
+
             transConnection.Open();
 
             myTransCommand = transConnection.CreateCommand();
@@ -310,6 +363,11 @@ namespace RoyalPetz_ADMIN
             return result;
         }
 
+
+        public void clearPools()
+        {
+            conn.ClearAllPoolsAsync();
+        }
 
     }
 }

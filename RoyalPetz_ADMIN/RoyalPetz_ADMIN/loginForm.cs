@@ -156,6 +156,8 @@ namespace RoyalPetz_ADMIN
                         gutil.setUserID(selectedUserID);
                         gutil.setUserGroupID(selectedUserGroupID);
 
+                        gutil.saveUserChangeLog(0, globalConstants.CHANGE_LOG_LOGIN, "USER LOGIN FROM LOGIN FORM");
+
                         if (gutil.userIsCashier() == 1)
                         {
                             cashierLoginForm newCashierForm = new cashierLoginForm(0);
@@ -166,6 +168,8 @@ namespace RoyalPetz_ADMIN
                             adminForm displayAdminForm = new adminForm(selectedUserID, selectedUserGroupID);
                             displayAdminForm.ShowDialog(this);
                         }
+
+                        gutil.saveUserChangeLog(0, globalConstants.CHANGE_LOG_LOGOUT, "USER LOGOUT");
 
                         //logoutForm displayLogOutForm = new logoutForm();
                         //displayLogOutForm.ShowDialog(this);

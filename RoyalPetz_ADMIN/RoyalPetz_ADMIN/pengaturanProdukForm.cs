@@ -514,6 +514,19 @@ namespace RoyalPetz_ADMIN
 
                 loadData();
 
+                switch (originModuleID)
+                {
+                    case globalConstants.PENGATURAN_HARGA_JUAL:
+                        gutil.saveUserChangeLog(globalConstants.MENU_PENGATURAN_HARGA, globalConstants.CHANGE_LOG_UPDATE, "PENGATURAN HARGA JUAL, SEARCH TERM [" + namaProdukTextBox.Text + "]");
+                        break;
+                    case globalConstants.PENGATURAN_LIMIT_STOK:
+                        gutil.saveUserChangeLog(globalConstants.MENU_PENGATURAN_LIMIT_STOK, globalConstants.CHANGE_LOG_UPDATE, "PENGATURAN LIMIT STOK, SEARCH TERM [" + namaProdukTextBox.Text + "]");
+                        break;
+                    case globalConstants.PENGATURAN_NOMOR_RAK:
+                        gutil.saveUserChangeLog(globalConstants.MENU_PENGATURAN_NOMOR_RAK, globalConstants.CHANGE_LOG_UPDATE, "PENGATURAN NOMOR RAK, SEARCH TERM [" + namaProdukTextBox.Text + "]");
+                        break;
+                }
+
                 //MessageBox.Show("SUCCESS");
                 gutil.showSuccess(gutil.UPD);
             }

@@ -1106,6 +1106,10 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                    gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "PENERIMAAN BARANG [" + prInvoiceTextBox.Text + "] DARI MUTASI[" + noMutasiTextBox.Text + "]");
+                else
+                    gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "PENERIMAAN BARANG [" + prInvoiceTextBox.Text + "] NO PO [" + selectedInvoice + "]");
                 saveButton.Visible = false;
                 prInvoiceTextBox.Enabled = false;
                 PRDtPicker.Enabled = false;

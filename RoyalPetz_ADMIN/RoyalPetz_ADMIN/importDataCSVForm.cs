@@ -153,6 +153,7 @@ namespace RoyalPetz_ADMIN
             if (DialogResult.Yes == MessageBox.Show("IMPORT DATA ?", "WARNING", MessageBoxButtons.YesNo,MessageBoxIcon.Warning))
                 if (saveDataTransaction())
                 {
+                    gutil.saveUserChangeLog(globalConstants.MENU_PENYESUAIAN_STOK, globalConstants.CHANGE_LOG_UPDATE, "IMPORT DATA CSV [" + importFileNameTextBox.Text + "]");
                     gutil.showSuccess(gutil.UPD);
                     searchKategoriButton.Enabled = false;
                     importButton.Enabled = false;

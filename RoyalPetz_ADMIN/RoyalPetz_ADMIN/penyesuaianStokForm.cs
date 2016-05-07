@@ -163,6 +163,7 @@ namespace RoyalPetz_ADMIN
         {
             if (saveData())
             {
+                gutil.saveUserChangeLog(globalConstants.MENU_PENYESUAIAN_STOK, globalConstants.CHANGE_LOG_UPDATE, "PENYESUAIAN STOK PRODUK [" + namaProductTextBox.Text + "] " + jumlahAwalMaskedTextBox.Text + "/" + jumlahBaruMaskedTextBox.Text);
                 gutil.showSuccess(gutil.INS);
                 saveButton.Enabled = false;
                 errorLabel.Text = "";
