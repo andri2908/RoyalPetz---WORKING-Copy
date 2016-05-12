@@ -8,19 +8,29 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.IO;
+//using System.Windows.Forms;
 
 namespace RoyalPetz_ADMIN
 {
     class Data_Access
     {
+        private string userName = "SYS_POS_ADMIN";
+        private string password = "pass123";
+        private string databaseName = "SYS_POS";
+        public const int LOCAL_SERVER = 0;
+        public const int HQ_SERVER = 1;
+        public const int BRANCH_SERVER = 2;
+
         private MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection();
         private MySqlConnection HQ_conn = new MySql.Data.MySqlClient.MySqlConnection();
+        private MySqlConnection Branch_conn = new MySql.Data.MySqlClient.MySqlConnection();
 
         private MySqlTransaction myTrans;
         private MySqlCommand myTransCommand;
         public bool connectToLive = true;
         private static string configFileConnectionString = "";
         private static string HQconfigFileConnectionString = "";
+        private static string BranchconfigFileConnectionString = "";
 
         private static string ipServer = "";
         //private string myConnectionString = "server=127.0.0.1;uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
@@ -73,7 +83,7 @@ namespace RoyalPetz_ADMIN
 
             if (HQ_IP.Length > 0)
             { 
-                HQconnectionString = "server=" + HQ_IP + ";uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
+                HQconnectionString = "server=" + HQ_IP + ";uid="+userName+";pwd="+password+";database="+databaseName+";";
 
                 try
                 {
@@ -85,6 +95,7 @@ namespace RoyalPetz_ADMIN
                 }
                 catch (MySql.Data.MySqlClient.MySqlException ex)
                 {
+                    //MessageBox.Show(ex.Message);
                     return false;
                 }
             }
@@ -92,9 +103,60 @@ namespace RoyalPetz_ADMIN
             return false;
         }
 
+        public void HQ_mySqlClose()
+        {
+            if (null != HQ_conn)
+            {
+                HQ_conn.Close();
+            }
+        }
+
+        public string getBranch_IPServer(int branchID)
+        {
+            string Branch_Ip = "";
+
+            Branch_Ip = getDataSingleValue("SELECT IFNULL(BRANCH_IP4, '') FROM MASTER_BRANCH WHERE BRANCH_ID = "+branchID).ToString();
+
+            return Branch_Ip;
+        }
+
+        public bool Branch_mySQLConnect(int branchID)
+        {
+            string BranchconnectionString = "";
+            string Branch_IP = getBranch_IPServer(branchID);
+
+            if (Branch_IP.Length > 0)
+            {
+                BranchconnectionString = "server=" + Branch_IP + ";uid=" + userName + ";pwd=" + password + ";database=" + databaseName + ";";
+
+                try
+                {
+                    Branch_conn.ConnectionString = BranchconnectionString;//myConnectionString;
+                    Branch_conn.Open();
+
+                    BranchconfigFileConnectionString = BranchconnectionString;
+                    return true;
+                }
+                catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        public void Branch_mySqlClose()
+        {
+            if (null != Branch_conn)
+            {
+                Branch_conn.Close();
+            }
+        }
+
         public void setConfigFileConnectionString(string ipAddress)
         {            
-            configFileConnectionString = "server=" + ipAddress + ";uid=SYS_POS_ADMIN;pwd=pass123;database=SYS_POS;";
+            configFileConnectionString = "server=" + ipAddress + ";uid="+userName+";pwd="+password+";database="+databaseName+";";
             ipServer = ipAddress;
         }
 
@@ -225,12 +287,22 @@ namespace RoyalPetz_ADMIN
             return rdr;
         }
 
-        public object getDataSingleValue(string sqlCommand)
+        public object getDataSingleValue(string sqlCommand, int serverToConnect = LOCAL_SERVER)
         {
-            if (conn.State.ToString() != "Open")
-                mySqlConnect();
+            MySqlCommand cmd = null;
+            switch (serverToConnect)
+            {
+                case LOCAL_SERVER:
+                    if (conn.State.ToString() != "Open")
+                        mySqlConnect();
 
-            MySqlCommand cmd = new MySqlCommand(sqlCommand, conn);
+                    cmd = new MySqlCommand(sqlCommand, conn);
+                    break;
+
+                case BRANCH_SERVER:
+                    cmd = new MySqlCommand(sqlCommand, Branch_conn);
+                    break;
+            }
             object result = cmd.ExecuteScalar();
 
             return result;
@@ -303,16 +375,18 @@ namespace RoyalPetz_ADMIN
             }
         }
     
-        public void beginTransaction(bool isHQConnection = false)
+        public void beginTransaction(int serverToConnect = LOCAL_SERVER)
         {
             //myConnectionString = Properties.Settings.Default.connectionString;
 
             //transConnection = new MySqlConnection(myConnectionString);
             //setConfigFileConnectionFromTable();
-            if (!isHQConnection)
+            if (serverToConnect == LOCAL_SERVER)
                 transConnection = new MySqlConnection(configFileConnectionString);
-            else
+            else if (serverToConnect == HQ_SERVER)
                 transConnection = new MySqlConnection(HQconfigFileConnectionString);
+            else if (serverToConnect == BRANCH_SERVER)
+                transConnection = new MySqlConnection(BranchconfigFileConnectionString);
 
             transConnection.Open();
 
@@ -361,12 +435,6 @@ namespace RoyalPetz_ADMIN
             result = Convert.ToInt32(getDataSingleValue("SELECT IFNULL(USER_ACCESS_OPTION, 0) FROM USER_ACCESS_MANAGEMENT WHERE MODULE_ID = " + moduleID + " AND GROUP_ID = " + groupID));
 
             return result;
-        }
-
-
-        public void clearPools()
-        {
-            conn.ClearAllPoolsAsync();
         }
 
     }

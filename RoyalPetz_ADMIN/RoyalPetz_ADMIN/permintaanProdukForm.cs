@@ -957,6 +957,7 @@ namespace RoyalPetz_ADMIN
             string roDateExpired = "";
             DateTime selectedRODate;
             DateTime expiredRODate;
+            string messageContent = "";
 
             string selectedDate = RODateTimePicker.Value.ToShortDateString();
             selectedRODate = RODateTimePicker.Value;
@@ -970,31 +971,41 @@ namespace RoyalPetz_ADMIN
             roDateExpired = String.Format(culture, "{0:dd-MM-yyyy}", expiredRODate);
             roTotal = globalTotalValue;
 
-            DAccess.beginTransaction(true);
+            DAccess.beginTransaction(Data_Access.HQ_SERVER);
 
             try
             {
                 //DAccess.mySqlConnect();
 
-                        // SAVE HEADER TABLE
-                        sqlCommand = "INSERT INTO REQUEST_ORDER_HEADER (RO_INVOICE, RO_BRANCH_ID_FROM, RO_BRANCH_ID_TO, RO_DATETIME, RO_TOTAL, RO_EXPIRED, RO_ACTIVE) VALUES " +
-                                            "('" + roInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(roTotal) + ", STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y'), 1)";
+                // SAVE HEADER TABLE
+                sqlCommand = "INSERT INTO REQUEST_ORDER_HEADER (RO_INVOICE, RO_BRANCH_ID_FROM, RO_BRANCH_ID_TO, RO_DATETIME, RO_TOTAL, RO_EXPIRED, RO_ACTIVE) VALUES " +
+                                    "('" + roInvoice + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(roTotal) + ", STR_TO_DATE('" + roDateExpired + "', '%d-%m-%Y'), 1)";
+
+                if (!DAccess.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
+
+                // SAVE DETAIL TABLE
+                for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
+                {
+                    if (null != detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
+                    {
+                        sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
+                                            "('" + roInvoice + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + gUtil.validateDecimalNumericInput(Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value)) + ")";
 
                         if (!DAccess.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
+                    }
+                }
 
-                        // SAVE DETAIL TABLE
-                        for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
-                        {
-                            if (null != detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
-                            {
-                                sqlCommand = "INSERT INTO REQUEST_ORDER_DETAIL (RO_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, RO_QTY, RO_SUBTOTAL) VALUES " +
-                                                    "('" + roInvoice + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value) + ", " + gUtil.validateDecimalNumericInput(Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value)) + ")";
+                // INSERT INTO HQ MESSAGING TABLE 
+                messageContent = "REQUEST ORDER [" + roInvoice + "] EXPIRED PADA TGL " + roDateExpired;
 
-                                if (!DAccess.executeNonQueryCommand(sqlCommand, ref internalEX))
-                                    throw internalEX;
-                            }
-                        }
+                sqlCommand = "INSERT INTO MASTER_MESSAGE (STATUS, MODULE_ID, IDENTIFIER_NO, MSG_DATETIME_CREATED, MSG_CONTENT) " +
+                                        "VALUES " +
+                                        "(0, " + globalConstants.MENU_REQUEST_ORDER + ", '" + roInvoice + "', STR_TO_DATE('" + roDateTime + "', '%d-%m-%Y'), '" + messageContent + "')";
+
+                if (!DAccess.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
 
                 DAccess.commit();
                 result = true;
@@ -1027,24 +1038,27 @@ namespace RoyalPetz_ADMIN
         private bool sendRequestToHQ()
         {
             bool result = false;
-            Data_Access DS_HQ = new Data_Access();
+            //Data_Access DS_HQ = new Data_Access();
 
             if (saveData()) // SAVE TO LOCAL DATABASE FIRST
             {
                  // CREATE CONNECTION TO CENTRAL HQ DATABASE SERVER
-                 if (DS_HQ.HQ_mySQLConnect())
+                 if (DS.HQ_mySQLConnect())
                 {
                     // SEND REQUEST DATA TO HQ
-                        if (insertDataToHQ(DS_HQ))
+                        if (insertDataToHQ(DS))
                             result = true;
                         else
+                        {
+                            MessageBox.Show("FAIL TO INSERT DATA TO HQ"); 
                             result = false;
-
+                        }
                     // CLOSE CONNECTION TO CENTRAL HQ DATABASE SERVER
-                    DS_HQ.mySqlClose();
+                    DS.HQ_mySqlClose();
                 }
                 else
                 {
+                    MessageBox.Show("FAIL TO CONNECT");
                     result = false;
                 }
             }
@@ -1059,6 +1073,19 @@ namespace RoyalPetz_ADMIN
                 gUtil.showSuccess(gUtil.INS);
                 exportDataRO();
                 gUtil.saveUserChangeLog(globalConstants.MENU_REQUEST_ORDER, globalConstants.CHANGE_LOG_INSERT, "SEND REQUEST ORDER [" + ROinvoiceTextBox.Text + "] TO GUDANG PUSAT");
+
+                gUtil.ResetAllControls(this);
+                originModuleID = globalConstants.NEW_REQUEST_ORDER;
+                detailRequestOrderDataGridView.Rows.Clear();
+                totalLabel.Text = "Rp. 0";
+
+                selectedBranchFromID = 0;
+                selectedBranchToID = 0;
+
+                gUtil.showSuccess(gUtil.UPD);
+
+                ROinvoiceTextBox.ReadOnly = false;
+                ROinvoiceTextBox.Focus();
             }
             else
                 MessageBox.Show("KONEKSI KE PUSAT GAGAL");

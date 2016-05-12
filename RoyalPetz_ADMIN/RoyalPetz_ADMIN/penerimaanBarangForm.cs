@@ -1102,14 +1102,99 @@ namespace RoyalPetz_ADMIN
             return false;
         }
 
+        private bool updateDataToHQ(Data_Access DAccess)
+        {
+            bool result = false;
+            string sqlCommand = "";
+            MySqlException internalEX = null;
+
+            string pmInvoice = "";
+            pmInvoice = noMutasiTextBox.Text;
+
+            DAccess.beginTransaction(Data_Access.HQ_SERVER);
+
+            try
+            {
+                // UPDATE PM DATA AT HQ
+                sqlCommand = "UPDATE PRODUCTS_MUTATION_HEADER SET PM_RECEIVED = 1 WHERE PM_INVOICE = '" + pmInvoice + "'";
+                if (!DAccess.executeNonQueryCommand(sqlCommand, ref internalEX))
+                    throw internalEX;
+                
+                DAccess.commit();
+                result = true;
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    DAccess.rollBack();
+                }
+                catch (MySqlException ex)
+                {
+                    if (DAccess.getMyTransConnection() != null)
+                    {
+                        gUtil.showDBOPError(ex, "ROLLBACK");
+                    }
+                }
+
+                gUtil.showDBOPError(e, "INSERT");
+                result = false;
+            }
+            finally
+            {
+                DAccess.mySqlClose();
+            }
+
+            return result;
+        }
+
+        private bool sendUpdateToHQ()
+        {
+            bool result = false;
+            //Data_Access DS_HQ = new Data_Access();
+
+            //if (saveData()) // SAVE TO LOCAL DATABASE FIRST
+            {
+                // CREATE CONNECTION TO CENTRAL HQ DATABASE SERVER
+                if (DS.HQ_mySQLConnect())
+                {
+                    // SEND REQUEST DATA TO HQ
+                    if (updateDataToHQ(DS))
+                        result = true;
+                    else
+                    {
+                        MessageBox.Show("FAIL TO UPDATE DATA TO HQ");
+                        result = false;
+                    }
+                    // CLOSE CONNECTION TO CENTRAL HQ DATABASE SERVER
+                    DS.HQ_mySqlClose();
+                }
+                else
+                {
+                    MessageBox.Show("FAIL TO CONNECT");
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
         private void saveButton_Click(object sender, EventArgs e)
         {
             if (saveData())
             {
                 if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                {
+                    // UPDATE DATA AT HQ
+                    if (!sendUpdateToHQ())
+                        MessageBox.Show("KONEKSI KE PUSAT GAGAL");
+
                     gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "PENERIMAAN BARANG [" + prInvoiceTextBox.Text + "] DARI MUTASI[" + noMutasiTextBox.Text + "]");
+                }
                 else
                     gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "PENERIMAAN BARANG [" + prInvoiceTextBox.Text + "] NO PO [" + selectedInvoice + "]");
+
+
                 saveButton.Visible = false;
                 prInvoiceTextBox.Enabled = false;
                 PRDtPicker.Enabled = false;

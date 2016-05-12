@@ -28,6 +28,8 @@ namespace RoyalPetz_ADMIN
         private double globalTotalValue = 0;
         private bool directMutasiBarang = false;
         private string previousInput = "";
+        private string noMutasi = "";
+        private Button[] arrButton = new Button[5];
 
         private Data_Access DS = new Data_Access();
         private List<string> detailRequestQtyApproved = new List<string>();
@@ -67,6 +69,9 @@ namespace RoyalPetz_ADMIN
                     exportButton.Visible = false;
                     acceptedButton.Visible = false;
                     rejectButton.Visible = false;
+                    totalApproved.Visible = false;
+                    totalApprovedLabel.Visible = false;
+                    label13.Visible = false;
 
                     directMutasiBarang = true;
                     break;
@@ -640,7 +645,6 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangDetailForm_Load(object sender, EventArgs e)
         {
             int userAccessOption = 0;
-            Button[] arrButton = new Button[5];
             PMDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             RODateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
             ROExpiredDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
@@ -774,7 +778,6 @@ namespace RoyalPetz_ADMIN
             MySqlException internalEX = null;
 
             string roInvoice = "0";
-            string noMutasi = "";
             int branchIDFrom = 0;
             int branchIDTo = 0;
             string PMDateTime = "";
@@ -931,10 +934,133 @@ namespace RoyalPetz_ADMIN
             return false;
         }
 
+        private bool insertAndUpdateBranchData(int approvedRO)
+        {
+            bool result = false;
+            string sqlCommand = "";
+            string roInvoice = ROInvoiceTextBox.Text;
+            MySqlException internalEX = null;
+
+            int branchIDFrom = 0;
+            int branchIDTo = 0;
+            string PMDateTime = "";
+            double PMTotal = 0;
+            double qtyApproved = 0;
+            DateTime selectedPMDate;
+            string messageContent = "";
+            string todayDate = String.Format(culture, "{0:dd-MM-yyyy}", DateTime.Now);
+
+            // UPDATE DATA REQUEST BRANCH AND INSERT NEW DATA MUTATION
+            DS.beginTransaction(Data_Access.BRANCH_SERVER);
+
+            try
+            {
+                if (!directMutasiBarang)
+                { 
+                    // CHECK WHETHER CONNECTING TO CORRECT BRANCH AND THE REQUEST DATA EXISTS
+                    sqlCommand = "SELECT COUNT(1) FROM REQUEST_ORDER_HEADER WHERE RO_INVOICE = '" + roInvoice + "'";
+                    if (Convert.ToInt32(DS.getDataSingleValue(sqlCommand)) <= 0)
+                        throw new Exception("REQUEST ORDER NOT FOUND AT BRANCH");
+
+                    // UPDATE REQUEST ORDER DATA TO INACTIVE
+                    sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
+                }
+
+                if (approvedRO == 1)
+                { 
+                    // INSERT NEW DATA MUTATION THAT CORRESPONDS TO THE REQUEST ORDER
+                    selectedPMInvoice = noMutasi;
+                    branchIDFrom = selectedBranchFromID;
+                    branchIDTo = selectedBranchToID;
+                    selectedPMDate = PMDateTimePicker.Value;
+                    PMDateTime = String.Format(culture, "{0:dd-MM-yyyy}", selectedPMDate);
+                    PMTotal = globalTotalValue;
+
+                    // SAVE HEADER TABLE
+                    sqlCommand = "INSERT INTO PRODUCTS_MUTATION_HEADER (PM_INVOICE, BRANCH_ID_FROM, BRANCH_ID_TO, PM_DATETIME, PM_TOTAL, RO_INVOICE) VALUES " +
+                                        "('" + noMutasi + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", '" + roInvoice + "')";
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
+
+                    // SAVE DETAIL TABLE
+                    for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
+                    {
+                        if (null == detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value)
+                            continue;
+
+                        if (null != detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value)
+                            qtyApproved = Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["qty"].Value);
+                  
+                        sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
+                                            "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + qtyApproved + ", " + gUtil.validateDecimalNumericInput(Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value)) + ")";
+
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+                    }
+                }
+
+                if (!directMutasiBarang)
+                { 
+                    // INSERT TO BRANCH MESSAGING TABLE ??
+                    if (approvedRO == 1)
+                        messageContent = "REQUEST ORDER [" + roInvoice + "] DISETUJUI, LAKUKAN PENERIMAAN BARANG BERDASARKAN MUTASI BARANG NO [" + noMutasi + "]";
+                    else
+                        messageContent = "REQUEST ORDER [" + roInvoice + "] DITOLAK";
+
+                    sqlCommand = "INSERT INTO MASTER_MESSAGE (STATUS, MODULE_ID, IDENTIFIER_NO, MSG_DATETIME_CREATED, MSG_CONTENT) " +
+                                            "VALUES " +
+                                            "(0, " + globalConstants.MENU_REQUEST_ORDER + ", '" + roInvoice + "', STR_TO_DATE('" + todayDate + "', '%d-%m-%Y'), '" + messageContent + "')";
+
+                    if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        throw internalEX;
+                }
+
+                DS.commit();
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
+        private bool updateDataAtBranch(int approvedRO = 1)
+        {
+            int branchID = 0;
+            bool result = false;
+            string roInvoice = ROInvoiceTextBox.Text;
+
+            // GET BRANCH IP
+            if (!directMutasiBarang)
+                branchID = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(RO_BRANCH_ID_TO, 0) FROM REQUEST_ORDER_HEADER WHERE RO_INVOICE = '" + roInvoice + "'"));
+            else
+                branchID = selectedBranchToID;
+
+            if (branchID > 0)
+            {
+                // CONNECT TO BRANCH
+                if (DS.Branch_mySQLConnect(branchID))
+                {
+                    result = insertAndUpdateBranchData(approvedRO);
+                    DS.Branch_mySqlClose();
+                }
+            }
+
+            return result;
+        }
+
         private void approveButton_Click(object sender, EventArgs e)
         {
             if (saveData())
             {
+                if (!updateDataAtBranch())
+                    MessageBox.Show("KONEKSI KE CABANG GAGAL");
+                //if (!directMutasiBarang)
+
                 gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "APPROVE MUTASI BARANG TGL MUTASI [" + PMDateTimePicker.Text + "], NO PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
                 //MessageBox.Show("SUCCESS");
                 gUtil.showSuccess(gUtil.INS);
@@ -949,6 +1075,8 @@ namespace RoyalPetz_ADMIN
                 exportButton.Visible = true;
                 acceptedButton.Visible = true;
                 //reprintButton.Visible = true;
+
+                gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
             }
         }
 
@@ -983,6 +1111,10 @@ namespace RoyalPetz_ADMIN
             subModuleID = globalConstants.REJECT_PRODUCT_MUTATION;
             if (saveData())
             {
+                if (!directMutasiBarang)
+                    if (!updateDataAtBranch())
+                        MessageBox.Show("KONEKSI KE CABANG GAGAL");
+
                 totalApproved.Text = "Rp. 0";
 
                 gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_UPDATE, "REJECT PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
@@ -995,6 +1127,7 @@ namespace RoyalPetz_ADMIN
                 createPOButton.Visible = false;
                 rejectButton.Visible = false;
                 //reprintButton.Visible = false;
+                gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
             }
         }
 
@@ -1243,6 +1376,8 @@ namespace RoyalPetz_ADMIN
                 MessageBox.Show("MUTASI DITERIMA");
                 acceptedButton.Visible = false;
                 exportButton.Visible = false;
+                
+                gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
             }
         }
     }
