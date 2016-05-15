@@ -65,7 +65,7 @@ namespace RoyalPetz_ADMIN
                                         "CREATE TABLE `temp_master_product` (" + "\n" +
                                         "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," + "\n" +
                                         "`PRODUCT_ID` varchar(50) DEFAULT NULL," + "\n" +
-                                        "`PRODUCT_BARCODE` int(10) unsigned DEFAULT NULL," + "\n" +
+                                        "`PRODUCT_BARCODE` varchar(15) DEFAULT NULL," + "\n" +
                                         "`PRODUCT_NAME` varchar(50) DEFAULT NULL," + "\n" +
                                         "`PRODUCT_DESCRIPTION` varchar(100) DEFAULT NULL," + "\n" +
                                         "`PRODUCT_BASE_PRICE` double DEFAULT NULL," + "\n" +
@@ -108,7 +108,7 @@ namespace RoyalPetz_ADMIN
                     while (rdr.Read())
                     {
                         insertStatement = "INSERT INTO TEMP_MASTER_PRODUCT (PRODUCT_ID, PRODUCT_BARCODE, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRODUCT_BASE_PRICE, PRODUCT_RETAIL_PRICE, PRODUCT_BULK_PRICE, PRODUCT_WHOLESALE_PRICE, UNIT_ID, PRODUCT_IS_SERVICE) VALUES (" +
-                                                 "'" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_ID")) + "', " + rdr.GetString("PRODUCT_BARCODE") + ", '" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_NAME")) + "', '" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_DESCRIPTION")) + "', " + rdr.GetString("PRODUCT_BASE_PRICE") + ", " + rdr.GetString("PRODUCT_RETAIL_PRICE") + ", " + rdr.GetString("PRODUCT_BULK_PRICE") + ", " + rdr.GetString("PRODUCT_WHOLESALE_PRICE") + ", " + rdr.GetString("UNIT_ID") + ", " + rdr.GetString("PRODUCT_IS_SERVICE") + ");";
+                                                 "'" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_ID")) + "', '" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_BARCODE")) + "', '" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_NAME")) + "', '" + MySqlHelper.EscapeString(rdr.GetString("PRODUCT_DESCRIPTION")) + "', " + rdr.GetString("PRODUCT_BASE_PRICE") + ", " + rdr.GetString("PRODUCT_RETAIL_PRICE") + ", " + rdr.GetString("PRODUCT_BULK_PRICE") + ", " + rdr.GetString("PRODUCT_WHOLESALE_PRICE") + ", " + rdr.GetString("UNIT_ID") + ", " + rdr.GetString("PRODUCT_IS_SERVICE") + ");";
                         sw.WriteLine(insertStatement);
                     }
                 }
@@ -375,7 +375,7 @@ namespace RoyalPetz_ADMIN
                                 while (i < dataGridView1.Rows.Count)
                                 {
                                     productID = MySqlHelper.EscapeString(dataGridView1.Rows[i].Cells["PRODUCT_ID"].Value.ToString());
-                                    productBarcode = dataGridView1.Rows[i].Cells["PRODUCT_BARCODE"].Value.ToString();
+                                    productBarcode = MySqlHelper.EscapeString(dataGridView1.Rows[i].Cells["PRODUCT_BARCODE"].Value.ToString());
                                     productName = MySqlHelper.EscapeString(dataGridView1.Rows[i].Cells["PRODUCT_NAME"].Value.ToString());
                                     productDescription = MySqlHelper.EscapeString(dataGridView1.Rows[i].Cells["PRODUCT_DESCRIPTION"].Value.ToString());
                                     productBasePrice = dataGridView1.Rows[i].Cells["PRODUCT_BASE_PRICE"].Value.ToString();

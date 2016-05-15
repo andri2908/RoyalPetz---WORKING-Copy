@@ -142,6 +142,7 @@ namespace RoyalPetz_ADMIN
         public const int MENU_PEMBAYARAN_HUTANG_SUPPLIER = 48;
         public const int MENU_PENGATURAN_LIMIT_PAJAK = 49;
 
+        public const int MENU_MODULE_MESSAGING = 50;
 
         // CONSTANTS FOR USER CHANGE LOG
         public const int CHANGE_LOG_LOGIN = 1;

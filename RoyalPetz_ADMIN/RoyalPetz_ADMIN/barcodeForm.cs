@@ -37,7 +37,7 @@ namespace RoyalPetz_ADMIN
             if (barcodeValue.Length > 0)
                 try
                 { 
-                    productName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME, '') FROM MASTER_PRODUCT WHERE PRODUCT_BARCODE = " + barcodeValue).ToString();
+                    productName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME, '') FROM MASTER_PRODUCT WHERE PRODUCT_BARCODE = '" + barcodeValue + "'").ToString();
                 }
                 catch (Exception e)
                 {}

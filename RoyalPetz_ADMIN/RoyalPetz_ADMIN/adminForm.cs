@@ -77,10 +77,12 @@ namespace RoyalPetz_ADMIN
 
         private void captureAll(Keys key)
         {
+            int userAccessOptions = 0;
             switch (key)
             {
                 case Keys.F1:
-                    if (!newMessageFormExist)
+                    userAccessOptions = DS.getUserAccessRight(globalConstants.MENU_MODULE_MESSAGING, gutil.getUserGroupID());
+                    if (!newMessageFormExist  && userAccessOptions == 1)
                     { 
                         messagingForm displayForm = new messagingForm();
                         displayForm.ShowDialog(this);
@@ -986,7 +988,10 @@ namespace RoyalPetz_ADMIN
 
         private void timerMessage_Tick(object sender, EventArgs e)
         {
-            if (!newMessageFormExist && gutil.checkNewMessageData())
+            int userAccessOptions;
+
+            userAccessOptions = DS.getUserAccessRight(globalConstants.MENU_MODULE_MESSAGING, gutil.getUserGroupID());
+            if (userAccessOptions == 1 && !newMessageFormExist && gutil.checkNewMessageData())
             {
                 newMessageFormExist = true;
                 newMessageForm newMsgForm = new newMessageForm((Form) this);

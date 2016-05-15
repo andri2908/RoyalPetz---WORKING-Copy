@@ -598,7 +598,7 @@ namespace RoyalPetz_ADMIN
                     case globalConstants.EDIT_PRODUK:
                             // UPDATE MASTER_PRODUK TABLE
                             sqlCommand = "UPDATE MASTER_PRODUCT SET " +
-                                                "PRODUCT_BARCODE = " + produkBarcode + ", " +
+                                                "PRODUCT_BARCODE = '" + produkBarcode + "', " +
                                                 "PRODUCT_NAME =  '" + produkName + "', " +
                                                 "PRODUCT_DESCRIPTION =  '" + produkDesc + "', " +
                                                 "PRODUCT_BASE_PRICE = " + produkHargaPokok + ", " +
@@ -784,7 +784,7 @@ namespace RoyalPetz_ADMIN
         {
             bool result = false;
 
-            if (!DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_BARCODE = " + barcodeTextBox.Text).ToString().Equals("0"))
+            if (!DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_BARCODE = '" + barcodeTextBox.Text + "'").ToString().Equals("0"))
             {
                 result = true;
             }
