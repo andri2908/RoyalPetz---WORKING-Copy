@@ -767,6 +767,7 @@ namespace RoyalPetz_ADMIN
             lastNo++;
 
             result = "PM-" + lastNo.ToString();
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "GET NEW NO MUTASI [" + result + "]");
 
             return result;
         }
@@ -809,7 +810,10 @@ namespace RoyalPetz_ADMIN
                         // SAVE HEADER TABLE
                         sqlCommand = "INSERT INTO PRODUCTS_MUTATION_HEADER (PM_INVOICE, BRANCH_ID_FROM, BRANCH_ID_TO, PM_DATETIME, PM_TOTAL, RO_INVOICE) VALUES " +
                                             "('" + noMutasi + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", '" + roInvoice + "')";
-                        DS.executeNonQueryCommand(sqlCommand);
+
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "ADD NEW MUTASI [" + noMutasi + "]");
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
 
                         // SAVE DETAIL TABLE
                         for (int i = 0; i < detailRequestOrderDataGridView.Rows.Count; i++)
@@ -825,6 +829,7 @@ namespace RoyalPetz_ADMIN
                             sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
                                                 "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + qtyApproved + ", " + gUtil.validateDecimalNumericInput(Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value)) + ")";
 
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "ADD DETAIL NEW MUTASI [" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + ", " + qtyApproved + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         }
@@ -833,14 +838,17 @@ namespace RoyalPetz_ADMIN
                         { 
                             // UPDATE REQUEST ORDER HEADER TABLE
                             sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "UPDATE REQUEST ORDER [" + roInvoice + "]");
+
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         }
 
                         // INSERT CREDIT TABLE FOR THAT PARTICULAR BRANCH
                         sqlCommand = "INSERT INTO CREDIT (PM_INVOICE, CREDIT_DUE_DATE, CREDIT_NOMINAL, CREDIT_PAID) VALUES " +
-                                                "('" + noMutasi + "', STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", 0)"; 
-                    
+                                                "('" + noMutasi + "', STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", 0)";
+
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "INSERT TO CREDIT TABLE [" + noMutasi + "]");
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         
@@ -849,8 +857,11 @@ namespace RoyalPetz_ADMIN
                     case globalConstants.REJECT_PRODUCT_MUTATION:
                         // UPDATE REQUEST ORDER HEADER TABLE
                         sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "REJECT REQUEST ORDER [" + roInvoice + "]");
+
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
+
                         break;
                 }
 
@@ -859,6 +870,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "EXCEPTION THROWN [" + e.Message+ "]");
                 try
                 {
                     DS.rollBack();
@@ -962,8 +974,12 @@ namespace RoyalPetz_ADMIN
                     if (Convert.ToInt32(DS.getDataSingleValue(sqlCommand)) <= 0)
                         throw new Exception("REQUEST ORDER NOT FOUND AT BRANCH");
 
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "REQUEST ORDER FOUND AT BRANCH [" + roInvoice + "]");
+                    
                     // UPDATE REQUEST ORDER DATA TO INACTIVE
                     sqlCommand = "UPDATE REQUEST_ORDER_HEADER SET RO_ACTIVE = 0 WHERE RO_INVOICE = '" + roInvoice + "'";
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "SET REQUEST ORDER TO INACTIVE [" + roInvoice + "]");
+
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
                 }
@@ -981,6 +997,8 @@ namespace RoyalPetz_ADMIN
                     // SAVE HEADER TABLE
                     sqlCommand = "INSERT INTO PRODUCTS_MUTATION_HEADER (PM_INVOICE, BRANCH_ID_FROM, BRANCH_ID_TO, PM_DATETIME, PM_TOTAL, RO_INVOICE) VALUES " +
                                         "('" + noMutasi + "', " + branchIDFrom + ", " + branchIDTo + ", STR_TO_DATE('" + PMDateTime + "', '%d-%m-%Y'), " + gUtil.validateDecimalNumericInput(PMTotal) + ", '" + roInvoice + "')";
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "INSERT NEW DATA MUTASI TO BRANCH [" + noMutasi + "]");
+
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
 
@@ -995,6 +1013,7 @@ namespace RoyalPetz_ADMIN
                   
                         sqlCommand = "INSERT INTO PRODUCTS_MUTATION_DETAIL (PM_INVOICE, PRODUCT_ID, PRODUCT_BASE_PRICE, PRODUCT_QTY, PM_SUBTOTAL) VALUES " +
                                             "('" + noMutasi + "', '" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["hpp"].Value) + ", " + qtyApproved + ", " + gUtil.validateDecimalNumericInput(Convert.ToDouble(detailRequestOrderDataGridView.Rows[i].Cells["subTotal"].Value)) + ")";
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "INSERT NEW DETAIL DATA MUTASI TO BRANCH [" + detailRequestOrderDataGridView.Rows[i].Cells["productID"].Value.ToString() + ", " + qtyApproved + "]");
 
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
@@ -1013,6 +1032,8 @@ namespace RoyalPetz_ADMIN
                                             "VALUES " +
                                             "(0, " + globalConstants.MENU_REQUEST_ORDER + ", '" + roInvoice + "', STR_TO_DATE('" + todayDate + "', '%d-%m-%Y'), '" + messageContent + "')";
 
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "INSERT TO BRANCH MESSAGING TABLE [" + roInvoice + "]");
+
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
                 }
@@ -1022,6 +1043,8 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception ex)
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "EXCEPTION THROWN [" + ex.Message + "]");
+
                 result = false;
             }
 
@@ -1034,17 +1057,22 @@ namespace RoyalPetz_ADMIN
             bool result = false;
             string roInvoice = ROInvoiceTextBox.Text;
 
-            // GET BRANCH IP
+            // GET BRANCH ID
             if (!directMutasiBarang)
                 branchID = Convert.ToInt32(DS.getDataSingleValue("SELECT IFNULL(RO_BRANCH_ID_TO, 0) FROM REQUEST_ORDER_HEADER WHERE RO_INVOICE = '" + roInvoice + "'"));
             else
                 branchID = selectedBranchToID;
 
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "GET BRANCH ID TO UPDATE [" + branchID + "]");
+
             if (branchID > 0)
             {
                 // CONNECT TO BRANCH
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "TRY TO CONNECT TO BRANCH [" + branchID + "]");
                 if (DS.Branch_mySQLConnect(branchID))
                 {
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "CONNECTED TO BRANCH [" + branchID + "] [" + approvedRO + "]");
+
                     result = insertAndUpdateBranchData(approvedRO);
                     DS.Branch_mySqlClose();
                 }
@@ -1055,10 +1083,16 @@ namespace RoyalPetz_ADMIN
 
         private void approveButton_Click(object sender, EventArgs e)
         {
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "SAVE/APPROVE MUTASI");
             if (saveData())
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "MUTASI SAVED TO LOCAL DATA");
+
                 if (!updateDataAtBranch())
+                {
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "FAILED TO UPDATE BRANCH DATA");
                     MessageBox.Show("KONEKSI KE CABANG GAGAL");
+                }
                 //if (!directMutasiBarang)
 
                 gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_INSERT, "APPROVE MUTASI BARANG TGL MUTASI [" + PMDateTimePicker.Text + "], NO PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
@@ -1108,13 +1142,19 @@ namespace RoyalPetz_ADMIN
         
         private void rejectButton_Click(object sender, EventArgs e)
         {
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "REJECT REQUEST ORDER");
+
             subModuleID = globalConstants.REJECT_PRODUCT_MUTATION;
             if (saveData())
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "REQUEST ORDER [" + ROInvoiceTextBox.Text + "] REJECTED");
+
                 if (!directMutasiBarang)
                     if (!updateDataAtBranch())
+                    {
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "FAIL TO UPDATE BRANCH DATA");
                         MessageBox.Show("KONEKSI KE CABANG GAGAL");
-
+                    }
                 totalApproved.Text = "Rp. 0";
 
                 gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_UPDATE, "REJECT PERMINTAAN [" + ROInvoiceTextBox.Text + "]");
@@ -1177,6 +1217,7 @@ namespace RoyalPetz_ADMIN
 
         private void createPOButton_Click(object sender, EventArgs e)
         {
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "CREATE PO FROM REQUEST ORDER [" + selectedROInvoice + "]");
             purchaseOrderDetailForm displayedForm = new purchaseOrderDetailForm(globalConstants.PURCHASE_ORDER_DARI_RO, selectedROInvoice);
             displayedForm.ShowDialog(this);
 
@@ -1308,9 +1349,11 @@ namespace RoyalPetz_ADMIN
             //saveFileDialog1.ShowDialog();
             
             if (DialogResult.OK == saveFileDialog1.ShowDialog())
-            { 
+            {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "TRY TO EXPORT DATA [" + saveFileDialog1.FileName + "]");
                 if (exportDataMutasi(saveFileDialog1.FileName))
                 {
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "DATA EXPORTED [" + saveFileDialog1.FileName + "]");
                     MessageBox.Show("EXPORT SUCCESS");
                 }
             }
@@ -1333,6 +1376,8 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
 
                 sqlCommand = "UPDATE PRODUCTS_MUTATION_HEADER SET PM_RECEIVED = 1 WHERE PM_INVOICE = '" + noMutasi + "'";
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "UPDATE PRODUCT MUTATION HEADER TO RECEIVED [" + noMutasi + "]");
+
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
 
@@ -1341,6 +1386,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "EXCEPTION THROWN [" + e.Message+ "]");
                 result = false;
                 try
                 {
@@ -1370,8 +1416,11 @@ namespace RoyalPetz_ADMIN
 
         private void acceptedButton_Click(object sender, EventArgs e)
         {
+            gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "MANUALLY SET MUTASI [" + selectedPMInvoice + "] TO RECEIVED");
             if (setReceived())
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_MUTASI_BARANG, "MUTASI [" + selectedPMInvoice + "] SET TO RECEIVED");
+
                 gUtil.saveUserChangeLog(globalConstants.MENU_MUTASI_BARANG, globalConstants.CHANGE_LOG_UPDATE, "MUTASI [" + selectedPMInvoice + "] SUDAH DITERIMA");
                 MessageBox.Show("MUTASI DITERIMA");
                 acceptedButton.Visible = false;

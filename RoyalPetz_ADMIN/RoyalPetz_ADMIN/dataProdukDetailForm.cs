@@ -615,17 +615,22 @@ namespace RoyalPetz_ADMIN
                                                 "PRODUCT_IS_SERVICE = " + produkSvc + " " +
                                                 "WHERE PRODUCT_ID = '" + productID + "'";
 
-
-                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "UPDATE CURRENT PRODUCT DATA [" + productID + "]");
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
 
                             // UPDATE PRODUCT_CATEGORY TABLE
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "UPDATE PRODUCT CATEGORY FOR [" + productID + "]");
+
                             // delete the content first, and insert the new data based on the currentSelectedKategoryID LIST
                             sqlCommand = "DELETE FROM PRODUCT_CATEGORY WHERE PRODUCT_ID = '" + productID + "'";
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "DELETE CURRENT PRODUCT CATEGORY FOR [" + productID + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
 
                             // SAVE TO PRODUCT_CATEGORY TABLE
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "INSERT PRODUCT CATEGORY FOR [" + productID + "]");
+
                             for (int i = 0; i < currentSelectedKategoriID.Count(); i++)
                             {
                                 sqlCommand = "INSERT INTO PRODUCT_CATEGORY (PRODUCT_ID, CATEGORY_ID) VALUES ('" + productID + "', " + currentSelectedKategoriID[i] + ")";
@@ -641,10 +646,14 @@ namespace RoyalPetz_ADMIN
                                             "VALUES " +
                                             "('" + productID + "', '" + produkBarcode + "', '" + produkName + "', '" + produkDesc + "', " + produkHargaPokok + ", " + produkHargaEcer + ", " + produkHargaPartai + ", " + produkHargaGrosir + ", '" + produkPhoto + "', " + selectedUnitID + ", " + produkQty + ", " + limitStock + ", '" + produkShelves + "', " + produkStatus + ", '" + produkBrand + "', " + produkSvc + ")";
 
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "INSERT NEW PRODUCT [" + productID + "]");
+
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
 
                         // SAVE TO PRODUCT_CATEGORY TABLE
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "INSERT PRODUCT CATEGORY FOR [" + productID + "]");
+
                         for (int i = 0; i < currentSelectedKategoriID.Count(); i++)
                         {
                             sqlCommand = "INSERT INTO PRODUCT_CATEGORY (PRODUCT_ID, CATEGORY_ID) VALUES ('" + productID + "', " + currentSelectedKategoriID[i] + ")";
@@ -657,11 +666,16 @@ namespace RoyalPetz_ADMIN
 
                 if (!selectedPhoto.Equals("PRODUCT_PHOTO/" + produkPhoto) && !selectedPhoto.Equals(""))// && result == true)
                 {
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "SET PRODUCT IMAGE [" + selectedPhoto + "]");
+
                     panelImage.BackgroundImage = null;
                     System.IO.File.Copy(selectedPhoto, "PRODUCT_PHOTO/" + produkPhoto + "_temp");
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "COPY SELECTED IMAGE TO PRODUCT_PHOTO FOLDER");
 
                     if (System.IO.File.Exists("PRODUCT_PHOTO/" + produkPhoto))
                     {
+                        gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "DELETE CURRENT PRODUCT IMAGE [" + productID + "]");
+
                         System.GC.Collect();
                         System.GC.WaitForPendingFinalizers();
                         System.IO.File.Delete("PRODUCT_PHOTO/" + produkPhoto);
@@ -669,6 +683,8 @@ namespace RoyalPetz_ADMIN
 
                     System.IO.File.Move("PRODUCT_PHOTO/" + produkPhoto + "_temp", "PRODUCT_PHOTO/" + produkPhoto);
                     panelImage.BackgroundImage = Image.FromFile("PRODUCT_PHOTO/" + produkPhoto);
+
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "RENAME AND SET NEW PRODUCT IMAGE");
                 }
 
                 DS.commit();
@@ -676,6 +692,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_TAMBAH_PRODUK, "EXCEPTION THROWN [" + e.Message+ "]");
                 try
                 {
                     DS.rollBack();
@@ -702,9 +719,19 @@ namespace RoyalPetz_ADMIN
 
         private bool saveData()
         {
+            bool result = false; 
             if (dataValidated())
             {
-                return saveDataTransaction();
+                smallPleaseWait pleaseWait = new smallPleaseWait();
+                pleaseWait.Show();
+
+                //  ALlow main UI thread to properly display please wait form.
+                Application.DoEvents();
+                result = saveDataTransaction();
+
+                pleaseWait.Close();
+
+                return result;
             }
 
             return false;

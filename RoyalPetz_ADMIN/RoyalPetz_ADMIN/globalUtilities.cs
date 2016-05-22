@@ -10,6 +10,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.IO;
 
 namespace RoyalPetz_ADMIN
 {
@@ -19,17 +20,24 @@ namespace RoyalPetz_ADMIN
         public const string REGEX_NUMBER_ONLY = @"^[0-9]*$";
         public const string REGEX_ALPHANUMERIC_ONLY = @"^[0-9A-Za-z]*$";
         public const string CUSTOM_DATE_FORMAT = "dd MMM yyyy";
+        private const string logFileName = "system.log";
+
         public int INS = 1;
         public int UPD = 2;
         private Data_Access DS = new Data_Access();
         private static int userID = 0;
         private static int userGroupID = 0;
+        private static string userName = "";
         private static int papermode = 0; //0 = cashier mode, 1 = 1/2 kwarto, 2 = kwarto
+        private static StreamWriter sw = null;
+
         private CultureInfo culture = new CultureInfo("id-ID");
 
         public void setUserID(int selectedUserID)
         {
             userID = selectedUserID;
+
+            userName = DS.getDataSingleValue("SELECT IFNULL(USER_NAME, '') FROM MASTER_USER WHERE ID = "+userID).ToString();
         }
 
         public int getUserID()
@@ -165,13 +173,13 @@ namespace RoyalPetz_ADMIN
                 if (control is TextBox)
                 {
                     TextBox textBox = (TextBox)control;
-                    textBox.Text = null;
+                    textBox.Text = "";
                 }
 
                 if (control is MaskedTextBox)
                 {
                     MaskedTextBox maskedtextBox = (MaskedTextBox)control;
-                    maskedtextBox.Text = null;
+                    maskedtextBox.Text = "";
                 }
 
                 if (control is ComboBox)
@@ -206,14 +214,16 @@ namespace RoyalPetz_ADMIN
             {
 
                 typectrl = "" + form.Controls[i].GetType();
+                Control ctrl = form.Controls[i];
                 //MessageBox.Show(typectrl);
                 if ((typectrl.Equals("System.Windows.Forms.Panel")) || (typectrl.Equals("System.Windows.Forms.TableLayoutPanel")))
                 {
-                    Control ctrl = form.Controls[i];
                     //MessageBox.Show("" + ctrl.Controls.Count);
                     //ClearControls(ctrl);
-                   ResetAllControls(ctrl);
+                    ResetAllControls(ctrl);
                 }
+                else
+                    ClearControls(ctrl);
             }
         }
 
@@ -467,6 +477,43 @@ namespace RoyalPetz_ADMIN
             }
             catch(Exception ex)
             {}
+        }
+
+        public void saveSystemDebugLog(int moduleID, string logMessage)
+        {
+            string messageToWrite;
+            string dateTimeLog = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
+            string moduleName = "";
+
+            try
+            {
+                if (moduleID > 0)
+                    moduleName = DS.getDataSingleValue("SELECT IFNULL(MODULE_NAME, '') FROM MASTER_MODULE WHERE MODULE_ID = " + moduleID).ToString();
+
+                messageToWrite = "[" + userName + "] [" + dateTimeLog + "] [" + moduleName + "] " + logMessage;
+
+                // if (sw == null)
+                {
+                    if (!File.Exists(Application.StartupPath + "\\" + logFileName))
+                        sw = File.CreateText(Application.StartupPath + "\\" + logFileName);
+                    else
+                        sw = File.AppendText(Application.StartupPath + "\\" + logFileName);
+                }
+
+                sw.WriteLine(messageToWrite);
+                sw.Close();
+            }
+            catch (Exception e)
+            { }
+        }
+
+        public void renameLogFile()
+        {
+            string oldPath = Application.StartupPath + "\\" + logFileName;
+            string dateTimeValue = String.Format(culture, "{0:ddMMyyyyHHmm}", DateTime.Now);
+            string newPath = Application.StartupPath + "\\logFile_" + dateTimeValue + ".log";
+            if (File.Exists(Application.StartupPath + "\\" + logFileName))
+                File.Move(oldPath, newPath);
         }
     }
 }

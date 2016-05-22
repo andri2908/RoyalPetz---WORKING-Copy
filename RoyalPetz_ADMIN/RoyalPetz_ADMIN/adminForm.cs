@@ -164,9 +164,12 @@ namespace RoyalPetz_ADMIN
         
         private void adminForm_Load(object sender, EventArgs e)
         {
+            gutil.saveSystemDebugLog(0, "adminForm Load");
+
             if (!System.IO.Directory.Exists(appPath + "\\PRODUCT_PHOTO"))
             {
                 System.IO.Directory.CreateDirectory(appPath + "\\PRODUCT_PHOTO");
+                gutil.saveSystemDebugLog(0, "CREATE PRODUCT_PHOTO FOLDER");
             }
 
             //updateLabel();
@@ -432,21 +435,30 @@ namespace RoyalPetz_ADMIN
                 try
                 {
                     fileName = openFileDialog1.FileName;
+                    gutil.saveSystemDebugLog(0, "SELECTED PICTURE [" + fileName + "]");
 
                     if (openFileDialog1.FileName != appPath + "\\bg.jpg")
                     { 
                         if (null!= this.BackgroundImage)
+                        {
+                            gutil.saveSystemDebugLog(0, "REMOVE CURRENT BACKGROUND IMAGE");
                             this.BackgroundImage.Dispose();
-                    
+                        }
+
+                        gutil.saveSystemDebugLog(0, "REMOVE CURRENT BACKGROUND IMAGE FILE");
                         System.IO.File.Delete(appPath + "\\bg.jpg");
+
+                        gutil.saveSystemDebugLog(0, "CREATE A COPY OF NEW BACKGROUND IMAGE");
                         System.IO.File.Copy(openFileDialog1.FileName, appPath + "\\bg.jpg");
 
+                        gutil.saveSystemDebugLog(0, "CHANGE BACKGROUND IMAGE");
                         this.BackgroundImage = Image.FromFile(BG_IMAGE);
                         this.BackgroundImageLayout = ImageLayout.Stretch;
                     }
                 }
                 catch (Exception ex)
                 {
+                    gutil.saveSystemDebugLog(0, "CAN'T READ FILE");
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
@@ -771,6 +783,8 @@ namespace RoyalPetz_ADMIN
             if (selectedUserGroupID == 0)
                 return;
 
+            gutil.saveSystemDebugLog(0, "ACTIVATE USER ACCESS RIGHT");
+
             // SET ACCESSIBILITY FOR MANAJEMEN SISTEM MAIN MENU
             setAccessibility(globalConstants.MENU_MANAJEMEN_SISTEM, MAINMENU_manajemenSistem);
             // SUB MENU DATABASE
@@ -1015,6 +1029,71 @@ namespace RoyalPetz_ADMIN
         private void detailedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ReportSalesSummarySearchForm displayedForm = new ReportSalesSummarySearchForm(globalConstants.REPORT_SALES_DETAILED);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void pembelianBarangToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void perProdukBarangToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportSalesSummarySearchForm displayedForm = new ReportSalesSummarySearchForm(globalConstants.REPORT_SALES_PRODUCT);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void globalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportTopSalesFormSearchForm displayedForm = new ReportTopSalesFormSearchForm(globalConstants.REPORT_TOPSALES_GLOBAL);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void perJenisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportTopSalesFormSearchForm displayedForm = new ReportTopSalesFormSearchForm(globalConstants.REPORT_TOPSALES_byTAGS);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void penjualanPertanggalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportTopSalesFormSearchForm displayedForm = new ReportTopSalesFormSearchForm(globalConstants.REPORT_TOPSALES_byDATE);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void penjualanLabaPertanggalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportTopSalesFormSearchForm displayedForm = new ReportTopSalesFormSearchForm(globalConstants.REPORT_TOPSALES_ByMARGIN);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void detailedToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            ReportPurchaseSearchForm displayedForm = new ReportPurchaseSearchForm(globalConstants.REPORT_PURCHASE_DETAILED);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void summaryToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            ReportPurchaseSearchForm displayedForm = new ReportPurchaseSearchForm(globalConstants.REPORT_PURCHASE_SUMMARY);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void perProdukBarangToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ReportPurchaseSearchForm displayedForm = new ReportPurchaseSearchForm(globalConstants.REPORT_PURCHASE_ByPRODUCT);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void omzetPenjualanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportSalesSummarySearchForm displayedForm = new ReportSalesSummarySearchForm(globalConstants.REPORT_SALES_OMZET);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void penjualanKasirPerShiftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportCashierLogSearchForm displayedForm = new ReportCashierLogSearchForm();
             displayedForm.ShowDialog(this);
         }
     }

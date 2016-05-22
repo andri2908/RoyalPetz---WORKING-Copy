@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.crystalReportViewer1 = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
-            this.purchaseOrderPrintOut1 = new RoyalPetz_ADMIN.purchaseOrderPrintOut();
             this.ReportSalesDetailed1 = new RoyalPetz_ADMIN.ReportSalesDetailed();
             this.SuspendLayout();
             // 
@@ -46,7 +45,7 @@
             this.crystalReportViewer1.ShowCopyButton = false;
             this.crystalReportViewer1.ShowGroupTreeButton = false;
             this.crystalReportViewer1.ShowParameterPanelButton = false;
-            this.crystalReportViewer1.Size = new System.Drawing.Size(1186, 590);
+            this.crystalReportViewer1.Size = new System.Drawing.Size(933, 590);
             this.crystalReportViewer1.TabIndex = 0;
             this.crystalReportViewer1.ToolPanelView = CrystalDecisions.Windows.Forms.ToolPanelViewType.None;
             // 
@@ -54,7 +53,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1186, 590);
+            this.ClientSize = new System.Drawing.Size(933, 590);
             this.Controls.Add(this.crystalReportViewer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "ReportSalesDetailedForm";
@@ -68,6 +67,5 @@
 
         private CrystalDecisions.Windows.Forms.CrystalReportViewer crystalReportViewer1;
         private ReportSalesDetailed ReportSalesDetailed1;
-        private purchaseOrderPrintOut purchaseOrderPrintOut1;
     }
 }

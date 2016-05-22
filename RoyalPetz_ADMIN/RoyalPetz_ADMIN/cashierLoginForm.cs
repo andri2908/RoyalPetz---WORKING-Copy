@@ -74,7 +74,8 @@ namespace RoyalPetz_ADMIN
 
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
-                                       
+
+                    gUtil.saveSystemDebugLog(0, "INSERT DATA FOR A NEW CASHIER SESSION, SA="+startAmountBox.Text);
                 }
                 else if (loginState == 1)
                 {
@@ -103,10 +104,12 @@ namespace RoyalPetz_ADMIN
                                            "AND DATE_FORMAT(JOURNAL_DATETIME, '%Y%m%d%H%i') >= '" + dateTimeFrom + "' " +
                                            "AND DATE_FORMAT(JOURNAL_DATETIME, '%Y%m%d%H%i') <= '" + dateTimeTo + "'";
                     totalOtherTransaction = Convert.ToDouble(DS.getDataSingleValue(sqlCommand));
-                    sqlCommand = "UPDATE CASHIER_LOG SET DATE_LOGOUT = STR_TO_DATE('" + dateLogOut + "', '%d-%m-%Y %H:%i'), AMOUNT_END = " + endAmountBox.Text + ", COMMENT = '" + remarkTextBox.Text + "', TOTAL_CASH_TRANSACTION = " + totalCashTransaction + ", TOTAL_NON_CASH_TRANSACTION = " + totalNonCashTransaction + ", TOTAL_OTHER_TRANSACTION = " + totalOtherTransaction + " WHERE ID = " + logEntryID;
 
+                    sqlCommand = "UPDATE CASHIER_LOG SET DATE_LOGOUT = STR_TO_DATE('" + dateLogOut + "', '%d-%m-%Y %H:%i'), AMOUNT_END = " + endAmountBox.Text + ", COMMENT = '" + remarkTextBox.Text + "', TOTAL_CASH_TRANSACTION = " + totalCashTransaction + ", TOTAL_NON_CASH_TRANSACTION = " + totalNonCashTransaction + ", TOTAL_OTHER_TRANSACTION = " + totalOtherTransaction + " WHERE ID = " + logEntryID;
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
+
+                    gUtil.saveSystemDebugLog(0, "UPDATE DATA FOR CASHIER END SESSION, EA="+ endAmountBox.Text+", TC = "+totalCashTransaction+", TN="+totalNonCashTransaction+", TO="+totalOtherTransaction);
 
                 }
 
@@ -182,6 +185,8 @@ namespace RoyalPetz_ADMIN
             {
                 // LOGIN 
                 // KEY IN THE STARTING AMOUNT FOR CASHIER MONEY
+                gUtil.saveSystemDebugLog(0, "DISPLAY CASHIER LOG SCREEN FOR CASHIER LOGIN");
+
                 startAmountBox.ReadOnly = false;
                 endAmountBox.ReadOnly = true;
                 remarkTextBox.ReadOnly = true;
@@ -192,6 +197,8 @@ namespace RoyalPetz_ADMIN
             else
             {
                 // KEY IN THE END AMOUNT FOR CASHIER MONEY
+                gUtil.saveSystemDebugLog(0, "DISPLAY CASHIER LOG SCREEN FOR CASHIER LOGOUT");
+
                 startAmountBox.ReadOnly = true;
                 endAmountBox.ReadOnly = false;
                 remarkTextBox.ReadOnly = false;
@@ -216,6 +223,8 @@ namespace RoyalPetz_ADMIN
                         endAmountBox.ReadOnly = true;
                         remarkTextBox.ReadOnly = true;
                         endTimeTextBox.Text = "";
+
+                        gUtil.saveSystemDebugLog(0, "CASHIER CONTINUE SESSION");
                     }
                     else
                     {

@@ -138,6 +138,7 @@ namespace RoyalPetz_ADMIN
                     case globalConstants.NEW_CATEGORY:
                         sqlCommand = "INSERT INTO MASTER_CATEGORY (CATEGORY_NAME, CATEGORY_DESCRIPTION, CATEGORY_ACTIVE) " +
                                             "VALUES ('" + categoryName + "', '" + categoryDesc + "', " + categoryStatus + ")";
+                        gutil.saveSystemDebugLog(globalConstants.MENU_KATEGORI, "ADD NEW CATEGORY [" + categoryName + "]");
                         break;
                     case globalConstants.EDIT_CATEGORY:
                         sqlCommand = "UPDATE MASTER_CATEGORY SET " +
@@ -145,6 +146,7 @@ namespace RoyalPetz_ADMIN
                                             "CATEGORY_DESCRIPTION = '" + categoryDesc + "', " +
                                             "CATEGORY_ACTIVE = " + categoryStatus + " " +
                                             "WHERE CATEGORY_ID = " + selectedCategoryID;
+                        gutil.saveSystemDebugLog(globalConstants.MENU_KATEGORI, "UPDATE CATEGORY [" + selectedCategoryID + "]");
                         break;
                 }
 
@@ -156,6 +158,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                gutil.saveSystemDebugLog(globalConstants.MENU_KATEGORI, "EXCEPTION THROWN [" + e.Message + "]");
                 try
                 {
                     DS.rollBack();

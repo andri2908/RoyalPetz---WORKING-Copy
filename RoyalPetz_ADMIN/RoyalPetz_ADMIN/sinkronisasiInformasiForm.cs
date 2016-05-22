@@ -219,7 +219,7 @@ namespace RoyalPetz_ADMIN
             saveFileDialog1.ShowDialog();
            
             exportData(saveFileDialog1.FileName, DS);
-
+            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "EXPORTED FILE NAME = " + saveFileDialog1.FileName);
             MessageBox.Show("DONE");
         }
 
@@ -236,6 +236,7 @@ namespace RoyalPetz_ADMIN
         private void ProcessExited(Object source, EventArgs e)
         {
             var proc = (System.Diagnostics.Process)source;
+            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "PROCESS EXITED");
             if (updateLocalData())
             {
                 MessageBox.Show("DONE");
@@ -258,6 +259,7 @@ namespace RoyalPetz_ADMIN
             proc.StartInfo.Arguments = "/C " + "mysql -h " + ipServer + " -u SYS_POS_ADMIN -ppass123 sys_pos < \"" + fileName + "\"";
             proc.Exited += new EventHandler(ProcessExited);
             proc.EnableRaisingEvents = true;
+            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "SYNC INFORMATION PROCESS START");
             proc.Start();
             
 
@@ -290,7 +292,7 @@ namespace RoyalPetz_ADMIN
             int i = 0;
             DS.beginTransaction();
 
-
+            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "UPDATE LOCAL DATA");
             sqlCommand = "SELECT PRODUCT_ID FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1";
             try
             {
@@ -306,6 +308,7 @@ namespace RoyalPetz_ADMIN
                         dataGridView1.DataSource = dt;
                         i = 0;
                         // UPDATE CURRENT DATA IN LOCAL DATABASE    
+                        gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "UPDATE CURRENT DATA IN LOCAL DATABASE");
                         while (i < dataGridView1.Rows.Count)
                         {
                             productID = dataGridView1.Rows[i].Cells["PRODUCT_ID"].Value.ToString();
@@ -330,17 +333,20 @@ namespace RoyalPetz_ADMIN
 
                             i++;
                         }
+                        gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "FINISHED UPDATE CURRENT DATA IN LOCAL DATABASE");
 
                         dataGridView1.DataSource = null;
                         // INSERT NEW PRODUCT CATEGORY
                         sqlCommand = "SELECT * FROM TEMP_PRODUCT_CATEGORY WHERE CONCAT(PRODUCT_ID, '-', CATEGORY_ID) NOT IN (SELECT CONCAT(PRODUCT_ID, '-', CATEGORY_ID) FROM PRODUCT_CATEGORY)";
                         using (rdr = DS.getData(sqlCommand))
                         {
+                            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "INSERT NEW PRODUCT CATEGORY ["+Convert.ToInt32(rdr.HasRows)+"]");
+
                             if (rdr.HasRows)
                             {
                                 dt2.Load(rdr);
                                 rdr.Close();
-
+                            
                                 dataGridView1.DataSource = dt2;
                                 i = 0;
                                 while (i < dataGridView1.Rows.Count)
@@ -365,6 +371,7 @@ namespace RoyalPetz_ADMIN
 
                         using (rdr = DS.getData(sqlCommand))
                         {
+                            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "INSERT NEW PRODUCT DATA [" + Convert.ToInt32(rdr.HasRows) + "]");
                             if (rdr.HasRows)
                             {
                                 dt3.Load(rdr);
@@ -403,6 +410,8 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "EXCEPTION THROWN ["+e.Message+"]");
+
                 try
                 {
                     DS.rollBack();
@@ -431,8 +440,9 @@ namespace RoyalPetz_ADMIN
             if (fileNameTextbox.Text != "")
             {
                 //this.Cursor = Cursors.WaitCursor;
-                
+
                 //restore database from file
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "SINKRONISASI INFORMASI, FILENAME [" + fileNameTextbox.Text + "]");
                 syncInformation(fileNameTextbox.Text);
                 gutil.saveUserChangeLog(globalConstants.MENU_SINKRONISASI_INFORMASI, globalConstants.CHANGE_LOG_UPDATE, "SINKRONISASI INFORMASI DENGAN SERVER VIA USB EXPORT");
                 
@@ -450,21 +460,31 @@ namespace RoyalPetz_ADMIN
             Data_Access DS_HQ = new Data_Access();
 
             // CREATE CONNECTION TO CENTRAL HQ DATABASE SERVER
+            gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "TRY TO CREATE CONNECTION TO CENTRAL HQ");
             if (DS_HQ.HQ_mySQLConnect())
             {
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "CONNECTION TO CENTRAL HQ CREATED");
+
                 // DUMP NECESSARY DATA TO LOCAL COPY
                 exportData(syncFileName, DS_HQ, true);
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "CENTRAL HQ DATA EXPORTED");
 
                 // CLOSE CONNECTION TO CENTRAL HQ DATABASE SERVER
                 DS_HQ.mySqlClose();
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "CLOSE CONNECTION TO CENTRAL HQ");
 
                 // INSERT TO LOCAL DATA
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "SYNC LOCAL INFORMATION WITH DATA FROM CENTRAL HQ [" + syncFileName + "]");
                 syncInformation(syncFileName);
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "SYNC LOCAL INFORMATION FINISHED");
+
                 result = true;
             }
             else
             {
                 MessageBox.Show("KONEKSI KE PUSAT GAGAL");
+                gutil.saveSystemDebugLog(globalConstants.MENU_SINKRONISASI_INFORMASI, "FAILED TO CONNECT TO CENTRAL HQ");
+
                 result = false;
             }
 
