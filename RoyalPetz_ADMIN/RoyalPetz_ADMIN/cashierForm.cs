@@ -541,7 +541,7 @@ namespace RoyalPetz_ADMIN
             else
             {
                 // CHECK TEMPO
-                if (tempoMaskedTextBox.Text.Length <= 0)
+                if (tempoMaskedTextBox.Text.Length <= 0 || tempoMaskedTextBox.Text == "0")
                 {
                     errorLabel.Text = "LAMA TEMPO TIDAK BOLEH NOL";
                     return false;
@@ -697,9 +697,9 @@ namespace RoyalPetz_ADMIN
                         discRP = Convert.ToDouble(cashierDataGridView.Rows[i].Cells["discRP"].Value);
                         productID = cashierDataGridView.Rows[i].Cells["productID"].Value.ToString();
 
-                        sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
+                        sqlCommand = "INSERT INTO SALES_DETAIL (SALES_INVOICE, PRODUCT_ID, PRODUCT_PRICE, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
                                             "VALUES " +
-                                            "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
+                                            "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
                                             gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value)) + ", " + gutil.validateDecimalNumericInput(disc1) + ", " + gutil.validateDecimalNumericInput(disc2) + ", " + gutil.validateDecimalNumericInput(discRP) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value)) + ")";
 
                         gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "INSERT INTO SALES DETAIL[" + productID + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
@@ -710,9 +710,9 @@ namespace RoyalPetz_ADMIN
 
                         if (addToTaxTable)
                         {
-                            sqlCommand = "INSERT INTO SALES_DETAIL_TAX (SALES_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
+                            sqlCommand = "INSERT INTO SALES_DETAIL_TAX (SALES_INVOICE, PRODUCT_ID, PRODUCT_PRICE, PRODUCT_SALES_PRICE, PRODUCT_QTY, PRODUCT_DISC1, PRODUCT_DISC2, PRODUCT_DISC_RP, SALES_SUBTOTAL) " +
                                                 "VALUES " +
-                                                "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
+                                                "('" + salesInvoice + "', '" + productID + "', " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["hpp"].Value) + ", " + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["productPrice"].Value) + ", " +
                                                 gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value)) + ", " + gutil.validateDecimalNumericInput(disc1) + ", " + gutil.validateDecimalNumericInput(disc2) + ", " + gutil.validateDecimalNumericInput(discRP) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value)) + ")";
 
                             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "INSERT INTO SALES DETAIL TAX [" + productID + "]");
@@ -908,7 +908,7 @@ namespace RoyalPetz_ADMIN
             return salesInvoice;
         }
 
-        private double getProductPriceValue(string productID, int customerType = 0)
+        private double getProductPriceValue(string productID, int customerType = 0, bool hppValue = false)
         {
             double result = 0;
             string priceType = "";
@@ -921,6 +921,9 @@ namespace RoyalPetz_ADMIN
                 priceType = "PRODUCT_BULK_PRICE";
             else
                 priceType = "PRODUCT_WHOLESALE_PRICE";
+
+            if (hppValue)
+                priceType = "PRODUCT_BASE_PRICE";
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : PRODUCT PRICE TYPE [" + priceType + "]");
 
@@ -1033,10 +1036,14 @@ namespace RoyalPetz_ADMIN
             selectedProductID = productIDComboCell.Items[selectedIndex].ToString();
             productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
 
-            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex, true);
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : comboSelectedIndexChangeMethod, PRODUCT_BASE_PRICE [" + hpp + "]");
+            selectedRow.Cells["hpp"].Value = hpp;
 
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : comboSelectedIndexChangeMethod, HPP [" + hpp + "]");
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : comboSelectedIndexChangeMethod, PRODUCT_SALES_PRICE [" + hpp + "]");
             selectedRow.Cells["productPrice"].Value = hpp;
+
             selectedRow.Cells["productId"].Value = selectedProductID;
 
             if (selectedPelangganID != 0)
@@ -1111,9 +1118,12 @@ namespace RoyalPetz_ADMIN
             productIDComboCell.Value = productIDComboCell.Items[selectedIndex];
             productNameComboCell.Value = productNameComboCell.Items[selectedIndex];
 
-            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, HPP [" + hpp + "]");
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex, true);
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, PRODUCT_BASE_PRICE [" + hpp + "]");
+            selectedRow.Cells["hpp"].Value = hpp;
 
+            hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, PRODUCT_SALES_PRICE [" + hpp + "]");
             selectedRow.Cells["productPrice"].Value = hpp;
 
             if (null == selectedRow.Cells["qty"].Value)
@@ -1380,6 +1390,7 @@ namespace RoyalPetz_ADMIN
             DataGridViewTextBoxColumn F8Column = new DataGridViewTextBoxColumn();
             DataGridViewComboBoxColumn productIdColumn = new DataGridViewComboBoxColumn();
             DataGridViewComboBoxColumn productNameCmb = new DataGridViewComboBoxColumn();
+            DataGridViewTextBoxColumn productHPPColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn productPriceColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn stockQtyColumn = new DataGridViewTextBoxColumn();
             DataGridViewTextBoxColumn disc1Column = new DataGridViewTextBoxColumn();
@@ -1456,6 +1467,12 @@ namespace RoyalPetz_ADMIN
             subTotalColumn.Width = 200;
             subTotalColumn.ReadOnly = true;
             cashierDataGridView.Columns.Add(subTotalColumn);
+
+            productHPPColumn.HeaderText = "HPP";
+            productHPPColumn.Name = "hpp";
+            productHPPColumn.Width = 200;
+            productHPPColumn.Visible = false;
+            cashierDataGridView.Columns.Add(productHPPColumn);
 
         }
 
@@ -1971,6 +1988,8 @@ namespace RoyalPetz_ADMIN
             sf.Alignment = StringAlignment.Near;
             //read sales_detail
 
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : BEFORE DISPLAY DETAIL PENJUALAN");
+
             DS.mySqlConnect();
             string product_id = "";
             string product_name = "";
@@ -2005,13 +2024,15 @@ namespace RoyalPetz_ADMIN
                         rectright.Y = Offset-startY;
                         sf.LineAlignment = StringAlignment.Far;
                         sf.Alignment = StringAlignment.Far;
-                        ucapan = " Rp." + product_price;
+                        ucapan = product_price.ToString("C2", culture);//" Rp." + product_price;
                         graphics.DrawString(ucapan, new Font("Courier New", 7),
                                  new SolidBrush(Color.Black), rectright, sf);
                     }
                 }
             }
             DS.mySqlClose();
+
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : AFTER DISPLAY DETAIL PENJUALAN");
 
             Offset = Offset + 13;
             rect.Y = startY + Offset;
@@ -2034,44 +2055,49 @@ namespace RoyalPetz_ADMIN
                      new SolidBrush(Color.Black), rectcenter, sf);
             sf.LineAlignment = StringAlignment.Far;
             sf.Alignment = StringAlignment.Far;
-            ucapan = "Rp." + total;
+            ucapan = total.ToString("C2", culture);
             rectright.Y = Offset - startY + 1;
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rectright, sf);
 
-            Offset = Offset + 15;
-            rect.Y = startY + Offset;
-            rect.X = startX + 15;
-            rect.Width = 260;
-            sf.LineAlignment = StringAlignment.Near;
-            sf.Alignment = StringAlignment.Near;
-            ucapan = "               TUNAI   :";
-            rectcenter.Y = rect.Y;
-            graphics.DrawString(ucapan, new Font("Courier New", 7),
-                     new SolidBrush(Color.Black), rectcenter, sf);
-            sf.LineAlignment = StringAlignment.Far;
-            sf.Alignment = StringAlignment.Far;
-            ucapan = "Rp." + bayarTextBox.Text;
-            rectright.Y = Offset - startY + 1;
-            graphics.DrawString(ucapan, new Font("Courier New", 7),
-                     new SolidBrush(Color.Black), rectright, sf);
+            if (cashRadioButton.Checked == true)
+            { 
+                Offset = Offset + 15;
+                rect.Y = startY + Offset;
+                rect.X = startX + 15;
+                rect.Width = 260;
+                sf.LineAlignment = StringAlignment.Near;
+                sf.Alignment = StringAlignment.Near;
+                ucapan = "               TUNAI   :";
+                rectcenter.Y = rect.Y;
+                graphics.DrawString(ucapan, new Font("Courier New", 7),
+                         new SolidBrush(Color.Black), rectcenter, sf);
+                sf.LineAlignment = StringAlignment.Far;
+                sf.Alignment = StringAlignment.Far;
 
-            Offset = Offset + 15;
-            rect.Y = startY + Offset;
-            rect.X = startX + 15;
-            rect.Width = 260;
-            sf.LineAlignment = StringAlignment.Near;
-            sf.Alignment = StringAlignment.Near;
-            ucapan = "               KEMBALI :";
-            rectcenter.Y = rect.Y;
-            graphics.DrawString(ucapan, new Font("Courier New", 7),
-                     new SolidBrush(Color.Black), rectcenter, sf);
-            sf.LineAlignment = StringAlignment.Far;
-            sf.Alignment = StringAlignment.Far;
-            ucapan = uangKembaliTextBox.Text;
-            rectright.Y = Offset - startY + 1;
-            graphics.DrawString(ucapan, new Font("Courier New", 7),
-                     new SolidBrush(Color.Black), rectright, sf);
+                double jumlahBayar = Convert.ToDouble(bayarTextBox.Text);
+                ucapan = jumlahBayar.ToString("C2", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
+                rectright.Y = Offset - startY + 1;
+                graphics.DrawString(ucapan, new Font("Courier New", 7),
+                         new SolidBrush(Color.Black), rectright, sf);
+
+                Offset = Offset + 15;
+                rect.Y = startY + Offset;
+                rect.X = startX + 15;
+                rect.Width = 260;
+                sf.LineAlignment = StringAlignment.Near;
+                sf.Alignment = StringAlignment.Near;
+                ucapan = "               KEMBALI :";
+                rectcenter.Y = rect.Y;
+                graphics.DrawString(ucapan, new Font("Courier New", 7),
+                         new SolidBrush(Color.Black), rectcenter, sf);
+                sf.LineAlignment = StringAlignment.Far;
+                sf.Alignment = StringAlignment.Far;
+                ucapan = uangKembaliTextBox.Text;
+                rectright.Y = Offset - startY + 1;
+                graphics.DrawString(ucapan, new Font("Courier New", 7),
+                         new SolidBrush(Color.Black), rectright, sf);
+            }
 
             total_qty = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PRODUCT_QTY), 0) FROM SALES_DETAIL S, MASTER_PRODUCT P WHERE S.PRODUCT_ID = P.PRODUCT_ID AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'"));
 
