@@ -16,14 +16,14 @@ namespace RoyalPetz_ADMIN {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class purchaseOrderPrintOut : ReportClass {
+    public class penerimaanBarangPrintOut : ReportClass {
         
-        public purchaseOrderPrintOut() {
+        public penerimaanBarangPrintOut() {
         }
         
         public override string ResourceName {
             get {
-                return "purchaseOrderPrintOut.rpt";
+                return "penerimaanBarangPrintOut.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace RoyalPetz_ADMIN {
         
         public override string FullResourceName {
             get {
-                return "RoyalPetz_ADMIN.purchaseOrderPrintOut.rpt";
+                return "RoyalPetz_ADMIN.penerimaanBarangPrintOut.rpt";
             }
             set {
                 // Do nothing
@@ -66,7 +66,7 @@ namespace RoyalPetz_ADMIN {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection1 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section3 {
             get {
                 return this.ReportDefinition.Sections[2];
             }
@@ -74,7 +74,7 @@ namespace RoyalPetz_ADMIN {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section Section3 {
+        public CrystalDecisions.CrystalReports.Engine.Section Section4 {
             get {
                 return this.ReportDefinition.Sections[3];
             }
@@ -82,33 +82,17 @@ namespace RoyalPetz_ADMIN {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection1 {
-            get {
-                return this.ReportDefinition.Sections[4];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section Section4 {
-            get {
-                return this.ReportDefinition.Sections[5];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
         public CrystalDecisions.CrystalReports.Engine.Section Section5 {
             get {
-                return this.ReportDefinition.Sections[6];
+                return this.ReportDefinition.Sections[4];
             }
         }
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedpurchaseOrderPrintOut : Component, ICachedReport {
+    public class CachedpenerimaanBarangPrintOut : Component, ICachedReport {
         
-        public CachedpurchaseOrderPrintOut() {
+        public CachedpenerimaanBarangPrintOut() {
         }
         
         [Browsable(false)]
@@ -145,7 +129,7 @@ namespace RoyalPetz_ADMIN {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            purchaseOrderPrintOut rpt = new purchaseOrderPrintOut();
+            penerimaanBarangPrintOut rpt = new penerimaanBarangPrintOut();
             rpt.Site = this.Site;
             return rpt;
         }

@@ -396,8 +396,9 @@ namespace RoyalPetz_ADMIN
 
         private void toolStripMenuItem67_Click(object sender, EventArgs e)
         {
-//            dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.REPRINT_PERMINTAAN_BARANG);
-//            displayedForm.ShowDialog(this);
+            dataPOForm displayedForm = new dataPOForm(globalConstants.REPRINT_PURCHASE_ORDER);
+            displayedForm.ShowDialog(this);
+            //            dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.REPRINT_PERMINTAAN_BARANG);
         }
 
         private void toolStripMenuItem52_Click(object sender, EventArgs e)

@@ -7,31 +7,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using CrystalDecisions.ReportSource;
 using CrystalDecisions.CrystalReports.Engine;
-using System.IO;
 
 namespace RoyalPetz_ADMIN
 {
-    public partial class purchaseOrderPrintOutForm : Form
+    public partial class penerimaanBarangPrintOutForm : Form
     {
         private globalUtilities gUtil = new globalUtilities();
 
-        public purchaseOrderPrintOutForm()
+        public penerimaanBarangPrintOutForm()
         {
             InitializeComponent();
         }
 
-        private void purchaseOrderPrintOutForm_Load(object sender, EventArgs e)
+        private void penerimaanBarangPrintOutForm_Load(object sender, EventArgs e)
         {
             DataSet dsTempReport = new DataSet();
             try
             {
-                string appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.purchaseOrderXML;
+                string appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.penerimaanBarangXML;
                 dsTempReport.ReadXml(@appPath);
 
                 //prepare report for preview
-                purchaseOrderPrintOut rptXMLReport = new purchaseOrderPrintOut();
+                penerimaanBarangPrintOut rptXMLReport = new penerimaanBarangPrintOut();
                 CrystalDecisions.CrystalReports.Engine.TextObject txtReportHeader1, txtReportHeader2;
                 txtReportHeader1 = rptXMLReport.ReportDefinition.ReportObjects["NamaTokoLabel"] as TextObject;
                 txtReportHeader2 = rptXMLReport.ReportDefinition.ReportObjects["InfoTokoLabel"] as TextObject;
@@ -57,6 +57,11 @@ namespace RoyalPetz_ADMIN
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void crystalReportViewer1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

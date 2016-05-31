@@ -653,7 +653,7 @@
             this.MENU_requestOrder.ForeColor = System.Drawing.Color.FloralWhite;
             this.MENU_requestOrder.Name = "MENU_requestOrder";
             this.MENU_requestOrder.ShowShortcutKeys = false;
-            this.MENU_requestOrder.Size = new System.Drawing.Size(235, 22);
+            this.MENU_requestOrder.Size = new System.Drawing.Size(243, 22);
             this.MENU_requestOrder.Text = "Request Order";
             this.MENU_requestOrder.Click += new System.EventHandler(this.toolStripMenuItem65_Click);
             // 
@@ -663,7 +663,7 @@
             this.MENU_purchaseOrder.ForeColor = System.Drawing.Color.FloralWhite;
             this.MENU_purchaseOrder.Name = "MENU_purchaseOrder";
             this.MENU_purchaseOrder.ShowShortcutKeys = false;
-            this.MENU_purchaseOrder.Size = new System.Drawing.Size(235, 22);
+            this.MENU_purchaseOrder.Size = new System.Drawing.Size(243, 22);
             this.MENU_purchaseOrder.Text = "Purchase Order";
             this.MENU_purchaseOrder.Click += new System.EventHandler(this.toolStripMenuItem36_Click);
             // 
@@ -673,8 +673,8 @@
             this.MENU_reprintRequestOrder.ForeColor = System.Drawing.Color.FloralWhite;
             this.MENU_reprintRequestOrder.Name = "MENU_reprintRequestOrder";
             this.MENU_reprintRequestOrder.ShowShortcutKeys = false;
-            this.MENU_reprintRequestOrder.Size = new System.Drawing.Size(235, 22);
-            this.MENU_reprintRequestOrder.Text = "Re-print Request Order";
+            this.MENU_reprintRequestOrder.Size = new System.Drawing.Size(243, 22);
+            this.MENU_reprintRequestOrder.Text = "Re-print Purchase Order";
             this.MENU_reprintRequestOrder.Click += new System.EventHandler(this.toolStripMenuItem67_Click);
             // 
             // MENU_returPembelianKeSupplier

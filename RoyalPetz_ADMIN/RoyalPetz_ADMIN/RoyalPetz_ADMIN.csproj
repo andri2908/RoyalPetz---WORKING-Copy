@@ -338,6 +338,18 @@
     <Compile Include="penerimaanBarangForm.Designer.cs">
       <DependentUpon>penerimaanBarangForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="penerimaanBarangPrintOut.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>penerimaanBarangPrintOut.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="penerimaanBarangPrintOutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="penerimaanBarangPrintOutForm.Designer.cs">
+      <DependentUpon>penerimaanBarangPrintOutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="pengaturanKategoriProdukForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -933,6 +945,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="penerimaanBarangForm.resx">
       <DependentUpon>penerimaanBarangForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="penerimaanBarangPrintOut.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>penerimaanBarangPrintOut.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="penerimaanBarangPrintOutForm.resx">
+      <DependentUpon>penerimaanBarangPrintOutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="pengaturanKategoriProdukForm.resx">
       <DependentUpon>pengaturanKategoriProdukForm.cs</DependentUpon>
