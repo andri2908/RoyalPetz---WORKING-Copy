@@ -303,5 +303,10 @@ namespace RoyalPetz_ADMIN
         {
 
         }
+
+        private void supplierCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            supplierID = Convert.ToInt32(supplierHiddenCombo.Items[supplierCombo.SelectedIndex].ToString());
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace RoyalPetz_ADMIN
 {
-    partial class ReportDebtUnpaidForm
+    partial class ReportCreditDueForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.crystalReportViewer1 = new CrystalDecisions.Windows.Forms.CrystalReportViewer();
-            this.ReportDebtUnpaid1 = new RoyalPetz_ADMIN.ReportDebtUnpaid();
+            this.ReportCreditDue1 = new RoyalPetz_ADMIN.ReportCreditDue();
             this.SuspendLayout();
             // 
             // crystalReportViewer1
@@ -40,24 +40,24 @@
             this.crystalReportViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.crystalReportViewer1.Location = new System.Drawing.Point(0, 0);
             this.crystalReportViewer1.Name = "crystalReportViewer1";
-            this.crystalReportViewer1.ReportSource = this.ReportDebtUnpaid1;
+            this.crystalReportViewer1.ReportSource = this.ReportCreditDue1;
             this.crystalReportViewer1.ShowCloseButton = false;
             this.crystalReportViewer1.ShowCopyButton = false;
             this.crystalReportViewer1.ShowGroupTreeButton = false;
             this.crystalReportViewer1.ShowParameterPanelButton = false;
             this.crystalReportViewer1.Size = new System.Drawing.Size(1075, 507);
             this.crystalReportViewer1.TabIndex = 0;
+            this.crystalReportViewer1.ToolPanelView = CrystalDecisions.Windows.Forms.ToolPanelViewType.None;
             // 
-            // ReportDebtUnpaidForm
+            // ReportCreditDueForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1075, 507);
             this.Controls.Add(this.crystalReportViewer1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "ReportDebtUnpaidForm";
-            this.Text = "Laporan Hutang Lewat Jatuh Tempo";
-            this.Load += new System.EventHandler(this.ReportDebtUnpaidForm_Load);
+            this.Name = "ReportCreditDueForm";
+            this.Text = "Laporan Piutang Jatuh Tempo";
+            this.Load += new System.EventHandler(this.ReportCreditDueForm_Load);
             this.ResumeLayout(false);
 
         }
@@ -65,6 +65,6 @@
         #endregion
 
         private CrystalDecisions.Windows.Forms.CrystalReportViewer crystalReportViewer1;
-        private ReportDebtUnpaid ReportDebtUnpaid1;
+        private ReportCreditDue ReportCreditDue1;
     }
 }

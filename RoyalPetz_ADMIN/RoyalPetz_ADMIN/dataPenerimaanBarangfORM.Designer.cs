@@ -1,6 +1,6 @@
 ﻿namespace RoyalPetz_ADMIN
 {
-    partial class dataPOForm
+    partial class dataPenerimaanBarangForm
     {
         /// <summary>
         /// Required designer variable.
@@ -44,10 +44,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.supplierCombo = new System.Windows.Forms.ComboBox();
             this.displayButton = new System.Windows.Forms.Button();
-            this.dataPurchaseOrder = new System.Windows.Forms.DataGridView();
+            this.dataPenerimaanBarang = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataPenerimaanBarang)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -58,7 +58,7 @@
             // 
             this.noPOInvoiceTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.noPOInvoiceTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noPOInvoiceTextBox.Location = new System.Drawing.Point(185, 3);
+            this.noPOInvoiceTextBox.Location = new System.Drawing.Point(199, 3);
             this.noPOInvoiceTextBox.Name = "noPOInvoiceTextBox";
             this.noPOInvoiceTextBox.Size = new System.Drawing.Size(260, 27);
             this.noPOInvoiceTextBox.TabIndex = 36;
@@ -72,11 +72,11 @@
             this.tableLayoutPanel2.Controls.Add(this.PODtPicker_1, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.label5, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.PODtPicker_2, 2, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(185, 36);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(199, 36);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(359, 33);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(351, 33);
             this.tableLayoutPanel2.TabIndex = 43;
             // 
             // PODtPicker_1
@@ -117,9 +117,9 @@
             this.label1.ForeColor = System.Drawing.Color.FloralWhite;
             this.label1.Location = new System.Drawing.Point(3, 7);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(176, 18);
+            this.label1.Size = new System.Drawing.Size(143, 18);
             this.label1.TabIndex = 35;
-            this.label1.Text = "No Purchase Order";
+            this.label1.Text = "No Penerimaan";
             // 
             // supplierHiddenCombo
             // 
@@ -128,7 +128,7 @@
             this.supplierHiddenCombo.Location = new System.Drawing.Point(566, 274);
             this.supplierHiddenCombo.Name = "supplierHiddenCombo";
             this.supplierHiddenCombo.Size = new System.Drawing.Size(311, 26);
-            this.supplierHiddenCombo.TabIndex = 55;
+            this.supplierHiddenCombo.TabIndex = 61;
             this.supplierHiddenCombo.Visible = false;
             // 
             // showAllCheckBox
@@ -137,7 +137,7 @@
             this.showAllCheckBox.AutoSize = true;
             this.showAllCheckBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.showAllCheckBox.ForeColor = System.Drawing.Color.FloralWhite;
-            this.showAllCheckBox.Location = new System.Drawing.Point(550, 79);
+            this.showAllCheckBox.Location = new System.Drawing.Point(556, 79);
             this.showAllCheckBox.Name = "showAllCheckBox";
             this.showAllCheckBox.Size = new System.Drawing.Size(101, 22);
             this.showAllCheckBox.TabIndex = 47;
@@ -147,11 +147,11 @@
             // newButton
             // 
             this.newButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newButton.Location = new System.Drawing.Point(566, 150);
+            this.newButton.Location = new System.Drawing.Point(508, 150);
             this.newButton.Name = "newButton";
-            this.newButton.Size = new System.Drawing.Size(243, 37);
-            this.newButton.TabIndex = 54;
-            this.newButton.Text = "NEW PURCHASE ORDER";
+            this.newButton.Size = new System.Drawing.Size(301, 37);
+            this.newButton.TabIndex = 60;
+            this.newButton.Text = "NEW PENERIMAAN BARANG";
             this.newButton.UseVisualStyleBackColor = true;
             this.newButton.Click += new System.EventHandler(this.newButton_Click);
             // 
@@ -175,7 +175,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(899, 108);
-            this.tableLayoutPanel1.TabIndex = 57;
+            this.tableLayoutPanel1.TabIndex = 62;
             // 
             // label2
             // 
@@ -185,9 +185,9 @@
             this.label2.ForeColor = System.Drawing.Color.FloralWhite;
             this.label2.Location = new System.Drawing.Point(3, 43);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(110, 18);
+            this.label2.Size = new System.Drawing.Size(190, 18);
             this.label2.TabIndex = 37;
-            this.label2.Text = "Tanggal PO";
+            this.label2.Text = "Tanggal Penerimaan";
             // 
             // label3
             // 
@@ -207,7 +207,7 @@
             this.supplierCombo.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.supplierCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.supplierCombo.FormattingEnabled = true;
-            this.supplierCombo.Location = new System.Drawing.Point(185, 75);
+            this.supplierCombo.Location = new System.Drawing.Point(199, 75);
             this.supplierCombo.Name = "supplierCombo";
             this.supplierCombo.Size = new System.Drawing.Size(311, 26);
             this.supplierCombo.TabIndex = 40;
@@ -219,16 +219,16 @@
             this.displayButton.Location = new System.Drawing.Point(194, 150);
             this.displayButton.Name = "displayButton";
             this.displayButton.Size = new System.Drawing.Size(95, 37);
-            this.displayButton.TabIndex = 53;
+            this.displayButton.TabIndex = 59;
             this.displayButton.Text = "DISPLAY";
             this.displayButton.UseVisualStyleBackColor = true;
             this.displayButton.Click += new System.EventHandler(this.displayButton_Click);
             // 
-            // dataPurchaseOrder
+            // dataPenerimaanBarang
             // 
-            this.dataPurchaseOrder.AllowUserToAddRows = false;
-            this.dataPurchaseOrder.AllowUserToDeleteRows = false;
-            this.dataPurchaseOrder.BackgroundColor = System.Drawing.Color.FloralWhite;
+            this.dataPenerimaanBarang.AllowUserToAddRows = false;
+            this.dataPenerimaanBarang.AllowUserToDeleteRows = false;
+            this.dataPenerimaanBarang.BackgroundColor = System.Drawing.Color.FloralWhite;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -236,19 +236,18 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataPurchaseOrder.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataPurchaseOrder.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataPurchaseOrder.Location = new System.Drawing.Point(0, 211);
-            this.dataPurchaseOrder.MultiSelect = false;
-            this.dataPurchaseOrder.Name = "dataPurchaseOrder";
-            this.dataPurchaseOrder.RowHeadersVisible = false;
-            this.dataPurchaseOrder.Size = new System.Drawing.Size(921, 427);
-            this.dataPurchaseOrder.TabIndex = 52;
-            this.dataPurchaseOrder.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataPurchaseOrder_CellContentClick);
-            this.dataPurchaseOrder.DoubleClick += new System.EventHandler(this.dataPurchaseOrder_DoubleClick);
-            this.dataPurchaseOrder.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataPurchaseOrder_KeyDown);
+            this.dataPenerimaanBarang.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataPenerimaanBarang.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataPenerimaanBarang.Location = new System.Drawing.Point(0, 211);
+            this.dataPenerimaanBarang.MultiSelect = false;
+            this.dataPenerimaanBarang.Name = "dataPenerimaanBarang";
+            this.dataPenerimaanBarang.RowHeadersVisible = false;
+            this.dataPenerimaanBarang.Size = new System.Drawing.Size(921, 427);
+            this.dataPenerimaanBarang.TabIndex = 58;
+            this.dataPenerimaanBarang.DoubleClick += new System.EventHandler(this.dataPenerimaanBarang_DoubleClick);
+            this.dataPenerimaanBarang.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataPenerimaanBarang_KeyDown);
             // 
-            // dataPOForm
+            // dataPenerimaanBarangForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -258,19 +257,17 @@
             this.Controls.Add(this.newButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.displayButton);
-            this.Controls.Add(this.dataPurchaseOrder);
+            this.Controls.Add(this.dataPenerimaanBarang);
             this.MaximizeBox = false;
-            this.Name = "dataPOForm";
-            this.ShowIcon = false;
+            this.Name = "dataPenerimaanBarangForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "DATA PURCHASE ORDER";
-            this.Activated += new System.EventHandler(this.dataPOForm_Activated);
-            this.Load += new System.EventHandler(this.dataPOForm_Load);
+            this.Text = "DATA PENERIMAAN BARANG";
+            this.Load += new System.EventHandler(this.dataPenerimaanBarangForm_Load);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataPenerimaanBarang)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -292,6 +289,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox supplierCombo;
         private System.Windows.Forms.Button displayButton;
-        private System.Windows.Forms.DataGridView dataPurchaseOrder;
+        private System.Windows.Forms.DataGridView dataPenerimaanBarang;
     }
 }

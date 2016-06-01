@@ -15,26 +15,25 @@ using MySql.Data.MySqlClient;
 
 namespace RoyalPetz_ADMIN
 {
-    public partial class ReportPurchaseSummaryForm : Form
+    public partial class ReportCreditUnpaidForm : Form
     {
         private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
-
-        public ReportPurchaseSummaryForm()
+        public ReportCreditUnpaidForm()
         {
             InitializeComponent();
         }
 
-        private void ReportPurchaseSummaryForm_Load(object sender, EventArgs e)
+        private void ReportCreditUnpaidForm_Load(object sender, EventArgs e)
         {
             DataSet dsTempReport = new DataSet();
             try
             {
                 string appPath = "";
-                appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.PurchaseSummaryXML;
+                appPath = Directory.GetCurrentDirectory() + "\\" + globalConstants.CreditUnpaidXML;
                 dsTempReport.ReadXml(@appPath);
                 //prepare report for preview                
-                ReportPurchaseSummary rptXMLReport = new ReportPurchaseSummary();
+                ReportCreditUnpaid rptXMLReport = new ReportCreditUnpaid();
                 CrystalDecisions.CrystalReports.Engine.TextObject txtReportHeader1, txtReportHeader2;
                 txtReportHeader1 = rptXMLReport.ReportDefinition.ReportObjects["NamaTokoLabel"] as TextObject;
                 txtReportHeader2 = rptXMLReport.ReportDefinition.ReportObjects["InfoTokoLabel"] as TextObject;
@@ -60,6 +59,7 @@ namespace RoyalPetz_ADMIN
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }        }
+            }
+        }
     }
 }
