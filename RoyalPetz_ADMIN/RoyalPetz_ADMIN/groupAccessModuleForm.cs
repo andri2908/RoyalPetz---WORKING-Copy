@@ -176,7 +176,6 @@ namespace RoyalPetz_ADMIN
             int moduleIdValue = 0;
             int tempModuleID = 0;
             int userAccessValue = 0;
-            int numOfAccessableModule = 0;
 
             DS.beginTransaction();
 
