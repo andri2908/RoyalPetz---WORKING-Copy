@@ -67,7 +67,6 @@ namespace RoyalPetz_ADMIN
         private void barcodeForm_Load(object sender, EventArgs e)
         {
             barcodeTextBox.Focus();
-            DS.mySqlConnect();
         }
 
         private void barcodeTextBox_KeyPress(object sender, KeyPressEventArgs e)

@@ -21,6 +21,7 @@ namespace RoyalPetz_ADMIN
         private string selectedProductName = "";
         private stokPecahBarangForm parentForm;
         private cashierForm parentCashierForm;
+        private penerimaanBarangForm parentPenerimaanBarangForm;
         private globalUtilities gutil = new globalUtilities();
         private Data_Access DS = new Data_Access();
 
@@ -64,6 +65,17 @@ namespace RoyalPetz_ADMIN
             newButton.Visible = false;
         }
 
+        public dataProdukForm(int moduleID, penerimaanBarangForm thisParentForm)
+        {
+            InitializeComponent();
+
+            originModuleID = moduleID;
+            parentPenerimaanBarangForm = thisParentForm;
+
+            // accessed from other form other than Master -> Data Produk
+            // it means that this form is only displayed for browsing / searching purpose only
+            newButton.Visible = false;
+        }
 
         private void displaySpecificForm()
         {
@@ -88,6 +100,12 @@ namespace RoyalPetz_ADMIN
                     parentCashierForm.addNewRowFromBarcode(selectedkodeProduct, selectedProductName);
                     this.Close();
                     break;
+
+                case globalConstants.PENERIMAAN_BARANG:
+                    parentPenerimaanBarangForm.addNewRowFromBarcode(selectedkodeProduct, selectedProductName);
+                    this.Close();
+                    break;
+
                 default: // MASTER DATA PRODUK
                     dataProdukDetailForm displayForm = new dataProdukDetailForm(globalConstants.EDIT_PRODUK, selectedProductID);
                     displayForm.ShowDialog(this);
