@@ -472,6 +472,8 @@
             // 
             // detailRequestOrderDataGridView
             // 
+            this.detailRequestOrderDataGridView.AllowUserToAddRows = false;
+            this.detailRequestOrderDataGridView.AllowUserToDeleteRows = false;
             this.detailRequestOrderDataGridView.BackgroundColor = System.Drawing.Color.FloralWhite;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -542,6 +544,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PERMINTAAN PRODUK";
             this.Activated += new System.EventHandler(this.permintaanProdukForm_Activated);
+            this.Deactivate += new System.EventHandler(this.permintaanProdukForm_Deactivate);
             this.Load += new System.EventHandler(this.permintaanProdukForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

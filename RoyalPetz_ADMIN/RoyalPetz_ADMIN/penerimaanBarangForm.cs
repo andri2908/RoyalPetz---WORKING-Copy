@@ -36,7 +36,6 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_CTRL_ENTER;
 
         Button[] arrButton = new Button[3];
-        int lastSelectedRowIndex = 0;
 
         private List<string> detailRequestQty = new List<string>();
         private List<string> detailHpp = new List<string>();
@@ -49,14 +48,6 @@ namespace RoyalPetz_ADMIN
         public penerimaanBarangForm()
         {
             InitializeComponent();
-        }
-
-        public penerimaanBarangForm(int moduleID, string pmInvoice)
-        {
-            InitializeComponent();
-
-            originModuleId = moduleID;
-            selectedInvoice = pmInvoice;
         }
 
         private void captureAll(Keys key)
@@ -82,9 +73,9 @@ namespace RoyalPetz_ADMIN
 
                 case Keys.F8:
                     if (detailGridView.ReadOnly == false)
-                        if (originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_PO && originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                        //if (originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_PO && originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
                         {
-                            addNewRow();// detailGridView.Rows.Add();
+                            addNewRow();
                         }
                     break;
 
@@ -100,7 +91,6 @@ namespace RoyalPetz_ADMIN
                         displayProdukForm.ShowDialog(this);
                     }
                     break;
-
             }
         }
 
@@ -185,15 +175,40 @@ namespace RoyalPetz_ADMIN
 
         public void addNewRow()
         {
+            int newRowIndex = 0;
             bool allowToAdd = true;
 
-            if (allowToAdd)
+            for (int i=0;i<detailGridView.Rows.Count && allowToAdd;i++)
             {
+                if (null != detailGridView.Rows[i].Cells["productID"].Value)
+                {
+                    if (!gUtil.isProductIDExist(detailGridView.Rows[i].Cells["productID"].Value.ToString()))
+                    {
+                        allowToAdd = false;
+                        newRowIndex = i;
+                    }
+                }
+                else
+                {
+                    allowToAdd = false;
+                    newRowIndex = i;
+                }
+            }
+
+            if (allowToAdd)
+            { 
                 detailGridView.Rows.Add();
                 detailHpp.Add("0");
                 detailRequestQty.Add("0");
-                detailGridView.CurrentCell = detailGridView.Rows[detailGridView.Rows.Count - 1].Cells["productID"];
+                newRowIndex = detailGridView.Rows.Count - 1;
             }
+            else
+            {
+                DataGridViewRow selectedRow = detailGridView.Rows[newRowIndex];
+                clearUpSomeRowContents(selectedRow, newRowIndex);
+            }
+
+            detailGridView.CurrentCell = detailGridView.Rows[newRowIndex].Cells["productID"];
         }
 
         public void addNewRowFromBarcode(string productID, string productName)
@@ -233,12 +248,14 @@ namespace RoyalPetz_ADMIN
                 if (foundEmptyRow)
                 {
                     detailRequestQty[emptyRowIndex] = "0";
+                    detailHpp[emptyRowIndex] = "0";
                     rowSelectedIndex = emptyRowIndex;
                 }
                 else
                 { 
                     detailGridView.Rows.Add();
                     detailRequestQty.Add("0");
+                    detailHpp.Add("0");
                     rowSelectedIndex = detailGridView.Rows.Count - 1;
                 }
             }
@@ -514,22 +531,21 @@ namespace RoyalPetz_ADMIN
             detailRequestQty.Clear();
             detailHpp.Clear();
 
+            productID_textBox.Name = "productID";
+            productID_textBox.HeaderText = "KODE PRODUK";
+            productID_textBox.Width = 150;
+            productID_textBox.DefaultCellStyle.BackColor = Color.LightBlue;
+            detailGridView.Columns.Add(productID_textBox);
+
+            namaProduct_textBox.Name = "productName";
+            namaProduct_textBox.HeaderText = "NAMA PRODUK";
+            namaProduct_textBox.ReadOnly = true;
+            namaProduct_textBox.Width = 200;
+            detailGridView.Columns.Add(namaProduct_textBox);
+
+
             if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_PO || originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
             {
-                //detailGridView.AllowUserToAddRows = false;
-
-                productID_textBox.Name = "productID";
-                productID_textBox.HeaderText = "KODE PRODUK";
-                productID_textBox.ReadOnly = true;
-                productID_textBox.Width = 150;
-                detailGridView.Columns.Add(productID_textBox);
-
-                namaProduct_textBox.Name = "productName";
-                namaProduct_textBox.HeaderText = "NAMA PRODUK";
-                namaProduct_textBox.ReadOnly = true;
-                namaProduct_textBox.Width = 200;
-                detailGridView.Columns.Add(namaProduct_textBox);
-
                 qtyRequested_textBox.Name = "qtyRequest";
                 qtyRequested_textBox.HeaderText = "QTY";
                 qtyRequested_textBox.ReadOnly = true;
@@ -538,18 +554,6 @@ namespace RoyalPetz_ADMIN
             }
             else
             {
-                //detailGridView.AllowUserToAddRows = true;
-                productID_textBox.Name = "productID";
-                productID_textBox.HeaderText = "KODE PRODUK";
-                productID_textBox.Width = 150;
-                detailGridView.Columns.Add(productID_textBox);
-
-                namaProduct_textBox.Name = "productName";
-                namaProduct_textBox.HeaderText = "NAMA PRODUK";
-                namaProduct_textBox.ReadOnly = true;
-                namaProduct_textBox.Width = 200;
-                detailGridView.Columns.Add(namaProduct_textBox);
-
                 detailRequestQty.Add("0");
                 detailHpp.Add("0");
             }
@@ -672,16 +676,21 @@ namespace RoyalPetz_ADMIN
 
         private void clearUpSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex)
         {
+            isLoading = true;
             selectedRow.Cells["productName"].Value = "";
             selectedRow.Cells["hpp"].Value = "0";
+            detailHpp[rowSelectedIndex] = "0";
             selectedRow.Cells["subtotal"].Value = "0";
             if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_PO || originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
             { 
                 selectedRow.Cells["qtyRequest"].Value = "0";
+                
             }
             selectedRow.Cells["qtyReceived"].Value = "0";
+            detailRequestQty[rowSelectedIndex] = "0";
 
             calculateTotal();
+            isLoading = false;
         }
 
         private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue)
@@ -747,11 +756,13 @@ namespace RoyalPetz_ADMIN
             int rowSelectedIndex = 0;
             DataGridViewTextBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
 
+            if (detailGridView.CurrentCell.OwningColumn.Name != "productID")
+                return;
+
             if (e.KeyCode == Keys.Enter)
             {
                 currentValue = dataGridViewComboBoxEditingControl.Text;
                 rowSelectedIndex = detailGridView.SelectedCells[0].RowIndex;
-                lastSelectedRowIndex = rowSelectedIndex;
                 DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
 
                 if (currentValue.Length > 0)
@@ -922,9 +933,19 @@ namespace RoyalPetz_ADMIN
                     errorLabel.Text = "";
         }
 
+        private double getCurrentHpp(string productID)
+        {
+            double result = 0;
+
+            result = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_BASE_PRICE FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+
+            return result;
+        }
+
         private bool dataValidated()
         {
-            bool dataExist = false;
+            bool dataExist = true;
+            int i = 0;
 
             if (prInvoiceTextBox.Text.Length <=0)
             {
@@ -932,14 +953,22 @@ namespace RoyalPetz_ADMIN
                 return false;
             }
 
-            for (int i = 0; i < detailGridView.Rows.Count && !dataExist; i ++)
+            if (detailGridView.Rows.Count <= 0)
+            {
+                errorLabel.Text = "TIDAK ADA PRODUCT YANG DITERIMA";
+                return false;
+            }
+
+            for (i = 0; i < detailGridView.Rows.Count && dataExist; i ++)
             {
                 if (null != detailGridView.Rows[i].Cells["productID"].Value)
-                    dataExist = true;
+                    dataExist = gUtil.isProductIDExist(detailGridView.Rows[i].Cells["productID"].Value.ToString());
+                else
+                    dataExist = false;
             }
             if (!dataExist)
             {
-                errorLabel.Text = "TIDAK ADA PRODUCT YANG DITERIMA";
+                errorLabel.Text = "PRODUCT ID PADA BARIS ["+ i +"] INVALID";
                 return false;
             }
 
@@ -951,16 +980,7 @@ namespace RoyalPetz_ADMIN
 
             return true;
         }
-
-        private double getCurrentHpp(string productID)
-        {
-            double result = 0;
-
-            result = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_BASE_PRICE FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
-
-            return result;
-        }
-        
+       
         private bool saveDataTransaction()
         {
             bool result = false;
@@ -1375,26 +1395,24 @@ namespace RoyalPetz_ADMIN
             string sqlCommandx = "";
             if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
             {
-                sqlCommandx = "SELECT '1' AS TYPE, '"+noMutasiTextBox.Text+"' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
+                sqlCommandx = "SELECT '1' AS TYPE, '"+noMutasiTextBox.Text+"' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_ACTUAL_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
                                      "FROM PRODUCTS_RECEIVED_HEADER PH, PRODUCTS_RECEIVED_DETAIL PD, MASTER_PRODUCT MP " +
                                      "WHERE PH.PR_INVOICE = '" + invoiceNo + "' AND PD.PR_INVOICE = PH.PR_INVOICE AND PD.PRODUCT_ID = MP.PRODUCT_ID";
             }
             else if (originModuleId == globalConstants.PENERIMAAN_BARANG_DARI_PO)
             {
-                sqlCommandx = "SELECT '2' AS TYPE, '" + noInvoiceTextBox.Text + "' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
+                sqlCommandx = "SELECT '2' AS TYPE, '" + noInvoiceTextBox.Text + "' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_ACTUAL_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
                                      "FROM PRODUCTS_RECEIVED_HEADER PH, PRODUCTS_RECEIVED_DETAIL PD, MASTER_PRODUCT MP " +
                                      "WHERE PH.PR_INVOICE = '" + invoiceNo + "' AND PD.PR_INVOICE = PH.PR_INVOICE AND PD.PRODUCT_ID = MP.PRODUCT_ID";
             }
             else
             {
-                sqlCommandx = "SELECT '0' AS TYPE, 'AA' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
+                sqlCommandx = "SELECT '0' AS TYPE, 'AA' AS ORIGIN_INVOICE, DATE(PH.PR_DATE) AS 'TGL', PH.PR_INVOICE AS 'INVOICE', MP.PRODUCT_NAME AS 'PRODUK', PD.PRODUCT_BASE_PRICE AS 'HARGA', PD.PRODUCT_ACTUAL_QTY AS 'QTY', PD.PR_SUBTOTAL AS 'SUBTOTAL' " +
                                      "FROM PRODUCTS_RECEIVED_HEADER PH, PRODUCTS_RECEIVED_DETAIL PD, MASTER_PRODUCT MP " +
                                      "WHERE PH.PR_INVOICE = '" + invoiceNo + "' AND PD.PR_INVOICE = PH.PR_INVOICE AND PD.PRODUCT_ID = MP.PRODUCT_ID";
             }
 
-            //"WHERE PD.PURCHASE_INVOICE = PH.PURCHASE_INVOICE AND PH.SUPPLIER_ID = MS.SUPPLIER_ID " + supplier + "AND PD.PRODUCT_ID = MP.PRODUCT_ID AND DATE_FORMAT(PH.PURCHASE_DATETIME, '%Y%m%d')  >= '" + dateFrom + "' AND DATE_FORMAT(PH.PURCHASE_DATETIME, '%Y%m%d')  <= '" + dateTo + "' " +
-            //"ORDER BY TGL,INVOICE,PRODUK";
-
+ 
             DS.writeXML(sqlCommandx, globalConstants.penerimaanBarangXML);
             penerimaanBarangPrintOutForm displayForm = new penerimaanBarangPrintOutForm();
             displayForm.ShowDialog(this);
@@ -1454,7 +1472,13 @@ namespace RoyalPetz_ADMIN
                 int rowSelectedIndex = detailGridView.SelectedCells[0].RowIndex;
                 DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
 
-                detailGridView.Rows.Remove(selectedRow);
+                if (null != selectedRow)
+                {
+                    isLoading = true;
+                    detailGridView.Rows.Remove(selectedRow);
+                    gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "deleteCurrentRow [" + rowSelectedIndex + "]");
+                    isLoading = false;
+                }
             }
         }
 

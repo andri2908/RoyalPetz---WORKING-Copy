@@ -445,18 +445,26 @@ namespace RoyalPetz_ADMIN
         {
             int prevValue = 0;
             bool allowToAdd = true;
+            int newRowIndex = 0;
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ADD NEW ROW,  isActive [" + isActive.ToString() + "]");
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ADD NEW ROW,  ROW COUNT [" + cashierDataGridView.Rows.Count + "]");
 
-            if (cashierDataGridView.Rows.Count > 0 )
+            for (int i = 0; i < cashierDataGridView.Rows.Count && allowToAdd; i++)
             {
-                prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["F8"].Value);
-
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ADD NEW ROW,  PREV VALUE [" + prevValue + "]");
-
-                if (null == cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"].Value)
+                if (null != cashierDataGridView.Rows[i].Cells["productID"].Value)
+                {
+                    if (!productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
+                    {
+                        allowToAdd = false;
+                        newRowIndex = i;
+                    }
+                }
+                else
+                {
                     allowToAdd = false;
+                    newRowIndex = i;
+                }
             }
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ADD NEW ROW,  ALLOW TO ADD [" + allowToAdd.ToString() + "]");
@@ -478,12 +486,18 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc2"].Value = "0";
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["discRP"].Value = "0";
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["jumlah"].Value = "0";
+                newRowIndex = cashierDataGridView.Rows.Count - 1;
+            }
+            else
+            {
+                DataGridViewRow selectedRow = cashierDataGridView.Rows[newRowIndex];
+                clearUpSomeRowContents(selectedRow, newRowIndex);
             }
 
             if (isActive)
             { 
                 cashierDataGridView.Focus();
-                cashierDataGridView.CurrentCell = cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"];
+                cashierDataGridView.CurrentCell = cashierDataGridView.Rows[newRowIndex].Cells["productID"];
             }
         }
 
@@ -1242,10 +1256,13 @@ namespace RoyalPetz_ADMIN
             selectedRow.Cells["disc1"].Value = "0";
             selectedRow.Cells["qty"].Value = "0";
             salesQty[rowSelectedIndex] = "0";
+
             disc1[rowSelectedIndex] = "0";
             selectedRow.Cells["disc2"].Value = "0";
+
             disc2[rowSelectedIndex] = "0";
             selectedRow.Cells["discRP"].Value = "0";
+
             discRP[rowSelectedIndex] = "0";
             selectedRow.Cells["jumlah"].Value = "0";
 
@@ -1361,6 +1378,9 @@ namespace RoyalPetz_ADMIN
             string currentValue = "";
             int rowSelectedIndex = 0;
             DataGridViewTextBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
+
+            if (cashierDataGridView.CurrentCell.OwningColumn.Name != "productID")
+                return;
 
             if (e.KeyCode == Keys.Enter)
             {

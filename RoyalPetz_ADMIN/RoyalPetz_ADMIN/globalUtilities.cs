@@ -520,5 +520,19 @@ namespace RoyalPetz_ADMIN
             if (File.Exists(oldPath))
                 File.Move(oldPath, newPath);
         }
+
+        public bool isProductIDExist(string productID)
+        {
+            bool result = false;
+            int numRows = 0;
+
+            numRows = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "' AND PRODUCT_ACTIVE = 1"));
+
+            if (numRows > 0)
+                result = true;
+
+            return result;
+        }
+
     }
 }
