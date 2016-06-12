@@ -197,7 +197,7 @@
             this.cashierDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.cashierDataGridView.Size = new System.Drawing.Size(983, 334);
             this.cashierDataGridView.TabIndex = 8;
-            this.cashierDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.cashierDataGridView_CellValueChanged);
+            this.cashierDataGridView.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.cashierDataGridView_CellValidated);
             // 
             // panel5
             // 
@@ -221,7 +221,6 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(982, 162);
             this.panel5.TabIndex = 9;
-            this.panel5.Paint += new System.Windows.Forms.PaintEventHandler(this.panel5_Paint);
             // 
             // ChangePrinterButton
             // 
@@ -295,8 +294,6 @@
             this.paymentComboBox.TabIndex = 7;
             this.paymentComboBox.Text = "Cash";
             this.paymentComboBox.SelectedIndexChanged += new System.EventHandler(this.paymentComboBox_SelectedIndexChanged);
-            this.paymentComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.paymentComboBox_KeyDown);
-            this.paymentComboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.paymentComboBox_KeyPress);
             // 
             // labelCaraBayar
             // 

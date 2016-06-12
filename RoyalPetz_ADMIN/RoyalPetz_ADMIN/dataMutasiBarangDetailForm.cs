@@ -1192,10 +1192,22 @@ namespace RoyalPetz_ADMIN
 
         private bool saveData()
         {
+            bool result = false;
             if (dataValidated())
-                return saveDataTransaction();
+            {
+                smallPleaseWait pleaseWait = new smallPleaseWait();
+                pleaseWait.Show();
 
-            return false;
+                //  ALlow main UI thread to properly display please wait form.
+                Application.DoEvents();
+                result = saveDataTransaction();
+
+                pleaseWait.Close();
+
+                return result;
+            }
+
+            return result;
         }
 
         private bool insertAndUpdateBranchData(int approvedRO)
@@ -1638,6 +1650,27 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangDetailForm_Deactivate(object sender, EventArgs e)
         {
             unregisterGlobalHotkey();
+        }
+
+        private void detailRequestOrderDataGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailRequestOrderDataGridView[e.ColumnIndex, e.RowIndex];
+            DataGridViewRow selectedRow = detailRequestOrderDataGridView.Rows[e.RowIndex];
+
+            if (cell.OwningColumn.Name == "productID")
+            {
+                if (null != cell.Value)
+                {
+                    if (cell.Value.ToString().Length > 0)
+                    {
+                        updateSomeRowContents(selectedRow, e.RowIndex, cell.Value.ToString());
+                    }
+                    else
+                    {
+                        clearUpSomeRowContents(selectedRow, e.RowIndex);
+                    }
+                }
+            }
         }
     }
 }

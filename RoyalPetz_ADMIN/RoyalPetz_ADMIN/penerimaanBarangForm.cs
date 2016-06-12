@@ -1597,5 +1597,26 @@ namespace RoyalPetz_ADMIN
                 pleaseWait.Close();
             }
         }
+
+        private void detailGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            DataGridViewRow selectedRow = detailGridView.Rows[e.RowIndex];
+
+            if (cell.OwningColumn.Name == "productID")
+            {
+                if (null != cell.Value)
+                {
+                    if (cell.Value.ToString().Length > 0)
+                    {
+                        updateSomeRowContents(selectedRow, e.RowIndex, cell.Value.ToString());
+                    }
+                    else
+                    {
+                        clearUpSomeRowContents(selectedRow, e.RowIndex);
+                    }
+                }
+            }
+        }
     }
 }

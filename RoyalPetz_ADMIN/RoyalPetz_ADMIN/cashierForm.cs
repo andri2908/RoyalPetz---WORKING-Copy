@@ -949,12 +949,22 @@ namespace RoyalPetz_ADMIN
 
         private bool saveData()
         {
+            bool result = false;
             if (dataValidated())
             {
-                return saveDataTransaction();
+                smallPleaseWait pleaseWait = new smallPleaseWait();
+                pleaseWait.Show();
+
+                //  ALlow main UI thread to properly display please wait form.
+                Application.DoEvents();
+                result = saveDataTransaction();
+
+                pleaseWait.Close();
+
+                return result;
             }
 
-            return false;
+            return result;
         }
 
         private void saveAndPrintOutInvoice()
@@ -2397,23 +2407,26 @@ namespace RoyalPetz_ADMIN
             });
         }
 
-        private void cashierDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void cashierDataGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
-        }
+            var cell = cashierDataGridView[e.ColumnIndex, e.RowIndex];
+            DataGridViewRow selectedRow = cashierDataGridView.Rows[e.RowIndex];
 
-        private void panel5_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void paymentComboBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-        }
-
-        private void paymentComboBox_KeyDown(object sender, KeyEventArgs e)
-        {
-
+            if (cell.OwningColumn.Name == "productID")
+            {
+                if (null != cell.Value)
+                {
+                    if (cell.Value.ToString().Length > 0)
+                    {
+                        updateSomeRowContents(selectedRow, e.RowIndex, cell.Value.ToString());
+                        //cashierDataGridView.CurrentCell = selectedRow.Cells["qty"];
+                    }
+                    else
+                    {
+                        clearUpSomeRowContents(selectedRow, e.RowIndex);
+                    }
+                }
+            }
         }
     }
 }
