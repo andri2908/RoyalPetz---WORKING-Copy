@@ -254,6 +254,10 @@ namespace RoyalPetz_ADMIN
             {
                 label3.Text = "PELANGGAN";
                 fillInCustomerCombo();
+                labelPrintOut.Visible = true;
+                comboPrintOut.Visible = true;
+                comboPrintOut.SelectedIndex = 0;
+                comboPrintOut.Text = comboPrintOut.Items[comboPrintOut.SelectedIndex].ToString();
             }
 
             arrButton[0] = displayButton;
@@ -284,7 +288,7 @@ namespace RoyalPetz_ADMIN
             string returNo = noRetur;
             string sqlCommandx = "";
             
-            sqlCommandx = "SELECT 'RETUR PEMBELIAN' AS MODULE_TYPE, RPH.RP_ID, IFNULL(MS.SUPPLIER_FULL_NAME, 'HQ PUSAT'), RPH.RP_DATE, RPH.RP_TOTAL, MP.PRODUCT_NAME, RPD.PRODUCT_BASEPRICE, RPD.PRODUCT_QTY, RPD.RP_DESCRIPTION, RPD.RP_SUBTOTAL " +
+            sqlCommandx = "SELECT 'RETUR PEMBELIAN' AS MODULE_TYPE, RPH.RP_ID AS 'NO_RETUR', IFNULL(MS.SUPPLIER_FULL_NAME, 'HQ PUSAT') AS 'NAME', RPH.RP_DATE AS 'RETUR_DATE', RPH.RP_TOTAL AS 'RETUR_TOTAL', MP.PRODUCT_NAME AS 'PRODUCT_NAME', RPD.PRODUCT_BASEPRICE AS 'PRICE', RPD.PRODUCT_QTY AS 'QTY', RPD.RP_DESCRIPTION AS 'DESC', RPD.RP_SUBTOTAL AS 'SUBTOTAL' " +
                                      "FROM RETURN_PURCHASE_HEADER RPH LEFT OUTER JOIN MASTER_SUPPLIER MS ON RPH.SUPPLIER_ID = MS.SUPPLIER_ID, MASTER_PRODUCT MP, RETURN_PURCHASE_DETAIL RPD " +
                                      "WHERE RPD.RP_ID = RPH.RP_ID AND RPD.PRODUCT_ID = MP.PRODUCT_ID AND RPH.RP_ID = '" + returNo + "'";
 
@@ -298,9 +302,23 @@ namespace RoyalPetz_ADMIN
             string returNo = noRetur;
             string sqlCommandx = "";
 
-            sqlCommandx = "SELECT 'RETUR PERMINTAAN' AS MODULE_TYPE, RPH.RP_ID, IFNULL(MS.SUPPLIER_FULL_NAME, 'HQ PUSAT'), RPH.RP_DATE, RPH.RP_TOTAL, MP.PRODUCT_NAME, RPD.PRODUCT_BASEPRICE, RPD.PRODUCT_QTY, RPD.RP_DESCRIPTION, RPD.RP_SUBTOTAL " +
+            sqlCommandx = "SELECT 'RETUR PERMINTAAN' AS MODULE_TYPE, RPH.RP_ID AS 'NO_RETUR', IFNULL(MS.SUPPLIER_FULL_NAME, 'HQ PUSAT') AS 'NAME', RPH.RP_DATE AS 'RETUR_DATE', RPH.RP_TOTAL AS 'RETUR_TOTAL', MP.PRODUCT_NAME AS 'PRODUCT_NAME', RPD.PRODUCT_BASEPRICE AS 'PRICE', RPD.PRODUCT_QTY AS 'QTY', RPD.RP_DESCRIPTION AS 'DESC', RPD.RP_SUBTOTAL AS 'SUBTOTAL' " +
                                      "FROM RETURN_PURCHASE_HEADER RPH LEFT OUTER JOIN MASTER_SUPPLIER MS ON RPH.SUPPLIER_ID = MS.SUPPLIER_ID, MASTER_PRODUCT MP, RETURN_PURCHASE_DETAIL RPD " +
                                      "WHERE RPD.RP_ID = RPH.RP_ID AND RPD.PRODUCT_ID = MP.PRODUCT_ID AND RPH.RP_ID = '" + returNo + "'";
+
+            DS.writeXML(sqlCommandx, globalConstants.returPermintaanXML);
+            dataReturPermintaanPrintOutForm displayForm = new dataReturPermintaanPrintOutForm();
+            displayForm.ShowDialog(this);
+        }
+
+        private void printOutReturPenjualan(string noRetur)
+        {
+            string returNo = noRetur;
+            string sqlCommandx = "";
+
+            sqlCommandx = "SELECT 'RETUR PENJUALAN' AS MODULE_TYPE, RSH.RS_INVOICE AS 'NO_RETUR', IFNULL(MC.CUSTOMER_FULL_NAME, '') AS 'NAME', RSH.RS_DATETIME AS 'RETUR_DATE', RSH.RS_TOTAL AS 'RETUR_TOTAL', MP.PRODUCT_NAME AS 'PRODUCT_NAME', RSD.PRODUCT_SALES_PRICE AS 'PRICE', RSD.PRODUCT_RETURN_QTY AS 'QTY', RSD.RS_DESCRIPTION AS 'DESC', RSD.RS_SUBTOTAL AS 'SUBTOTAL' " +
+                                     "FROM RETURN_SALES_HEADER RSH LEFT OUTER JOIN MASTER_CUSTOMER MC ON RSH.CUSTOMER_ID = MC.CUSTOMER_ID, MASTER_PRODUCT MP, RETURN_SALES_DETAIL RSD " +
+                                     "WHERE RSD.RS_INVOICE = RSH.RS_INVOICE AND RSD.PRODUCT_ID = MP.PRODUCT_ID AND RSH.RS_INVOICE = '" + returNo + "'";
 
             DS.writeXML(sqlCommandx, globalConstants.returPermintaanXML);
             dataReturPermintaanPrintOutForm displayForm = new dataReturPermintaanPrintOutForm();
@@ -321,7 +339,10 @@ namespace RoyalPetz_ADMIN
                 }
                 else if (originModuleID == globalConstants.RETUR_PENJUALAN)
                 {
-                    printReceipt(noRetur);
+                    if (comboPrintOut.SelectedIndex == 0)
+                        printReceipt(noRetur);
+                    else
+                        printOutReturPenjualan(noRetur);
                 }
             }
         }

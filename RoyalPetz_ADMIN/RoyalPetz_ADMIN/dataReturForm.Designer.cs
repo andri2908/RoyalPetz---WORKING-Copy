@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(dataReturForm));
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.noPOInvoiceTextBox = new System.Windows.Forms.TextBox();
@@ -49,6 +49,8 @@
             this.dataPurchaseOrder = new System.Windows.Forms.DataGridView();
             this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+            this.comboPrintOut = new System.Windows.Forms.ComboBox();
+            this.labelPrintOut = new System.Windows.Forms.Label();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).BeginInit();
@@ -233,23 +235,23 @@
             this.dataPurchaseOrder.AllowUserToAddRows = false;
             this.dataPurchaseOrder.AllowUserToDeleteRows = false;
             this.dataPurchaseOrder.BackgroundColor = System.Drawing.Color.FloralWhite;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataPurchaseOrder.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataPurchaseOrder.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataPurchaseOrder.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataPurchaseOrder.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataPurchaseOrder.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataPurchaseOrder.Location = new System.Drawing.Point(0, 210);
             this.dataPurchaseOrder.MultiSelect = false;
             this.dataPurchaseOrder.Name = "dataPurchaseOrder";
@@ -276,12 +278,42 @@
             // 
             this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
             // 
+            // comboPrintOut
+            // 
+            this.comboPrintOut.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.comboPrintOut.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboPrintOut.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboPrintOut.FormattingEnabled = true;
+            this.comboPrintOut.Items.AddRange(new object[] {
+            "POS Receipt",
+            "Kuarto"});
+            this.comboPrintOut.Location = new System.Drawing.Point(9, 169);
+            this.comboPrintOut.Name = "comboPrintOut";
+            this.comboPrintOut.Size = new System.Drawing.Size(145, 26);
+            this.comboPrintOut.TabIndex = 63;
+            this.comboPrintOut.Visible = false;
+            // 
+            // labelPrintOut
+            // 
+            this.labelPrintOut.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labelPrintOut.AutoSize = true;
+            this.labelPrintOut.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelPrintOut.ForeColor = System.Drawing.Color.FloralWhite;
+            this.labelPrintOut.Location = new System.Drawing.Point(12, 148);
+            this.labelPrintOut.Name = "labelPrintOut";
+            this.labelPrintOut.Size = new System.Drawing.Size(145, 18);
+            this.labelPrintOut.TabIndex = 64;
+            this.labelPrintOut.Text = "Print Out Paper";
+            this.labelPrintOut.Visible = false;
+            // 
             // dataReturForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(920, 637);
+            this.Controls.Add(this.labelPrintOut);
+            this.Controls.Add(this.comboPrintOut);
             this.Controls.Add(this.supplierHiddenCombo);
             this.Controls.Add(this.newButton);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -299,6 +331,7 @@
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataPurchaseOrder)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -322,5 +355,7 @@
         private System.Windows.Forms.DataGridView dataPurchaseOrder;
         private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
         private System.Drawing.Printing.PrintDocument printDocument1;
+        private System.Windows.Forms.ComboBox comboPrintOut;
+        private System.Windows.Forms.Label labelPrintOut;
     }
 }
