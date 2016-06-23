@@ -47,7 +47,8 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 500;
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // smallPleaseWait
@@ -67,6 +68,7 @@
             this.UseWaitCursor = true;
             this.Activated += new System.EventHandler(this.smallPleaseWait_Activated);
             this.Deactivate += new System.EventHandler(this.smallPleaseWait_Deactivate);
+            this.Load += new System.EventHandler(this.smallPleaseWait_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
