@@ -98,6 +98,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F2:
+                    totalAfterDiscTextBox.Focus();
                     gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : DISPLAY BARCODE FORM");
 
                     barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.CASHIER_MODULE);
@@ -149,6 +150,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F11:
+                    totalAfterDiscTextBox.Focus();
                     gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO OPEN PRODUK SEARCH FORM PRESSED");
 
                     dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.CASHIER_MODULE, this);
@@ -515,6 +517,9 @@ namespace RoyalPetz_ADMIN
 
             if (allowToAdd)
             {
+                if (cashierDataGridView.Rows.Count > 0)
+                    prevValue = Convert.ToInt32(cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value);
+
                 cashierDataGridView.Rows.Add();
 
                 salesQty.Add("0");
@@ -559,7 +564,7 @@ namespace RoyalPetz_ADMIN
             // CHECK FOR EXISTING SELECTED ITEM
             for (i = 0;i<cashierDataGridView.Rows.Count && !found && !foundEmptyRow;i++)
             {
-                if (null!= cashierDataGridView.Rows[i].Cells["productName"].Value)
+                if (null!= cashierDataGridView.Rows[i].Cells["productName"].Value && productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
                 { 
                     if (cashierDataGridView.Rows[i].Cells["productName"].Value.ToString() == productName)
                     {
@@ -1224,11 +1229,22 @@ namespace RoyalPetz_ADMIN
             else
             {
                 double stockQty = 0;
+                double limitQty = 0;
 
-                stockQty = Convert.ToDouble(DS.getDataSingleValue("SELECT (PRODUCT_STOCK_QTY - PRODUCT_LIMIT_STOCK) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+                stockQty = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_STOCK_QTY FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
+                limitQty = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_LIMIT_STOCK FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'"));
 
                 if (stockQty >= qtyRequested)
                     result = true;
+
+                if (stockQty - qtyRequested <= limitQty)
+                {
+                    errorLabel.Text = productID + " MENCAPAI LIMIT";
+                }
+                else
+                {
+                    errorLabel.Text = "";
+                }
 
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : CHECK STOCK QTY IS ENOUGH [" + stockQty + ", " + qtyRequested + "]");
             }
