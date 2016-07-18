@@ -88,6 +88,14 @@ namespace RoyalPetz_ADMIN
             titleLabel.Text = posTitle;
         }
 
+        public cashierForm(string noInvoice)
+        {
+            InitializeComponent();
+            originModuleID = globalConstants.COPY_NOTA;
+            selectedsalesinvoice = noInvoice;
+            titleLabel.Text = posTitle;
+        }
+
         private void captureAll(Keys key)
         {
             switch (key)
@@ -98,15 +106,18 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F2:
-                    totalAfterDiscTextBox.Focus();
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : DISPLAY BARCODE FORM");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    { 
+                        totalAfterDiscTextBox.Focus();
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : DISPLAY BARCODE FORM");
 
-                    barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.CASHIER_MODULE);
+                        barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.CASHIER_MODULE);
 
-                    displayBarcodeForm.Top = this.Top + 5;// - displayBarcodeForm.Height;
-                    displayBarcodeForm.Left = this.Left + 5;// (Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        displayBarcodeForm.Top = this.Top + 5;// - displayBarcodeForm.Height;
+                        displayBarcodeForm.Left = this.Left + 5;// (Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
 
-                    displayBarcodeForm.ShowDialog(this);
+                        displayBarcodeForm.ShowDialog(this);
+                    }
                     break;
 
                 case Keys.F3:
@@ -120,15 +131,19 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F4:
-                    //MessageBox.Show("F4");
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : DISPLAY PELANGGAN FORM");
-                    dataPelangganForm pelangganForm = new dataPelangganForm(globalConstants.CASHIER_MODULE, this);
-                    pelangganForm.ShowDialog(this);
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    {
+                        //MessageBox.Show("F4");
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : DISPLAY PELANGGAN FORM");
+                        dataPelangganForm pelangganForm = new dataPelangganForm(globalConstants.CASHIER_MODULE, this);
+                        pelangganForm.ShowDialog(this);
+                    }
                     break;
 
                 case Keys.F5:
-                    if (DialogResult.Yes == MessageBox.Show("HAPUS DATA DATA DI LAYAR ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
-                        clearUpScreen();
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                        if (DialogResult.Yes == MessageBox.Show("HAPUS DATA DATA DI LAYAR ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                            clearUpScreen();
                     break;
 
                 case Keys.F7:
@@ -138,23 +153,34 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F8:
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO ADD NEW ROW PRESSED");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    {
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO ADD NEW ROW PRESSED");
 
-                    addNewRow();
+                        addNewRow();
+                    }
                     break;
 
                 case Keys.F9:
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO SAVE AND PRINT OUT INVOICE PRESSED");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    {
 
-                    saveAndPrintOutInvoice();
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO SAVE AND PRINT OUT INVOICE PRESSED");
+
+                        saveAndPrintOutInvoice();
+                    }
                     break;
 
                 case Keys.F11:
-                    totalAfterDiscTextBox.Focus();
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO OPEN PRODUK SEARCH FORM PRESSED");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    {
 
-                    dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.CASHIER_MODULE, this);
-                    displayProdukForm.ShowDialog(this);
+                        totalAfterDiscTextBox.Focus();
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO OPEN PRODUK SEARCH FORM PRESSED");
+
+                        dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.CASHIER_MODULE, this);
+                        displayProdukForm.ShowDialog(this);
+                    }
                     break;
 
                 case Keys.Add:
@@ -190,20 +216,24 @@ namespace RoyalPetz_ADMIN
             switch (key)
             {
                 case Keys.Delete: // CTRL + DELETE
-                    //MessageBox.Show("CTRL+DELETE");
-                    if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
-                    {
-                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_KeyDown ATTEMPT TO DELETE ROW");
-                        deleteCurrentRow();
-                        updateRowNumber();
-                        calculateTotal();
-                    }
+                                  //MessageBox.Show("CTRL+DELETE");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                        if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
+                        {
+                            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_KeyDown ATTEMPT TO DELETE ROW");
+                            deleteCurrentRow();
+                            updateRowNumber();
+                            calculateTotal();
+                        }
                     break;
 
                 case Keys.Enter:
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO SAVE AND PRINT OUT INVOICE PRESSED");
+                    if (originModuleID != globalConstants.COPY_NOTA)
+                    {
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO SAVE AND PRINT OUT INVOICE PRESSED");
 
-                    saveAndPrintOutInvoice();
+                        saveAndPrintOutInvoice();
+                    }
                     break;
 
                 case Keys.C: // CTRL + C
@@ -642,7 +672,9 @@ namespace RoyalPetz_ADMIN
         {
             bool result = false;
 
-            if (0 < Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'")))
+            if (isLoading)
+                result = true;
+            else if (0 < Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + productID + "'")))
                 result = true;
 
             return result;
@@ -863,9 +895,9 @@ namespace RoyalPetz_ADMIN
                 {
                     salesInvoiceTax = getSalesInvoiceID(false);
                     selectedsalesinvoiceTax = salesInvoiceTax;
-                    sqlCommand = "INSERT INTO SALES_HEADER_TAX (SALES_INVOICE, ORIGIN_SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE, SALES_PAYMENT_METHOD) " +
+                    sqlCommand = "INSERT INTO SALES_HEADER_TAX (SALES_INVOICE, ORIGIN_SALES_INVOICE, CUSTOMER_ID, SALES_DATE, SALES_TOTAL, SALES_DISCOUNT_FINAL, SALES_TOP, SALES_TOP_DATE, SALES_PAID, SALES_PAYMENT, SALES_PAYMENT_CHANGE, SALES_PAYMENT_METHOD, ORIGIN_SALES_INVOICE) " +
                                     "VALUES " +
-                                    "('" + salesInvoiceTax + "', '" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y %H:%i'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ", " + selectedPaymentMethod + ")";
+                                    "('" + salesInvoiceTax + "', '" + salesInvoice + "', " + selectedPelangganID + ", STR_TO_DATE('" + SODateTime + "', '%d-%m-%Y %H:%i'), " + gutil.validateDecimalNumericInput(globalTotalValue) + ", " + gutil.validateDecimalNumericInput(Convert.ToDouble(salesDiscountFinal)) + ", " + salesTop + ", STR_TO_DATE('" + SODueDateTime + "', '%d-%m-%Y'), " + salesPaid + ", " + gutil.validateDecimalNumericInput(bayarAmount) + ", " + gutil.validateDecimalNumericInput(sisaBayar) + ", " + selectedPaymentMethod + ", " + selectedsalesinvoice + ")";
 
                     gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "INSERT INTO SALES HEADER TAX [" + salesInvoice + "]");
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
@@ -1625,6 +1657,85 @@ namespace RoyalPetz_ADMIN
             noFakturLabel.Text = noFakturValue;
         }
 
+        private void loadInvoiceData()
+        {
+            string sqlCommand;
+            int TOPValue;
+            int TOPDuration;
+            MySqlDataReader rdr;
+            int rowPos = 0;
+
+            salesQty.Clear();
+            isLoading = true;
+            // PULL HEADER DATA
+            sqlCommand = "SELECT SH.SALES_INVOICE AS NO_INVOICE, IFNULL(M.CUSTOMER_ID, 0) AS PELANGGAN_ID, IFNULL(M.CUSTOMER_FULL_NAME, '') AS NAMA, IFNULL(M.CUSTOMER_GROUP, 1) AS CUSTOMER_GROUP, SH.SALES_TOTAL AS TOTAL, SH.SALES_DISCOUNT_FINAL AS DISC_FINAL, SH.SALES_TOP AS TOP, DATEDIFF(SH.SALES_TOP_DATE, SH.SALES_DATE) AS TOP_DURATION " +
+                                   "FROM SALES_HEADER SH LEFT OUTER JOIN MASTER_CUSTOMER M ON (SH.CUSTOMER_ID = M.CUSTOMER_ID) WHERE SH.SALES_INVOICE = '" + selectedsalesinvoice + "'";
+            rdr = DS.getData(sqlCommand);
+            if (rdr.HasRows)
+            {
+                while (rdr.Read())
+                {
+                    pelangganTextBox.Text = rdr.GetString("NAMA");
+                    noFakturLabel.Text = selectedsalesinvoice;
+
+                    customerComboBox.SelectedIndex = rdr.GetInt32("CUSTOMER_GROUP") - 1;
+                    customerComboBox.Text = customerComboBox.Items[customerComboBox.SelectedIndex].ToString();
+                    selectedPelangganID = rdr.GetInt32("PELANGGAN_ID");
+
+                    globalTotalValue = rdr.GetDouble("TOTAL");
+                    totalPenjualanTextBox.Text = globalTotalValue.ToString("C2", culture);
+                    discValue = rdr.GetDouble("DISC_FINAL");
+                    discJualMaskedTextBox.Text = discValue.ToString();
+                    totalLabel.Text = (globalTotalValue - discValue).ToString("C2", culture);
+                    TOPValue = rdr.GetInt32("TOP");
+
+                    if (TOPValue == 1)
+                    {
+                        cashRadioButton.Checked = true;
+                        bayarTextBox.Text = (globalTotalValue - discValue).ToString();
+                    }
+                    else
+                    {
+                        creditRadioButton.Checked = true;
+                        TOPDuration = rdr.GetInt32("TOP_DURATION");
+                        tempoMaskedTextBox.Text = TOPDuration.ToString();
+                        bayarTextBox.Text = "0";
+                    }
+
+                    totalAfterDiscTextBox.Text = (globalTotalValue - discValue).ToString("C2", culture);
+                }
+            }
+            rdr.Close();
+
+            // PULL DETAIL DATA               
+            sqlCommand = "SELECT M.PRODUCT_ID AS KODE_PRODUK, M.PRODUCT_NAME AS NAMA_PRODUK, SD.PRODUCT_PRICE AS HPP, SD.PRODUCT_SALES_PRICE AS HARGA_PRODUK, SD.PRODUCT_QTY AS QTY, SD.PRODUCT_DISC1, SD.PRODUCT_DISC2, SD.PRODUCT_DISC_RP, SD.SALES_SUBTOTAL AS SUBTOTAL " +
+                    "FROM SALES_DETAIL SD, MASTER_PRODUCT M WHERE SD.SALES_INVOICE = '" + selectedsalesinvoice + "' AND SD.PRODUCT_ID = M.PRODUCT_ID";
+            rdr = DS.getData(sqlCommand);
+            if (rdr.HasRows)
+            {
+                while (rdr.Read())
+                {
+                    addNewRow();
+                    cashierDataGridView.Rows[rowPos].Cells["productID"].Value = rdr.GetString("KODE_PRODUK");
+                    cashierDataGridView.Rows[rowPos].Cells["productName"].Value = rdr.GetString("NAMA_PRODUK");
+                    cashierDataGridView.Rows[rowPos].Cells["productPrice"].Value = rdr.GetString("HARGA_PRODUK");
+                    cashierDataGridView.Rows[rowPos].Cells["qty"].Value = rdr.GetString("QTY");
+                    cashierDataGridView.Rows[rowPos].Cells["disc1"].Value = rdr.GetString("PRODUCT_DISC1");
+                    cashierDataGridView.Rows[rowPos].Cells["disc2"].Value = rdr.GetString("PRODUCT_DISC2");
+                    cashierDataGridView.Rows[rowPos].Cells["discRP"].Value = rdr.GetString("PRODUCT_DISC_RP");
+                    cashierDataGridView.Rows[rowPos].Cells["hpp"].Value = rdr.GetString("HPP");
+
+                    salesQty[rowPos] = rdr.GetString("QTY");
+                    cashierDataGridView.Rows[rowPos].Cells["jumlah"].Value = rdr.GetString("SUBTOTAL");
+
+                    rowPos += 1;
+                }
+            }
+            rdr.Close();
+            
+            isLoading = false;
+        }
+
         private void cashierForm_Load(object sender, EventArgs e)
         {
             registerGlobalHotkey();
@@ -1643,6 +1754,24 @@ namespace RoyalPetz_ADMIN
             errorLabel.Text = "";
 
             userStatusLabel.Text = "Welcome, " + DS.getDataSingleValue("SELECT IFNULL(USER_FULL_NAME, 0) FROM MASTER_USER WHERE ID = " + gutil.getUserID()).ToString();
+
+            if (originModuleID == globalConstants.COPY_NOTA && selectedsalesinvoice != "")
+            {
+                loadInvoiceData();
+
+                errorLabel.Text = "COPY NOTA";
+
+                cashierDataGridView.ReadOnly = true;
+                customerComboBox.Enabled = false;
+                cashRadioButton.Enabled = false;
+                creditRadioButton.Enabled = false;
+                tempoMaskedTextBox.ReadOnly = true;
+                paymentComboBox.Enabled = false;
+                printoutCheckBox.Enabled = false;
+
+                discJualMaskedTextBox.ReadOnly = true;
+                bayarTextBox.ReadOnly = true;     
+            }
         }
 
         private void cashierForm_Activated(object sender, EventArgs e)
@@ -1920,16 +2049,16 @@ namespace RoyalPetz_ADMIN
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : PrintReceipt, POS size Paper");
                 //width, height
                 paperLength = calculatePageLength();
-                PaperSize psize = new PaperSize("Custom", 320, paperLength);//820);
+                PaperSize psize = new PaperSize("Custom", 250, paperLength);//820); //change paper size receipt width x height
                 printDocument1.DefaultPageSettings.PaperSize = psize;
-                DialogResult result;
-                printPreviewDialog1.Width = 512;
-                printPreviewDialog1.Height = 768;
-                result = printPreviewDialog1.ShowDialog();
-                if (result == DialogResult.OK)
-                {
+                //DialogResult result;
+                //printPreviewDialog1.Width = 512;
+                //printPreviewDialog1.Height = 768;
+                //result = printPreviewDialog1.ShowDialog();
+                //if (result == DialogResult.OK)
+                //{
                     printDocument1.Print();
-                }
+                //}
             } else
             {
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : PrintReceipt, papermode [" + papermode + "]");
@@ -1939,7 +2068,7 @@ namespace RoyalPetz_ADMIN
                 DS.mySqlConnect();
                 string sqlCommandx = "";
                     
-                if (originModuleID == 0)
+                if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
                 {
                     // NORMAL TRANSACTION
                     sqlCommandx = "SELECT SD.ID, SH.SALES_DATE AS 'DATE', SD.SALES_INVOICE AS 'INVOICE', MC.CUSTOMER_FULL_NAME AS 'CUSTOMER', M.PRODUCT_NAME AS 'PRODUCT', PRODUCT_QTY AS 'QTY', " +
@@ -1974,54 +2103,55 @@ namespace RoyalPetz_ADMIN
                     SalesReceiptForm displayedform = new SalesReceiptForm();
                     displayedform.ShowDialog(this);
                 }
-            }
-
-           
+            }           
         }
        
         private int calculatePageLength()
         {
-            int startY = 10;
-            int Offset = 15;
+            int startY = 0;
+            int Offset = 5;
             int Offsetplus = 3;
+            Font font = new Font("Courier New", 9);
+            int rowheight = (int)Math.Ceiling(font.GetHeight());
+            int add_offset = rowheight;
             int totalLengthPage = startY + Offset;
             string nm, almt, tlpn, email;
-
+            
             loadInfoToko(2, out nm, out almt, out tlpn, out email);
 
             //set printing area
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 10;
+            Offset = Offset + add_offset;
 
             if (!email.Equals(""))
-                Offset = Offset + 10;
+                Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             //end of header
 
             //start of content
 
             //1. PAYMENT METHOD
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
             //2. CUSTOMER NAME
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15 + Offsetplus;
+            Offset = Offset + add_offset + Offsetplus;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
             //DETAIL PENJUALAN
-            
+
             DS.mySqlConnect();
             MySqlDataReader rdr;
             using (rdr = DS.getData("SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoice + "'"))//+ "group by s.product_id") )
@@ -2029,34 +2159,34 @@ namespace RoyalPetz_ADMIN
                 if (rdr.HasRows)
                 {
                     while (rdr.Read())
-                        Offset = Offset + 15;
+                        Offset = Offset + add_offset;
                 }
             }
             DS.mySqlClose();
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 25;
+            Offset = Offset + add_offset;
             //end of content
 
             //FOOTER
 
-            Offset = Offset + 15 + Offsetplus;
+            Offset = Offset + add_offset + Offsetplus;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             //end of footer
 
-            totalLengthPage = totalLengthPage + Offset + 15;
+            totalLengthPage = totalLengthPage + Offset + add_offset;
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculatePageLength, totalLengthPage [" + totalLengthPage + "]");
             return totalLengthPage;
@@ -2072,16 +2202,16 @@ namespace RoyalPetz_ADMIN
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : printDocument1_PrintPage, print POS size receipt");
 
             Graphics graphics = e.Graphics;
-            Font font = new Font("Courier New", 12);
-            float fontHeight = font.GetHeight();
-            int startX = 2;
-            int colxwidth = 93; //31x3
-            int totrowwidth = 310; //310/10=31
-            int totrowheight = 20;
-            int inlineheader = 12;
-            int inlinetext = 10;
-            int startY = 5;
-            int Offset = 15;
+            int startX = 0;
+            int startY = 0;
+            int colxwidth = 75; //93; //31x3
+            int totrowwidth = 250; //new/25 *old//310/10=31
+            Font font = new Font("Courier New", 9);
+            int rowheight = (int)Math.Ceiling(font.GetHeight());
+            //int inlineheader = 12;
+            //int inlinetext = 10;
+            int add_offset = rowheight;
+            int Offset = 5;
             int offset_plus = 3;
             int fontSize = 7;
             //HEADER
@@ -2092,24 +2222,24 @@ namespace RoyalPetz_ADMIN
             sf.Alignment = StringAlignment.Center;
 
             //set whole printing area
-            System.Drawing.RectangleF rect = new System.Drawing.RectangleF(startX, startY + Offset, totrowwidth, totrowheight);
+            System.Drawing.RectangleF rect = new System.Drawing.RectangleF(startX, startY + Offset, totrowwidth, rowheight);
             //set right print area
-            System.Drawing.RectangleF rectright = new System.Drawing.RectangleF(totrowwidth-colxwidth-startX, startY + Offset, colxwidth, totrowheight);
+            System.Drawing.RectangleF rectright = new System.Drawing.RectangleF(totrowwidth - colxwidth - startX, startY + Offset, colxwidth, rowheight);
             //set middle print area
-            System.Drawing.RectangleF rectcenter = new System.Drawing.RectangleF((startX + (totrowwidth / 2) - colxwidth - startX), startY + Offset, (totrowwidth / 2) - startX, totrowheight);
+            System.Drawing.RectangleF rectcenter = new System.Drawing.RectangleF((startX + totrowwidth), startY + Offset, colxwidth, rowheight);
 
-            loadInfoToko(2,out nm, out almt, out tlpn, out email);
+            loadInfoToko(2, out nm, out almt, out tlpn, out email);
 
             graphics.DrawString(nm, new Font("Courier New", 9),
                                 new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             graphics.DrawString(almt,
                      new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 10;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             graphics.DrawString(tlpn,
                      new Font("Courier New", fontSize),
@@ -2117,16 +2247,16 @@ namespace RoyalPetz_ADMIN
 
             if (!email.Equals(""))
             {
-                Offset = Offset + 10;
+                Offset = Offset + add_offset;
                 rect.Y = startY + Offset;
                 graphics.DrawString(email,
                          new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
             }
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            String underLine = "---------------------------------------";  //37 character
+            String underLine = "--------------------------------";  //32 character
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
             //end of header
@@ -2138,29 +2268,29 @@ namespace RoyalPetz_ADMIN
             DS.mySqlConnect();
             //load customer id
             string customer = "";
-            string tgl="";
+            string tgl = "";
             string group = "";
             double total = 0;
             string sqlCommand = "";
-            
-            if (originModuleID == 0)  // NORMAL TRANSACTION
-            { 
-            sqlCommand = "SELECT S.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE',S.SALES_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM SALES_HEADER S,MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = C.CUSTOMER_ID AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
-                " UNION " +
-                "SELECT S.SALES_INVOICE AS 'INVOICE', 'P-UMUM' AS 'CUSTOMER', DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE', S.SALES_TOTAL AS 'TOTAL', 'RETAIL' AS 'GROUP' FROM SALES_HEADER S WHERE S.CUSTOMER_ID = 0 AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
-                "ORDER BY DATE ASC";
+
+            if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)  // NORMAL TRANSACTION
+            {
+                sqlCommand = "SELECT S.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE',S.SALES_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM SALES_HEADER S,MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = C.CUSTOMER_ID AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
+                    " UNION " +
+                    "SELECT S.SALES_INVOICE AS 'INVOICE', 'P-UMUM' AS 'CUSTOMER', DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE', S.SALES_TOTAL AS 'TOTAL', 'RETAIL' AS 'GROUP' FROM SALES_HEADER S WHERE S.CUSTOMER_ID = 0 AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'" +
+                    "ORDER BY DATE ASC";
             }
             else
             {
                 // GET DUMMY TAX DATA
-                sqlCommand = "SELECT S.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE',S.SALES_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM SALES_HEADER_TAX S,MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = C.CUSTOMER_ID AND S.SALES_INVOICE = '" + selectedsalesinvoiceTax+ "'" +
+                sqlCommand = "SELECT S.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE',S.SALES_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM SALES_HEADER_TAX S,MASTER_CUSTOMER C WHERE S.CUSTOMER_ID = C.CUSTOMER_ID AND S.SALES_INVOICE = '" + selectedsalesinvoiceTax + "'" +
                                         " UNION " +
                                         "SELECT S.SALES_INVOICE AS 'INVOICE', 'P-UMUM' AS 'CUSTOMER', DATE_FORMAT(S.SALES_DATE, '%d-%M-%Y') AS 'DATE', S.SALES_TOTAL AS 'TOTAL', 'RETAIL' AS 'GROUP' FROM SALES_HEADER_TAX S WHERE S.CUSTOMER_ID = 0 AND S.SALES_INVOICE = '" + selectedsalesinvoiceTax + "'" +
                                         "ORDER BY DATE ASC";
             }
             using (rdr = DS.getData(sqlCommand))
             {
-                if (rdr.HasRows) 
+                if (rdr.HasRows)
                 {
                     rdr.Read();
                     customer = rdr.GetString("CUSTOMER");
@@ -2172,17 +2302,18 @@ namespace RoyalPetz_ADMIN
             DS.mySqlClose();
 
             //1. PAYMENT METHOD
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX + 15;
-            rect.Width = 280;
+            rect.Width = totrowwidth;
             //SET TO LEFT MARGIN
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
             if (creditRadioButton.Checked)
             {
                 ucapan = "JUAL CREDIT KEPADA";
-            } else
+            }
+            else
             {
                 ucapan = "JUAL TUNAI KEPADA";
             }
@@ -2190,13 +2321,13 @@ namespace RoyalPetz_ADMIN
                      new SolidBrush(Color.Black), rect, sf);
 
             //2. CUSTOMER NAME
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "PELANGGAN : " + customer + " [" + group + "]";
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -2205,41 +2336,41 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.Width = totrowwidth;
             ucapan = "BUKTI PEMBAYARAN";
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
-            
-            Offset = Offset + 15 + offset_plus;
+
+            Offset = Offset + add_offset + offset_plus;
             rect.Y = startY + Offset;
             rect.X = startX + 15;
-            rect.Width = 280;
+            rect.Width = totrowwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
-            if (originModuleID == 0)
+            if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
                 ucapan = "NO. NOTA : " + selectedsalesinvoice;
             else
                 ucapan = "NO. NOTA : " + selectedsalesinvoiceTax;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            ucapan = "TANGGAL  : "+ tgl;
+            ucapan = "TANGGAL  : " + tgl;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             string nama = "";
             loadNamaUser(gutil.getUserID(), out nama);
-            ucapan = "OPERATOR : " +  nama;
+            ucapan = "OPERATOR : " + nama;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -2259,8 +2390,8 @@ namespace RoyalPetz_ADMIN
             double total_qty = 0;
             double product_qty = 0;
             double product_price = 0;
-            
-            if (originModuleID == 0)
+
+            if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
             {
                 // NORMAL TRANSACTION
                 sqlCommand = "SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoice + "'";
@@ -2281,25 +2412,26 @@ namespace RoyalPetz_ADMIN
                         product_name = rdr.GetString("NAME");
                         product_qty = rdr.GetDouble("QTY");
                         product_price = rdr.GetDouble("PRICE");
-                        Offset = Offset + 15;
+                        Offset = Offset + add_offset;
                         rect.Y = startY + Offset;
-                        rect.X = startX + 15;
-                        rect.Width = 280;
+                        rect.X = startX + 5;
+                        rect.Width = totrowwidth;
                         sf.LineAlignment = StringAlignment.Near;
                         sf.Alignment = StringAlignment.Near;
-                        ucapan = product_qty + " X [" + product_id + "] " + product_name;
-                        if (ucapan.Length > 30 )
+                        ucapan = product_qty + "X " + product_name;
+                        if (ucapan.Length > 30)
                         {
-                            ucapan = ucapan.Substring(0, 30); //maximum 30 character
+                            ucapan = ucapan.Substring(0, 27); //maximum 27 character
                         }
                         //
                         graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                                  new SolidBrush(Color.Black), rect, sf);
 
-                        rectright.Y = Offset-startY;
+                        rectright.Y = rect.Y - 2;
+                        rectright.Width = colxwidth - 5;
                         sf.LineAlignment = StringAlignment.Far;
                         sf.Alignment = StringAlignment.Far;
-                        ucapan = "@" + product_price.ToString("C2", culture);//" Rp." + product_price;
+                        ucapan = product_price.ToString("C2", culture);//" Rp." + product_price;
                         graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                                  new SolidBrush(Color.Black), rectright, sf);
                     }
@@ -2307,7 +2439,7 @@ namespace RoyalPetz_ADMIN
             }
             DS.mySqlClose();
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -2316,63 +2448,64 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
-            rect.Width = 260;
+            rect.X = rect.X + 95;
+            //rectcenter.X = rectcenter.X + 15;
+            //rectcenter.Width = colxwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
-            ucapan = "               JUMLAH  :";
-            rectcenter.Y = rect.Y;
+            ucapan = "JUMLAH  :";
+            //rectcenter.Y = rect.Y;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                     new SolidBrush(Color.Black), rectcenter, sf);
+                     new SolidBrush(Color.Black), rect, sf);
             sf.LineAlignment = StringAlignment.Far;
             sf.Alignment = StringAlignment.Far;
             ucapan = total.ToString("C2", culture);
-            rectright.Y = Offset - startY + 1;
+            rectright.Y = rect.Y-2;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rectright, sf);
 
             if (cashRadioButton.Checked == true)
-            { 
-                Offset = Offset + 15;
+            {
+                Offset = Offset + add_offset;
                 rect.Y = startY + Offset;
-                rect.X = startX + 15;
-                rect.Width = 260;
+                //rectcenter.X = rectcenter.X + 15;
+                //rectcenter.Width = colxwidth;
                 sf.LineAlignment = StringAlignment.Near;
                 sf.Alignment = StringAlignment.Near;
-                ucapan = "               TUNAI   :";
-                rectcenter.Y = rect.Y;
+                ucapan = "TUNAI   :";
+                //rectcenter.Y = rect.Y;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                         new SolidBrush(Color.Black), rectcenter, sf);
+                         new SolidBrush(Color.Black), rect, sf);
                 sf.LineAlignment = StringAlignment.Far;
                 sf.Alignment = StringAlignment.Far;
 
                 double jumlahBayar = Convert.ToDouble(bayarTextBox.Text);
                 ucapan = jumlahBayar.ToString("C2", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
-                rectright.Y = Offset - startY + 1;
+                rectright.Y = rect.Y-2;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                          new SolidBrush(Color.Black), rectright, sf);
 
-                Offset = Offset + 15;
+                Offset = Offset + add_offset;
                 rect.Y = startY + Offset;
-                rect.X = startX + 15;
-                rect.Width = 260;
+                //rectcenter.X = rectcenter.X + 15;
+                //rectcenter.Width = colxwidth;
                 sf.LineAlignment = StringAlignment.Near;
                 sf.Alignment = StringAlignment.Near;
-                ucapan = "               KEMBALI :";
-                rectcenter.Y = rect.Y;
+                ucapan = "KEMBALI :";
+                //rectcenter.Y = rect.Y;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                         new SolidBrush(Color.Black), rectcenter, sf);
+                         new SolidBrush(Color.Black), rect, sf);
                 sf.LineAlignment = StringAlignment.Far;
                 sf.Alignment = StringAlignment.Far;
                 ucapan = uangKembaliTextBox.Text;
-                rectright.Y = Offset - startY + 1;
+                rectright.Y = rect.Y-2;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                          new SolidBrush(Color.Black), rectright, sf);
             }
 
-            if (originModuleID == 0)
+            if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
             {
                 // NORMAL TRANSACTION
                 sqlCommand = "SELECT IFNULL(SUM(PRODUCT_QTY), 0) FROM SALES_DETAIL S, MASTER_PRODUCT P WHERE S.PRODUCT_ID = P.PRODUCT_ID AND S.SALES_INVOICE = '" + selectedsalesinvoice + "'";
@@ -2385,10 +2518,10 @@ namespace RoyalPetz_ADMIN
 
             total_qty = Convert.ToDouble(DS.getDataSingleValue(sqlCommand));
 
-            Offset = Offset + 25 + offset_plus;
-            rect.Y = startY + Offset ;
+            Offset = Offset + add_offset + offset_plus;
+            rect.Y = startY + Offset;
             rect.X = startX + 15;
-            rect.Width = 280;
+            rect.Width = totrowwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
             ucapan = "TOTAL BARANG : " + total_qty;
@@ -2398,7 +2531,7 @@ namespace RoyalPetz_ADMIN
 
             //FOOTER
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -2407,25 +2540,24 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TERIMA KASIH ATAS KUNJUNGAN ANDA";
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "MAAF BARANG YANG SUDAH DIBELI";
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TIDAK DAPAT DITUKAR/ DIKEMBALIKKAN";
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
             //end of footer
-
         }
 
         private void tempoMaskedTextBox_Enter(object sender, EventArgs e)
@@ -2457,6 +2589,9 @@ namespace RoyalPetz_ADMIN
             var cell = cashierDataGridView[e.ColumnIndex, e.RowIndex];
             DataGridViewRow selectedRow = cashierDataGridView.Rows[e.RowIndex];
 
+            if (isLoading)
+                return;
+
             if (cell.OwningColumn.Name == "productID")
             {
                 if (null != cell.Value)
@@ -2473,5 +2608,6 @@ namespace RoyalPetz_ADMIN
                 }
             }
         }
+        
     }
 }

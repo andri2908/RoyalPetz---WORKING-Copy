@@ -1323,5 +1323,17 @@ namespace RoyalPetz_ADMIN
             p.StartInfo.Arguments = "runAdmin";
             p.Start();
         }
+
+        private void labaRugiBulananToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReportFinanceSearchForm displayedForm = new ReportFinanceSearchForm(globalConstants.REPORT_MONTHLY_BALANCE);
+            displayedForm.ShowDialog(this);
+        }
+
+        private void toolStripMenuItem11_Click_1(object sender, EventArgs e)
+        {
+            dataSalesInvoice displayedForm = new dataSalesInvoice();
+            displayedForm.ShowDialog(this);
+        }
     }
 }
