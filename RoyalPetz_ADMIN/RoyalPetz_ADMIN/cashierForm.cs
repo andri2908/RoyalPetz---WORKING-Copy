@@ -29,6 +29,10 @@ namespace RoyalPetz_ADMIN
         private int selectedPaymentMethod = 0;
         private bool isLoading = false;
         private double bayarAmount = 0;
+        private string bayarAmountText = "0";
+       // private double discAmount = 0;
+        private string discAmountText = "0";
+
         private double sisaBayar = 0;
         private int originModuleID = 0;
 
@@ -37,6 +41,8 @@ namespace RoyalPetz_ADMIN
         private globalUtilities gutil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
         private List<string> salesQty = new List<string>();
+        private List<string> productPriceList = new List<string>();
+        private List<string> jumlahList = new List<string>();
         private List<string> disc1 = new List<string>();
         private List<string> disc2 = new List<string>();
         private List<string> discRP = new List<string>();
@@ -52,7 +58,8 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_F10;
         private Hotkeys.GlobalHotkey ghk_F11;
         private Hotkeys.GlobalHotkey ghk_F12;
-        
+        private Hotkeys.GlobalHotkey ghk_DEL;
+
         private Hotkeys.GlobalHotkey ghk_CTRL_DEL;
         private Hotkeys.GlobalHotkey ghk_CTRL_Enter;
         private Hotkeys.GlobalHotkey ghk_CTRL_C;
@@ -117,6 +124,8 @@ namespace RoyalPetz_ADMIN
                         displayBarcodeForm.Left = this.Left + 5;// (Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
 
                         displayBarcodeForm.ShowDialog(this);
+
+                        cashierDataGridView.Focus();
                     }
                     break;
 
@@ -140,19 +149,19 @@ namespace RoyalPetz_ADMIN
                     }
                     break;
 
-                case Keys.F5:
+                case Keys.F5: // NOT USED
                     if (originModuleID != globalConstants.COPY_NOTA)
                         if (DialogResult.Yes == MessageBox.Show("HAPUS DATA DATA DI LAYAR ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                             clearUpScreen();
                     break;
 
-                case Keys.F7:
+                case Keys.F7: // NOT USED
                     if (selectedsalesinvoice != "")
                         if (DialogResult.Yes == MessageBox.Show("REPRINT INVOICE ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                             reprintInvoice();
                     break;
 
-                case Keys.F8:
+                case Keys.F8: // NOT USED
                     if (originModuleID != globalConstants.COPY_NOTA)
                     {
                         gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO ADD NEW ROW PRESSED");
@@ -164,7 +173,6 @@ namespace RoyalPetz_ADMIN
                 case Keys.F9:
                     if (originModuleID != globalConstants.COPY_NOTA)
                     {
-
                         gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO SAVE AND PRINT OUT INVOICE PRESSED");
 
                         saveAndPrintOutInvoice();
@@ -174,12 +182,14 @@ namespace RoyalPetz_ADMIN
                 case Keys.F11:
                     if (originModuleID != globalConstants.COPY_NOTA)
                     {
-
                         totalAfterDiscTextBox.Focus();
+
                         gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO OPEN PRODUK SEARCH FORM PRESSED");
 
                         dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.CASHIER_MODULE, this);
                         displayProdukForm.ShowDialog(this);
+
+                        cashierDataGridView.Focus();
                     }
                     break;
 
@@ -189,6 +199,19 @@ namespace RoyalPetz_ADMIN
 
                 case Keys.Subtract:
                     discJualMaskedTextBox.Focus();
+                    break;
+
+                case Keys.Delete:
+                    if (cashierDataGridView.Focused)
+                        if (originModuleID != globalConstants.COPY_NOTA)
+                            if (cashierDataGridView.Rows.Count > 1)
+                                if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
+                                {
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_KeyDown ATTEMPT TO DELETE ROW");
+                                    deleteCurrentRow();
+                                    updateRowNumber();
+                                    calculateTotal();
+                                }
                     break;
 
                 case Keys.F10:
@@ -279,14 +302,14 @@ namespace RoyalPetz_ADMIN
             ghk_F4 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F4, this);
             ghk_F4.Register();
 
-            ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
-            ghk_F5.Register();
+            //ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
+            //ghk_F5.Register();
 
-            ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
-            ghk_F7.Register();
+            //ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
+            //ghk_F7.Register();
 
-            ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
-            ghk_F8.Register();
+            //ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
+            //ghk_F8.Register();
 
             ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
             ghk_F9.Register();
@@ -300,8 +323,11 @@ namespace RoyalPetz_ADMIN
             ghk_Substract = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Subtract, this);
             ghk_Substract.Register();
 
-            ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
-            ghk_CTRL_DEL.Register();
+            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            ghk_DEL.Register();
+
+            //ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
+            //ghk_CTRL_DEL.Register();
 
             ghk_CTRL_Enter = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Enter, this);
             ghk_CTRL_Enter.Register();
@@ -339,16 +365,17 @@ namespace RoyalPetz_ADMIN
             ghk_F2.Unregister();
             ghk_F3.Unregister();
             ghk_F4.Unregister();
-            ghk_F5.Unregister();
-            ghk_F7.Unregister();
-            ghk_F8.Unregister();
+            //ghk_F5.Unregister();
+            //ghk_F7.Unregister();
+            //ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
 
             ghk_Add.Unregister();
             ghk_Substract.Unregister();
-            
-            ghk_CTRL_DEL.Unregister();
+            ghk_DEL.Unregister();
+
+            //ghk_CTRL_DEL.Unregister();
             ghk_CTRL_Enter.Unregister();
 
 
@@ -384,11 +411,11 @@ namespace RoyalPetz_ADMIN
             selectedPelangganID = 0;
             globalTotalValue = 0;
             discValue = 0;
-            totalLabel.Text = globalTotalValue.ToString("C2", culture);
+            totalLabel.Text = globalTotalValue.ToString("C0", culture);
             gutil.ResetAllControls(this);
 
-            totalPenjualanTextBox.Text = globalTotalValue.ToString("C2", culture);
-            totalAfterDiscTextBox.Text = globalTotalValue.ToString("C2", culture);
+            totalPenjualanTextBox.Text = globalTotalValue.ToString("C0", culture);
+            totalAfterDiscTextBox.Text = globalTotalValue.ToString("C0", culture);
             uangKembaliTextBox.Text = "0";
 
             customerComboBox.SelectedIndex = 0;
@@ -556,14 +583,16 @@ namespace RoyalPetz_ADMIN
                 disc1.Add("0");
                 disc2.Add("0");
                 discRP.Add("0");
+                productPriceList.Add("0");
+                jumlahList.Add("0");
 
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["F8"].Value = prevValue + 1;
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["hpp"].Value = "0";
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productPrice"].Value = "0";
-                cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc1"].Value = "0";
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["qty"].Value = "0";
-                cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc2"].Value = "0";
-                cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["discRP"].Value = "0";
+                //cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc1"].Value = "0";
+                //cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc2"].Value = "0";
+                //cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["discRP"].Value = "0";
                 cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["jumlah"].Value = "0";
                 newRowIndex = cashierDataGridView.Rows.Count - 1;
             }
@@ -591,10 +620,12 @@ namespace RoyalPetz_ADMIN
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ADD NEW ROW FROM BARCODE [" + productName + "]");
 
+            cashierDataGridView.AllowUserToAddRows = false;
+
             // CHECK FOR EXISTING SELECTED ITEM
             for (i = 0;i<cashierDataGridView.Rows.Count && !found && !foundEmptyRow;i++)
             {
-                if (null!= cashierDataGridView.Rows[i].Cells["productName"].Value && productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
+                if (null!= cashierDataGridView.Rows[i].Cells["productName"].Value && null != cashierDataGridView.Rows[i].Cells["productID"].Value && productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
                 { 
                     if (cashierDataGridView.Rows[i].Cells["productName"].Value.ToString() == productName)
                     {
@@ -664,6 +695,7 @@ namespace RoyalPetz_ADMIN
             selectedRow.Cells["jumlah"].Value = calculateSubTotal(rowSelectedIndex, Convert.ToDouble(selectedRow.Cells["productPrice"].Value));
             calculateTotal();
             cashierDataGridView.CurrentCell = selectedRow.Cells["qty"];
+            cashierDataGridView.AllowUserToAddRows = true;
             //comboSelectedIndexChangeMethod(rowSelectedIndex, i, selectedRow);
             //cashierDataGridView.CurrentCell = cashierDataGridView.Rows[rowSelectedIndex].Cells["qty"];
         }
@@ -714,10 +746,17 @@ namespace RoyalPetz_ADMIN
                     return false;
                 }
 
-                if (!productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
+                if (null == cashierDataGridView.Rows[i].Cells["productID"].Value)
                 {
-                    errorLabel.Text = "KODE PRODUK DI BARIS " + (i + 1) + " TIDAK VALID";
-                    return false;
+                    cashierDataGridView.Rows[i].DefaultCellStyle.BackColor = Color.Red;
+                    //errorLabel.Text = "KODE PRODUK DI BARIS " + (i + 1) + " TIDAK VALID";
+                    //return false;
+                }
+                else if (!productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
+                {
+                    cashierDataGridView.Rows[i].DefaultCellStyle.BackColor = Color.Red;
+                    //errorLabel.Text = "KODE PRODUK DI BARIS " + (i + 1) + " TIDAK VALID";
+                    //return false;
                 }
             }
 
@@ -907,7 +946,7 @@ namespace RoyalPetz_ADMIN
                 // SAVE DETAIL TABLE
                 for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
                 {
-                    if (null != cashierDataGridView.Rows[i].Cells["productID"].Value)
+                    if (null != cashierDataGridView.Rows[i].Cells["productID"].Value && productIDValid(cashierDataGridView.Rows[i].Cells["productID"].Value.ToString()))
                     {
                         disc1 = Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc1"].Value);
                         disc2 = Convert.ToDouble(cashierDataGridView.Rows[i].Cells["disc2"].Value);
@@ -1076,7 +1115,7 @@ namespace RoyalPetz_ADMIN
 
                     gutil.showSuccess(gutil.INS);
 
-                    //clearUpScreen();
+                    clearUpScreen();
                 }
             }
         }
@@ -1209,25 +1248,26 @@ namespace RoyalPetz_ADMIN
             for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
             {
                 if (null != cashierDataGridView.Rows[i].Cells["jumlah"].Value)
-                    total = total + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value);
+                    total = total + Convert.ToDouble(jumlahList[i]);
+                //total = total + Convert.ToDouble(cashierDataGridView.Rows[i].Cells["jumlah"].Value);
             }
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculateTotal [" + total + "]");
 
             globalTotalValue = total;
             totalAfterDisc = total;
-            totalLabel.Text = total.ToString("c2", culture);
+            totalLabel.Text = total.ToString("c0", culture);
 
-            totalPenjualanTextBox.Text = total.ToString("c2", culture);
+            totalPenjualanTextBox.Text = total.ToString("c0", culture);
 
             if (discJualMaskedTextBox.Text.Length > 0)
             {
-                discJual = Convert.ToDouble(discJualMaskedTextBox.Text);
+                discJual = discValue;// Convert.ToDouble(discJualMaskedTextBox.Text);
                 totalAfterDisc = Math.Round(totalAfterDisc - discJual, 2);
             }
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculateTotal, totalAfterDisc [" + totalAfterDisc + "]");
 
-            totalAfterDiscTextBox.Text = totalAfterDisc.ToString("c2", culture);
+            totalAfterDiscTextBox.Text = totalAfterDisc.ToString("c0", culture);
 
             calculateChangeValue();
         }
@@ -1238,7 +1278,7 @@ namespace RoyalPetz_ADMIN
             if (bayarTextBox.Text.Length > 0)
             {
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculateChangeValue, bayarTextBox.Text [" + bayarTextBox.Text + "]");
-                bayarAmount = Convert.ToDouble(bayarTextBox.Text);
+                //bayarAmount = Convert.ToDouble(bayarTextBox.Text);
                 totalAfterDisc = globalTotalValue - discValue;
                 if (bayarAmount > totalAfterDisc)
                     sisaBayar = bayarAmount - totalAfterDisc;
@@ -1246,7 +1286,7 @@ namespace RoyalPetz_ADMIN
                     sisaBayar = 0;
 
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculateChangeValue, sisaBayar [" + sisaBayar + "]");
-                uangKembaliTextBox.Text = sisaBayar.ToString("C2", culture);
+                uangKembaliTextBox.Text = sisaBayar.ToString("C0", culture);
             }
         }
 
@@ -1319,6 +1359,7 @@ namespace RoyalPetz_ADMIN
                 productIDTextBox.CharacterCasing = CharacterCasing.Upper;
                 productIDTextBox.TextChanged -= TextBox_TextChanged;
                 productIDTextBox.PreviewKeyDown += Combobox_previewKeyDown;
+                productIDTextBox.KeyDown += Combobox_KeyDown;
                 productIDTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 productIDTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
                 setTextBoxCustomSource(productIDTextBox);
@@ -1401,7 +1442,8 @@ namespace RoyalPetz_ADMIN
 
                 hpp = getProductPriceValue(selectedProductID, customerComboBox.SelectedIndex);
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, PRODUCT_SALES_PRICE [" + hpp + "]");
-                selectedRow.Cells["productPrice"].Value = hpp;
+                selectedRow.Cells["productPrice"].Value = hpp.ToString("N0", culture);
+                productPriceList[rowSelectedIndex] = hpp.ToString();
 
                 //if (null == selectedRow.Cells["qty"].Value)
                 selectedRow.Cells["qty"].Value = 0;
@@ -1418,7 +1460,7 @@ namespace RoyalPetz_ADMIN
                             if (rdr.HasRows)
                             {
                                 rdr.Read();
-
+                                
                                 selectedRow.Cells["disc1"].Value = rdr.GetString("DISC_1");
                                 disc1[rowSelectedIndex] = rdr.GetString("DISC_1");
 
@@ -1449,7 +1491,7 @@ namespace RoyalPetz_ADMIN
 
                 //subTotal = calculateSubTotal(rowSelectedIndex, hpp);
                 //gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, subTotal [" + subTotal + "]");
-                selectedRow.Cells["jumlah"].Value = subTotal;
+                selectedRow.Cells["jumlah"].Value = subTotal.ToString("N0", culture);
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ComboBox_SelectedIndexChanged, attempt to calculate total");
 
                 calculateTotal();
@@ -1457,6 +1499,14 @@ namespace RoyalPetz_ADMIN
             else
             {
                 clearUpSomeRowContents(selectedRow, rowSelectedIndex);
+            }
+        }
+
+        private void Combobox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
             }
         }
 
@@ -1484,6 +1534,7 @@ namespace RoyalPetz_ADMIN
                 {
                     clearUpSomeRowContents(selectedRow, rowSelectedIndex);
                 }
+                
             }
         }
 
@@ -1498,6 +1549,9 @@ namespace RoyalPetz_ADMIN
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, isLoading [" + isLoading.ToString() + "]");
 
+            //if (isLoadingNumFormat)
+            //    return;
+
             if (isLoading)
                 return;
 
@@ -1509,7 +1563,7 @@ namespace RoyalPetz_ADMIN
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, rowSelectedIndex [" + rowSelectedIndex + "]");
 
             //if (cashierDataGridView.CurrentCell.ColumnIndex != 3 && cashierDataGridView.CurrentCell.ColumnIndex != 4 && cashierDataGridView.CurrentCell.ColumnIndex != 5 && cashierDataGridView.CurrentCell.ColumnIndex != 6)
-            if (cashierDataGridView.CurrentCell.OwningColumn.Name != "hpp" && 
+            if (cashierDataGridView.CurrentCell.OwningColumn.Name != "productPrice" && 
                 cashierDataGridView.CurrentCell.OwningColumn.Name != "qty" && 
                 cashierDataGridView.CurrentCell.OwningColumn.Name != "disc1" && 
                 cashierDataGridView.CurrentCell.OwningColumn.Name != "disc2" && 
@@ -1524,6 +1578,7 @@ namespace RoyalPetz_ADMIN
                 isLoading = true;
                 // reset subTotal Value and recalculate total
                 selectedRow.Cells["jumlah"].Value = 0;
+                jumlahList[rowSelectedIndex] = "0";
 
                 //if (detailRequestQtyApproved.Count >= rowSelectedIndex + 1)
                 //    detailRequestQtyApproved[rowSelectedIndex] = "0";
@@ -1541,6 +1596,10 @@ namespace RoyalPetz_ADMIN
                     case "discRP":
                         discRP[rowSelectedIndex] = "0";
                         break;
+                    case "productPrice":
+                        productPriceList[rowSelectedIndex] = "0";
+                        break;
+
                 }
 
                 dataGridViewTextBoxEditingControl.Text = "0";
@@ -1569,6 +1628,9 @@ namespace RoyalPetz_ADMIN
                     break;
                 case "discRP":
                     previousInput = discRP[rowSelectedIndex];
+                    break;
+                case "productPrice":
+                    previousInput = productPriceList[rowSelectedIndex];
                     break;
             }
 
@@ -1606,6 +1668,9 @@ namespace RoyalPetz_ADMIN
                     case "discRP":
                         discRP[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
                         break;
+                    case "productPrice":
+                        productPriceList[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
+                        break;
                 }
             }
             else
@@ -1614,11 +1679,13 @@ namespace RoyalPetz_ADMIN
                 dataGridViewTextBoxEditingControl.Text = previousInput;
             }
 
-            productPrice = Convert.ToDouble(selectedRow.Cells["productPrice"].Value);
+            //productPrice = Convert.ToDouble(selectedRow.Cells["productPrice"].Value);
+            productPrice = Convert.ToDouble(productPriceList[rowSelectedIndex]);
 
             subTotal = calculateSubTotal(rowSelectedIndex, productPrice);
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, subtotal value [" + subTotal + "]");
-            selectedRow.Cells["jumlah"].Value = subTotal;
+            selectedRow.Cells["jumlah"].Value = subTotal.ToString("N0", culture);
+            jumlahList[rowSelectedIndex] = subTotal.ToString();
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, attempt to calculate total value");
             calculateTotal();
@@ -1683,10 +1750,10 @@ namespace RoyalPetz_ADMIN
                     selectedPelangganID = rdr.GetInt32("PELANGGAN_ID");
 
                     globalTotalValue = rdr.GetDouble("TOTAL");
-                    totalPenjualanTextBox.Text = globalTotalValue.ToString("C2", culture);
+                    totalPenjualanTextBox.Text = globalTotalValue.ToString("C0", culture);
                     discValue = rdr.GetDouble("DISC_FINAL");
                     discJualMaskedTextBox.Text = discValue.ToString();
-                    totalLabel.Text = (globalTotalValue - discValue).ToString("C2", culture);
+                    totalLabel.Text = (globalTotalValue - discValue).ToString("C0", culture);
                     TOPValue = rdr.GetInt32("TOP");
 
                     if (TOPValue == 1)
@@ -1702,7 +1769,7 @@ namespace RoyalPetz_ADMIN
                         bayarTextBox.Text = "0";
                     }
 
-                    totalAfterDiscTextBox.Text = (globalTotalValue - discValue).ToString("C2", culture);
+                    totalAfterDiscTextBox.Text = (globalTotalValue - discValue).ToString("C0", culture);
                 }
             }
             rdr.Close();
@@ -1745,6 +1812,11 @@ namespace RoyalPetz_ADMIN
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierForm_Load, ATTEMPT TO addColumnToDataGrid");
             addColumnToDataGrid();
 
+            //salesQty.Add("0");
+            //disc1.Add("0");
+            //disc2.Add("0");
+            //discRP.Add("0");
+
             customerComboBox.SelectedIndex = 0;
             customerComboBox.Text = customerComboBox.Items[0].ToString();
 
@@ -1762,6 +1834,8 @@ namespace RoyalPetz_ADMIN
                 errorLabel.Text = "COPY NOTA";
 
                 cashierDataGridView.ReadOnly = true;
+                cashierDataGridView.AllowUserToAddRows = false;
+
                 customerComboBox.Enabled = false;
                 cashRadioButton.Enabled = false;
                 creditRadioButton.Enabled = false;
@@ -1919,21 +1993,7 @@ namespace RoyalPetz_ADMIN
 
         private void discJualMaskedTextBox_Validating(object sender, CancelEventArgs e)
         {
-            double totalAfterDisc = 0;
-
-            if (discJualMaskedTextBox.Text.Length > 0)
-            {
-                totalAfterDisc = globalTotalValue - Convert.ToDouble(discJualMaskedTextBox.Text);
-                discValue = Convert.ToDouble(discJualMaskedTextBox.Text);
-            }
-            else
-            { 
-                totalAfterDisc = globalTotalValue;
-                discValue = 0;
-            }
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : discJualMaskedTextBox_Validating, totalAfterDisc [" + totalAfterDisc + "]");
-            totalAfterDiscTextBox.Text = totalAfterDisc.ToString("C2", culture);
+            
         }
 
         private void customerComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1960,6 +2020,38 @@ namespace RoyalPetz_ADMIN
 
         private void bayarTextBox_TextChanged(object sender, EventArgs e)
         {
+            string tempString;
+
+            if (isLoading)
+                return;
+
+            isLoading = true;
+            if (bayarTextBox.Text.Length == 0)
+            {
+                // IF TEXTBOX IS EMPTY, SET THE VALUE TO 0 AND EXIT THE CHECKING
+                bayarAmountText = "0";
+                bayarTextBox.Text = "0";
+
+                bayarTextBox.SelectionStart = bayarTextBox.Text.Length;
+                isLoading = false;
+
+                return;
+            }
+            // CHECKING TO PREVENT PREFIX "0" IN A NUMERIC INPUT WHILE ALLOWING A DECIMAL VALUE STARTED WITH "0"
+            else if (bayarTextBox.Text.IndexOf('0') == 0 && bayarTextBox.Text.Length > 1 && bayarTextBox.Text.IndexOf("0.") < 0)
+            {
+                tempString = bayarTextBox.Text;
+                bayarTextBox.Text = tempString.Remove(0, 1);
+            }
+
+            if (gutil.matchRegEx(bayarTextBox.Text, globalUtilities.REGEX_NUMBER_ONLY))
+                bayarAmountText = bayarTextBox.Text;
+            else
+                bayarTextBox.Text = bayarAmountText;
+
+            bayarTextBox.SelectionStart = bayarTextBox.Text.Length;
+            isLoading = false;
+            bayarAmount = Convert.ToDouble(bayarTextBox.Text);
             calculateChangeValue();
         }
 
@@ -2431,7 +2523,7 @@ namespace RoyalPetz_ADMIN
                         rectright.Width = colxwidth - 5;
                         sf.LineAlignment = StringAlignment.Far;
                         sf.Alignment = StringAlignment.Far;
-                        ucapan = product_price.ToString("C2", culture);//" Rp." + product_price;
+                        ucapan = product_price.ToString("C0", culture);//" Rp." + product_price;
                         graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                                  new SolidBrush(Color.Black), rectright, sf);
                     }
@@ -2461,7 +2553,7 @@ namespace RoyalPetz_ADMIN
                      new SolidBrush(Color.Black), rect, sf);
             sf.LineAlignment = StringAlignment.Far;
             sf.Alignment = StringAlignment.Far;
-            ucapan = total.ToString("C2", culture);
+            ucapan = total.ToString("C0", culture);
             rectright.Y = rect.Y-2;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rectright, sf);
@@ -2482,7 +2574,7 @@ namespace RoyalPetz_ADMIN
                 sf.Alignment = StringAlignment.Far;
 
                 double jumlahBayar = Convert.ToDouble(bayarTextBox.Text);
-                ucapan = jumlahBayar.ToString("C2", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
+                ucapan = jumlahBayar.ToString("C0", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
                 rectright.Y = rect.Y-2;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                          new SolidBrush(Color.Black), rectright, sf);
@@ -2570,6 +2662,7 @@ namespace RoyalPetz_ADMIN
 
         private void discJualMaskedTextBox_Enter(object sender, EventArgs e)
         {
+            discJualMaskedTextBox.Text = discValue.ToString();
             BeginInvoke((Action)delegate
             {
                 discJualMaskedTextBox.SelectAll();
@@ -2578,6 +2671,7 @@ namespace RoyalPetz_ADMIN
 
         private void bayarTextBox_Enter(object sender, EventArgs e)
         {
+            bayarTextBox.Text = bayarAmount.ToString();
             BeginInvoke((Action)delegate
             {
                 bayarTextBox.SelectAll();
@@ -2607,7 +2701,172 @@ namespace RoyalPetz_ADMIN
                     }
                 }
             }
+            else if (cell.OwningColumn.Name == "productPrice")
+            {
+                double tempValue = 0;
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoadingNumFormat = true;
+                    tempValue = Convert.ToDouble(productPriceList[e.RowIndex]);
+                    selectedRow.Cells["productPrice"].Value = tempValue.ToString("N0", culture);
+                    //isLoadingNumFormat = false;
+                }
+            }
+            else if (cell.OwningColumn.Name == "qty")
+            {
+                double tempValue = 0;
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoadingNumFormat = true;
+                    tempValue = Convert.ToDouble(salesQty[e.RowIndex]);
+                    selectedRow.Cells["qty"].Value = tempValue.ToString("N0", culture);
+                    //isLoadingNumFormat = false;
+                }
+            }
+
         }
-        
+
+        private void cashierDataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            updateRowNumber();
+
+            //if (cashierDataGridView.Rows.Count > 0)
+            //{
+            //    cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc1"].Value = "0";
+            //    cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc2"].Value = "0";
+            //    cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["discRP"].Value = "0";
+            //}
+
+            salesQty.Add("0");
+            disc1.Add("0");
+            disc2.Add("0");
+            discRP.Add("0");
+            productPriceList.Add("0");
+            jumlahList.Add("0");
+        }
+
+        private void bayarTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            { 
+                if (originModuleID != globalConstants.COPY_NOTA)
+                {
+                    bayarAmount = Convert.ToDouble(bayarTextBox.Text);
+                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TRIGGER SAVE INVOICE FROM BAYAR TEXTBOX");
+
+                    saveAndPrintOutInvoice();
+                }
+            }
+        }
+
+        private void cashierDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void cashierDataGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = cashierDataGridView[e.ColumnIndex, e.RowIndex];
+            DataGridViewRow selectedRow = cashierDataGridView.Rows[e.RowIndex];
+
+            if (isLoading)
+                return;
+
+            if (cell.OwningColumn.Name == "productPrice")
+            {
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoading = true;
+                    selectedRow.Cells["productPrice"].Value = productPriceList[e.RowIndex];
+                    //isLoading = false;
+                }
+            }
+            else if (cell.OwningColumn.Name == "qty")
+            {
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoading = true;
+                    selectedRow.Cells["qty"].Value = salesQty[e.RowIndex];
+                    //isLoading = false;
+                }
+            }
+        }
+
+        private void bayarTextBox_Leave(object sender, EventArgs e)
+        {
+            isLoading = true;
+            bayarAmount = Convert.ToDouble(bayarTextBox.Text);
+            bayarTextBox.Text = bayarAmount.ToString("C0", culture);
+            isLoading = false;
+
+        }
+
+        private void discJualMaskedTextBox_Leave(object sender, EventArgs e)
+        {
+            isLoading = true;
+            discValue = Convert.ToDouble(discJualMaskedTextBox.Text);
+            discJualMaskedTextBox.Text = discValue.ToString("C0", culture);
+            isLoading = false;
+
+        }
+
+        private void discJualMaskedTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string tempString;
+
+            if (isLoading)
+                return;
+
+            isLoading = true;
+            if (discJualMaskedTextBox.Text.Length == 0)
+            {
+                // IF TEXTBOX IS EMPTY, SET THE VALUE TO 0 AND EXIT THE CHECKING
+                discAmountText = "0";
+                discJualMaskedTextBox.Text = "0";
+
+                discJualMaskedTextBox.SelectionStart = discJualMaskedTextBox.Text.Length;
+                isLoading = false;
+
+                return;
+            }
+            // CHECKING TO PREVENT PREFIX "0" IN A NUMERIC INPUT WHILE ALLOWING A DECIMAL VALUE STARTED WITH "0"
+            else if (discJualMaskedTextBox.Text.IndexOf('0') == 0 && discJualMaskedTextBox.Text.Length > 1 && discJualMaskedTextBox.Text.IndexOf("0.") < 0)
+            {
+                tempString = discJualMaskedTextBox.Text;
+                discJualMaskedTextBox.Text = tempString.Remove(0, 1);
+            }
+
+            if (gutil.matchRegEx(discJualMaskedTextBox.Text, globalUtilities.REGEX_NUMBER_ONLY))
+                discAmountText = discJualMaskedTextBox.Text;
+            else
+                discJualMaskedTextBox.Text = discAmountText;
+
+            discJualMaskedTextBox.SelectionStart = discJualMaskedTextBox.Text.Length;
+            isLoading = false;
+
+            double totalAfterDisc = 0;
+
+            if (discJualMaskedTextBox.Text.Length > 0)
+            {
+                totalAfterDisc = globalTotalValue - Convert.ToDouble(discJualMaskedTextBox.Text);
+                discValue = Convert.ToDouble(discJualMaskedTextBox.Text);
+            }
+            else
+            {
+                totalAfterDisc = globalTotalValue;
+                discValue = 0;
+            }
+
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : discJualMaskedTextBox_Validating, totalAfterDisc [" + totalAfterDisc + "]");
+            totalAfterDiscTextBox.Text = totalAfterDisc.ToString("C0", culture);
+        }
+
+        private void cashierDataGridView_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            
+        }
     }
 }
