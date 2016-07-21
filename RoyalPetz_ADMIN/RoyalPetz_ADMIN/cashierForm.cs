@@ -32,6 +32,7 @@ namespace RoyalPetz_ADMIN
         private string bayarAmountText = "0";
        // private double discAmount = 0;
         private string discAmountText = "0";
+        private bool forceUpOneLevel = false;
 
         private double sisaBayar = 0;
         private int originModuleID = 0;
@@ -155,10 +156,11 @@ namespace RoyalPetz_ADMIN
                             clearUpScreen();
                     break;
 
-                case Keys.F7: // NOT USED
-                    if (selectedsalesinvoice != "")
-                        if (DialogResult.Yes == MessageBox.Show("REPRINT INVOICE ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
-                            reprintInvoice();
+                case Keys.F7: 
+                    if (originModuleID == globalConstants.COPY_NOTA)
+                        if (selectedsalesinvoice != "")
+                            if (DialogResult.Yes == MessageBox.Show("REPRINT INVOICE ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                                reprintInvoice();
                     break;
 
                 case Keys.F8: // NOT USED
@@ -202,7 +204,12 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.Delete:
-                    if (cashierDataGridView.Focused)
+                    //if (cashierDataGridView.Focused)
+                    if (!bayarTextBox.Focused && !discJualMaskedTextBox.Focused && 
+                        !tempoMaskedTextBox.Focused && !paymentComboBox.Focused &&
+                        !customerComboBox.Focused 
+                        )
+                    { 
                         if (originModuleID != globalConstants.COPY_NOTA)
                             if (cashierDataGridView.Rows.Count > 1)
                                 if (DialogResult.Yes == MessageBox.Show("DELETE CURRENT ROW?", "WARNING", MessageBoxButtons.YesNo))
@@ -212,6 +219,7 @@ namespace RoyalPetz_ADMIN
                                     updateRowNumber();
                                     calculateTotal();
                                 }
+                    }
                     break;
 
                 case Keys.F10:
@@ -305,8 +313,8 @@ namespace RoyalPetz_ADMIN
             //ghk_F5 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F5, this);
             //ghk_F5.Register();
 
-            //ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
-            //ghk_F7.Register();
+            ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
+            ghk_F7.Register();
 
             //ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
             //ghk_F8.Register();
@@ -366,7 +374,7 @@ namespace RoyalPetz_ADMIN
             ghk_F3.Unregister();
             ghk_F4.Unregister();
             //ghk_F5.Unregister();
-            //ghk_F7.Unregister();
+            ghk_F7.Unregister();
             //ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
@@ -775,7 +783,7 @@ namespace RoyalPetz_ADMIN
                 }
 
                 // CHECK PAYMENT AMOUNT MUST BE MORE OR EQUALS THAN THE BILL
-                paymentAmount = Convert.ToDouble(bayarTextBox.Text);
+                paymentAmount = Convert.ToDouble(bayarAmount);
                 if (paymentAmount < globalTotalValue)
                 {
                     errorLabel.Text = "JUMLAH PEMBAYARAN LEBIH KECIL DARI NOTA";
@@ -826,7 +834,8 @@ namespace RoyalPetz_ADMIN
             string salesDateValue = "";
             bool addToTaxTable = false;
 
-            SODateTime = String.Format(culture, "{0:dd-MM-yyyy HH:mm}", DateTime.Now);
+            //SODateTime = String.Format(culture, "{0:dd-MM-yyyy HH:mm}", DateTime.Now);
+            SODateTime = gutil.getCustomStringFormatDate(DateTime.Now);
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : ATTEMPT TO SAVE SALES DATA [" + SODateTime + "]");
 
@@ -1024,7 +1033,7 @@ namespace RoyalPetz_ADMIN
                         throw internalEX;
 
 
-                    if (selectedPaymentMethod == 0)
+                    if (salesTop == 1 && selectedPaymentMethod == 0)
                     {
                         // PAYMENT IN CASH THEREFORE ADDING THE AMOUNT OF CASH IN THE CASH REGISTER
                         // ADD A NEW ENTRY ON THE DAILY JOURNAL TO KEEP TRACK THE ADDITIONAL CASH AMOUNT 
@@ -1359,7 +1368,7 @@ namespace RoyalPetz_ADMIN
                 productIDTextBox.CharacterCasing = CharacterCasing.Upper;
                 productIDTextBox.TextChanged -= TextBox_TextChanged;
                 productIDTextBox.PreviewKeyDown += Combobox_previewKeyDown;
-                productIDTextBox.KeyDown += Combobox_KeyDown;
+                productIDTextBox.KeyUp += Combobox_KeyUp;
                 productIDTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 productIDTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
                 setTextBoxCustomSource(productIDTextBox);
@@ -1371,6 +1380,7 @@ namespace RoyalPetz_ADMIN
             {
                 TextBox textBox = e.Control as TextBox;
                 textBox.PreviewKeyDown -= Combobox_previewKeyDown;
+                //textBox.KeyUp -= Combobox_KeyUp;
                 textBox.TextChanged += TextBox_TextChanged;
                 textBox.AutoCompleteMode = AutoCompleteMode.None;
             }
@@ -1460,7 +1470,7 @@ namespace RoyalPetz_ADMIN
                             if (rdr.HasRows)
                             {
                                 rdr.Read();
-                                
+
                                 selectedRow.Cells["disc1"].Value = rdr.GetString("DISC_1");
                                 disc1[rowSelectedIndex] = rdr.GetString("DISC_1");
 
@@ -1502,11 +1512,13 @@ namespace RoyalPetz_ADMIN
             }
         }
 
-        private void Combobox_KeyDown(object sender, KeyEventArgs e)
+        private void Combobox_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (forceUpOneLevel)
             {
-                e.Handled = true;
+                int pos = cashierDataGridView.CurrentCell.RowIndex;
+                cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+                forceUpOneLevel = false;
             }
         }
 
@@ -1529,12 +1541,12 @@ namespace RoyalPetz_ADMIN
                 {
                     updateSomeRowContents(selectedRow, rowSelectedIndex, currentValue);
                     cashierDataGridView.CurrentCell = selectedRow.Cells["qty"];
+                    forceUpOneLevel = true;
                 }
                 else
                 {
                     clearUpSomeRowContents(selectedRow, rowSelectedIndex);
                 }
-                
             }
         }
 
@@ -1548,9 +1560,6 @@ namespace RoyalPetz_ADMIN
             string tempString = "";
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, isLoading [" + isLoading.ToString() + "]");
-
-            //if (isLoadingNumFormat)
-            //    return;
 
             if (isLoading)
                 return;
@@ -1732,7 +1741,7 @@ namespace RoyalPetz_ADMIN
             MySqlDataReader rdr;
             int rowPos = 0;
 
-            salesQty.Clear();
+            //salesQty.Clear();
             isLoading = true;
             // PULL HEADER DATA
             sqlCommand = "SELECT SH.SALES_INVOICE AS NO_INVOICE, IFNULL(M.CUSTOMER_ID, 0) AS PELANGGAN_ID, IFNULL(M.CUSTOMER_FULL_NAME, '') AS NAMA, IFNULL(M.CUSTOMER_GROUP, 1) AS CUSTOMER_GROUP, SH.SALES_TOTAL AS TOTAL, SH.SALES_DISCOUNT_FINAL AS DISC_FINAL, SH.SALES_TOP AS TOP, DATEDIFF(SH.SALES_TOP_DATE, SH.SALES_DATE) AS TOP_DURATION " +
@@ -1759,14 +1768,16 @@ namespace RoyalPetz_ADMIN
                     if (TOPValue == 1)
                     {
                         cashRadioButton.Checked = true;
-                        bayarTextBox.Text = (globalTotalValue - discValue).ToString();
+                        bayarTextBox.Text = (globalTotalValue - discValue).ToString("C0", culture);
+                        bayarAmount = globalTotalValue - discValue;
                     }
                     else
                     {
                         creditRadioButton.Checked = true;
                         TOPDuration = rdr.GetInt32("TOP_DURATION");
                         tempoMaskedTextBox.Text = TOPDuration.ToString();
-                        bayarTextBox.Text = "0";
+                        bayarAmount = 0;
+                        bayarTextBox.Text = bayarAmount.ToString("C0", culture);
                     }
 
                     totalAfterDiscTextBox.Text = (globalTotalValue - discValue).ToString("C0", culture);
@@ -1780,9 +1791,18 @@ namespace RoyalPetz_ADMIN
             rdr = DS.getData(sqlCommand);
             if (rdr.HasRows)
             {
+                rowPos = 0;
                 while (rdr.Read())
                 {
                     addNewRow();
+
+                    salesQty.Add("0");
+                    disc1.Add("0");
+                    disc2.Add("0");
+                    discRP.Add("0");
+                    productPriceList.Add("0");
+                    jumlahList.Add("0");
+
                     cashierDataGridView.Rows[rowPos].Cells["productID"].Value = rdr.GetString("KODE_PRODUK");
                     cashierDataGridView.Rows[rowPos].Cells["productName"].Value = rdr.GetString("NAMA_PRODUK");
                     cashierDataGridView.Rows[rowPos].Cells["productPrice"].Value = rdr.GetString("HARGA_PRODUK");
@@ -1806,6 +1826,12 @@ namespace RoyalPetz_ADMIN
         private void cashierForm_Load(object sender, EventArgs e)
         {
             registerGlobalHotkey();
+            salesQty.Add("0");
+            disc1.Add("0");
+            disc2.Add("0");
+            discRP.Add("0");
+            productPriceList.Add("0");
+            jumlahList.Add("0");
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierForm_Load, ATTEMPT TO LOAD NO FAKTUR");
             loadNoFaktur();
@@ -1827,8 +1853,11 @@ namespace RoyalPetz_ADMIN
 
             userStatusLabel.Text = "Welcome, " + DS.getDataSingleValue("SELECT IFNULL(USER_FULL_NAME, 0) FROM MASTER_USER WHERE ID = " + gutil.getUserID()).ToString();
 
+           
             if (originModuleID == globalConstants.COPY_NOTA && selectedsalesinvoice != "")
             {
+                cashierDataGridView.AllowUserToAddRows = false;
+
                 loadInvoiceData();
 
                 errorLabel.Text = "COPY NOTA";
@@ -1846,6 +1875,8 @@ namespace RoyalPetz_ADMIN
                 discJualMaskedTextBox.ReadOnly = true;
                 bayarTextBox.ReadOnly = true;     
             }
+
+          
         }
 
         private void cashierForm_Activated(object sender, EventArgs e)
@@ -1915,6 +1946,8 @@ namespace RoyalPetz_ADMIN
             productIdColumn.Width = 150;
             cashierDataGridView.Columns.Add(productIdColumn);
 
+            cashierDataGridView.CurrentCell = cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["productID"];
+            
             // PRODUCT NAME COLUMN
             productNameColumn.HeaderText = "NAMA PRODUK";
             productNameColumn.Name = "productName";
@@ -1984,11 +2017,6 @@ namespace RoyalPetz_ADMIN
                     isLoading = false;
                 }
             }
-        }
-
-        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-        {
-
         }
 
         private void discJualMaskedTextBox_Validating(object sender, CancelEventArgs e)
@@ -2141,16 +2169,16 @@ namespace RoyalPetz_ADMIN
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : PrintReceipt, POS size Paper");
                 //width, height
                 paperLength = calculatePageLength();
-                PaperSize psize = new PaperSize("Custom", 250, paperLength);//820); //change paper size receipt width x height
+                PaperSize psize = new PaperSize("Custom", 255, paperLength);//820); //change paper size receipt width x height
                 printDocument1.DefaultPageSettings.PaperSize = psize;
-                //DialogResult result;
-                //printPreviewDialog1.Width = 512;
-                //printPreviewDialog1.Height = 768;
-                //result = printPreviewDialog1.ShowDialog();
-                //if (result == DialogResult.OK)
-                //{
+                DialogResult result;
+                printPreviewDialog1.Width = 512;
+                printPreviewDialog1.Height = 768;
+                result = printPreviewDialog1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
                     printDocument1.Print();
-                //}
+                }
             } else
             {
                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : PrintReceipt, papermode [" + papermode + "]");
@@ -2251,7 +2279,10 @@ namespace RoyalPetz_ADMIN
                 if (rdr.HasRows)
                 {
                     while (rdr.Read())
+                    {
                         Offset = Offset + add_offset;
+                        Offset = Offset + add_offset;
+                    }
                 }
             }
             DS.mySqlClose();
@@ -2271,7 +2302,7 @@ namespace RoyalPetz_ADMIN
 
             Offset = Offset + add_offset + Offsetplus;
 
-            Offset = Offset + add_offset;
+            Offset = Offset + add_offset + Offsetplus; ;
 
             Offset = Offset + add_offset;
 
@@ -2296,8 +2327,8 @@ namespace RoyalPetz_ADMIN
             Graphics graphics = e.Graphics;
             int startX = 0;
             int startY = 0;
-            int colxwidth = 75; //93; //31x3
-            int totrowwidth = 250; //new/25 *old//310/10=31
+            int colxwidth = 85; //old 75
+            int totrowwidth = 255; //old 250
             Font font = new Font("Courier New", 9);
             int rowheight = (int)Math.Ceiling(font.GetHeight());
             //int inlineheader = 12;
@@ -2305,7 +2336,7 @@ namespace RoyalPetz_ADMIN
             int add_offset = rowheight;
             int Offset = 5;
             int offset_plus = 3;
-            int fontSize = 7;
+            int fontSize = 8;
             //HEADER
 
             //set allignemnt
@@ -2348,7 +2379,8 @@ namespace RoyalPetz_ADMIN
 
             Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            String underLine = "--------------------------------";  //32 character
+            //String underLine = "--------------------------------";  //32 character
+            String underLine = "------------------------------";  //32 character
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
             //end of header
@@ -2396,7 +2428,7 @@ namespace RoyalPetz_ADMIN
             //1. PAYMENT METHOD
             Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + 10;
             rect.Width = totrowwidth;
             //SET TO LEFT MARGIN
             sf.LineAlignment = StringAlignment.Near;
@@ -2437,7 +2469,7 @@ namespace RoyalPetz_ADMIN
 
             Offset = Offset + add_offset + offset_plus;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + 10;
             rect.Width = totrowwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
@@ -2482,48 +2514,85 @@ namespace RoyalPetz_ADMIN
             double total_qty = 0;
             double product_qty = 0;
             double product_price = 0;
+            float startRightX = totrowwidth - colxwidth - startX;
 
             if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
             {
                 // NORMAL TRANSACTION
-                sqlCommand = "SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoice + "'";
+                sqlCommand = "SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE', S.SALES_SUBTOTAL  FROM sales_detail S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoice + "'";
             }
             else
             {
                 // GET DUMMY DATA
-                sqlCommand = "SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE' FROM sales_detail_tax S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoiceTax + "'";
+                sqlCommand = "SELECT S.ID, S.PRODUCT_ID AS 'P-ID', P.PRODUCT_NAME AS 'NAME', S.PRODUCT_QTY AS 'QTY',ROUND(S.SALES_SUBTOTAL/S.PRODUCT_QTY) AS 'PRICE', S.SALES_SUBTOTAL FROM sales_detail_tax S, master_product P WHERE S.PRODUCT_ID=P.PRODUCT_ID AND S.SALES_INVOICE='" + selectedsalesinvoiceTax + "'";
             }
 
             using (rdr = DS.getData(sqlCommand))//+ "group by s.product_id") )
             {
                 if (rdr.HasRows)
                 {
+                    int i = 0;
                     while (rdr.Read())
                     {
                         product_id = rdr.GetString("P-ID");
                         product_name = rdr.GetString("NAME");
                         product_qty = rdr.GetDouble("QTY");
                         product_price = rdr.GetDouble("PRICE");
-                        Offset = Offset + add_offset;
+                        double subtotal = rdr.GetDouble("SALES_SUBTOTAL");
+                        if (i == 0)
+                        {
+                            Offset = Offset + add_offset;
+                        }
+                        else
+                        {
+                            i = 1;
+                            Offset = Offset + add_offset + offset_plus;
+                        }
                         rect.Y = startY + Offset;
-                        rect.X = startX + 5;
+                        rect.X = startX + 10;
                         rect.Width = totrowwidth;
                         sf.LineAlignment = StringAlignment.Near;
                         sf.Alignment = StringAlignment.Near;
-                        ucapan = product_qty + "X " + product_name;
+                        //ucapan = product_qty + "X " + product_name;
+                        ucapan = product_name;
                         if (ucapan.Length > 30)
                         {
-                            ucapan = ucapan.Substring(0, 27); //maximum 27 character
+                            ucapan = ucapan.Substring(0, 30); //maximum 30 character
                         }
                         //
                         graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                                  new SolidBrush(Color.Black), rect, sf);
 
-                        rectright.Y = rect.Y - 2;
+                        //new line
+                        Offset = Offset + add_offset;
+                        rect.Y = startY + Offset;
+                        rect.X = startX + 20;
+                        rect.Width = totrowwidth;
+                        sf.LineAlignment = StringAlignment.Near;
+                        sf.Alignment = StringAlignment.Near;
+                        ucapan = product_qty + "X";
+                        graphics.DrawString(ucapan, new Font("Courier New", fontSize),
+                                 new SolidBrush(Color.Black), rect, sf);
+                        //
+
+                        rect.Y = startY + Offset;
+                        rect.X = startX + 50;
+                        rect.Width = totrowwidth;
+                        sf.LineAlignment = StringAlignment.Near;
+                        sf.Alignment = StringAlignment.Near;
+                        ucapan = product_price.ToString("C2", culture);
+                        graphics.DrawString(ucapan, new Font("Courier New", fontSize),
+                                 new SolidBrush(Color.Black), rect, sf);
+
+
+
+                        rectright.X = startRightX - 5;
+                        rectright.Y = rect.Y;
+
                         rectright.Width = colxwidth - 5;
                         sf.LineAlignment = StringAlignment.Far;
                         sf.Alignment = StringAlignment.Far;
-                        ucapan = product_price.ToString("C0", culture);//" Rp." + product_price;
+                        ucapan = subtotal.ToString("C2", culture);//" Rp." + product_price;
                         graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                                  new SolidBrush(Color.Black), rectright, sf);
                     }
@@ -2547,16 +2616,17 @@ namespace RoyalPetz_ADMIN
             //rectcenter.Width = colxwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
-            ucapan = "JUMLAH  :";
+            ucapan = "JUMLAH  : " + total.ToString("C2", culture);
             //rectcenter.Y = rect.Y;
             graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                      new SolidBrush(Color.Black), rect, sf);
-            sf.LineAlignment = StringAlignment.Far;
-            sf.Alignment = StringAlignment.Far;
-            ucapan = total.ToString("C0", culture);
-            rectright.Y = rect.Y-2;
-            graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                     new SolidBrush(Color.Black), rectright, sf);
+            //sf.LineAlignment = StringAlignment.Far;
+            //sf.Alignment = StringAlignment.Far;
+            //ucapan = total.ToString("C2", culture);
+            //rectright.X = rectright.X - 5;
+            //rectright.Y = rect.Y-2;
+            //graphics.DrawString(ucapan, new Font("Courier New", fontSize),
+            //         new SolidBrush(Color.Black), rectright, sf);
 
             if (cashRadioButton.Checked == true)
             {
@@ -2566,18 +2636,19 @@ namespace RoyalPetz_ADMIN
                 //rectcenter.Width = colxwidth;
                 sf.LineAlignment = StringAlignment.Near;
                 sf.Alignment = StringAlignment.Near;
-                ucapan = "TUNAI   :";
+                double jumlahBayar = Convert.ToDouble(bayarAmount);
+                ucapan = "TUNAI   : " + jumlahBayar.ToString("C2", culture);
                 //rectcenter.Y = rect.Y;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                          new SolidBrush(Color.Black), rect, sf);
                 sf.LineAlignment = StringAlignment.Far;
                 sf.Alignment = StringAlignment.Far;
 
-                double jumlahBayar = Convert.ToDouble(bayarTextBox.Text);
-                ucapan = jumlahBayar.ToString("C0", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
-                rectright.Y = rect.Y-2;
-                graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                         new SolidBrush(Color.Black), rectright, sf);
+                //ucapan = jumlahBayar.ToString("C2", culture);//"Rp." + String.Format("{0:C2}", bayarTextBox.Text);
+                //rectright.X = rectright.X - 5;
+                //rectright.Y = rect.Y-2;
+                //graphics.DrawString(ucapan, new Font("Courier New", fontSize),
+                //         new SolidBrush(Color.Black), rectright, sf);
 
                 Offset = Offset + add_offset;
                 rect.Y = startY + Offset;
@@ -2585,16 +2656,17 @@ namespace RoyalPetz_ADMIN
                 //rectcenter.Width = colxwidth;
                 sf.LineAlignment = StringAlignment.Near;
                 sf.Alignment = StringAlignment.Near;
-                ucapan = "KEMBALI :";
+                ucapan = "KEMBALI : " + uangKembaliTextBox.Text;
                 //rectcenter.Y = rect.Y;
                 graphics.DrawString(ucapan, new Font("Courier New", fontSize),
                          new SolidBrush(Color.Black), rect, sf);
-                sf.LineAlignment = StringAlignment.Far;
-                sf.Alignment = StringAlignment.Far;
-                ucapan = uangKembaliTextBox.Text;
-                rectright.Y = rect.Y-2;
-                graphics.DrawString(ucapan, new Font("Courier New", fontSize),
-                         new SolidBrush(Color.Black), rectright, sf);
+                //sf.LineAlignment = StringAlignment.Far;
+                //sf.Alignment = StringAlignment.Far;
+                //ucapan = uangKembaliTextBox.Text;
+                //rectright.X = rectright.X - 5;
+                //rectright.Y = rect.Y-2;
+                //graphics.DrawString(ucapan, new Font("Courier New", fontSize),
+                //         new SolidBrush(Color.Black), rectright, sf);
             }
 
             if (originModuleID != globalConstants.DUMMY_TRANSACTION_TAX)
@@ -2610,9 +2682,9 @@ namespace RoyalPetz_ADMIN
 
             total_qty = Convert.ToDouble(DS.getDataSingleValue(sqlCommand));
 
-            Offset = Offset + add_offset + offset_plus;
+            Offset = Offset + add_offset + offset_plus + offset_plus; ;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + 10;
             rect.Width = totrowwidth;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
@@ -2701,17 +2773,17 @@ namespace RoyalPetz_ADMIN
                     }
                 }
             }
-            else if (cell.OwningColumn.Name == "productPrice")
-            {
-                double tempValue = 0;
-                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
-                {
-                    //isLoadingNumFormat = true;
-                    tempValue = Convert.ToDouble(productPriceList[e.RowIndex]);
-                    selectedRow.Cells["productPrice"].Value = tempValue.ToString("N0", culture);
-                    //isLoadingNumFormat = false;
-                }
-            }
+            //else if (cell.OwningColumn.Name == "productPrice")
+            //{
+            //    double tempValue = 0;
+            //    if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+            //    {
+            //        //isLoadingNumFormat = true;
+            //        tempValue = Convert.ToDouble(productPriceList[e.RowIndex]);
+            //        selectedRow.Cells["productPrice"].Value = tempValue.ToString("N0", culture);
+            //        //isLoadingNumFormat = false;
+            //    }
+            //}
             else if (cell.OwningColumn.Name == "qty")
             {
                 double tempValue = 0;
@@ -2720,6 +2792,17 @@ namespace RoyalPetz_ADMIN
                     //isLoadingNumFormat = true;
                     tempValue = Convert.ToDouble(salesQty[e.RowIndex]);
                     selectedRow.Cells["qty"].Value = tempValue.ToString("N0", culture);
+                    //isLoadingNumFormat = false;
+                }
+            }
+            else if (cell.OwningColumn.Name == "discRP")
+            {
+                double tempValue = 0;
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoadingNumFormat = true;
+                    tempValue = Convert.ToDouble(discRP[e.RowIndex]);
+                    selectedRow.Cells["discRP"].Value = tempValue.ToString("N0", culture);
                     //isLoadingNumFormat = false;
                 }
             }
@@ -2736,6 +2819,8 @@ namespace RoyalPetz_ADMIN
             //    cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["disc2"].Value = "0";
             //    cashierDataGridView.Rows[cashierDataGridView.Rows.Count - 1].Cells["discRP"].Value = "0";
             //}
+            //if (cashierDataGridView.ColumnCount > 1)
+            //    cashierDataGridView.CurrentCell = cashierDataGridView.Rows[cashierDataGridView.Rows.Count-1].Cells["productID"];
 
             salesQty.Add("0");
             disc1.Add("0");
@@ -2775,21 +2860,31 @@ namespace RoyalPetz_ADMIN
             if (isLoading)
                 return;
 
-            if (cell.OwningColumn.Name == "productPrice")
-            {
-                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
-                {
-                    //isLoading = true;
-                    selectedRow.Cells["productPrice"].Value = productPriceList[e.RowIndex];
-                    //isLoading = false;
-                }
-            }
-            else if (cell.OwningColumn.Name == "qty")
+            //if (cell.OwningColumn.Name == "productPrice")
+            //{
+            //    if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+            //    {
+            //        //isLoading = true;
+            //        selectedRow.Cells["productPrice"].Value = productPriceList[e.RowIndex];
+            //        //isLoading = false;
+            //    }
+            //}
+            //else 
+            if (cell.OwningColumn.Name == "qty")
             {
                 if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
                 {
                     //isLoading = true;
                     selectedRow.Cells["qty"].Value = salesQty[e.RowIndex];
+                    //isLoading = false;
+                }
+            }
+            else if (cell.OwningColumn.Name == "discRP")
+            {
+                if (null != selectedRow.Cells["productID"].Value && productIDValid(selectedRow.Cells["productID"].Value.ToString()))
+                {
+                    //isLoading = true;
+                    selectedRow.Cells["discRP"].Value = discRP[e.RowIndex];
                     //isLoading = false;
                 }
             }
@@ -2867,6 +2962,34 @@ namespace RoyalPetz_ADMIN
         private void cashierDataGridView_KeyPress(object sender, KeyPressEventArgs e)
         {
             
+        }
+
+        private void discJualMaskedTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+                bayarTextBox.Focus();
+        }
+
+        private void cashierDataGridView_KeyUp(object sender, KeyEventArgs e)
+        {
+ 
+        }
+
+        private void cashierDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (cashierDataGridView.Columns[e.ColumnIndex].Name == "productPrice" && e.RowIndex != this.cashierDataGridView.NewRowIndex && null != e.Value)
+            {
+                double d = double.Parse(e.Value.ToString());
+                //e.Value = d.ToString("0.00##");#,0.##
+                e.Value = d.ToString("#,0.##");
+            }
+
+            //if (e.ColumnIndex == 2 && e.RowIndex != this.cashierDataGridView.NewRowIndex && null != e.Value)
+            //{
+            //    double d = double.Parse(e.Value.ToString());
+            //    //e.Value = d.ToString("0.00##");#,0.##
+            //    e.Value = d.ToString("#,0.##");
+            //}
         }
     }
 }

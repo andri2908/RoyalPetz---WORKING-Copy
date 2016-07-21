@@ -482,7 +482,7 @@ namespace RoyalPetz_ADMIN
 
         public void saveSystemDebugLog(int moduleID, string logMessage)
         {
-            return;
+          //  return;
 
             string messageToWrite;
             string dateTimeLog = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
@@ -531,6 +531,38 @@ namespace RoyalPetz_ADMIN
 
             if (numRows > 0)
                 result = true;
+
+            return result;
+        }
+
+        public string getCustomStringFormatDate(DateTime inputDateTime)
+        {
+            string result = "";
+
+            string dateInput = "";
+            string hourInput = "";
+            string minuteInput = "";
+
+            dateInput = String.Format(culture, "{0:dd-MM-yyyy}", inputDateTime);
+            hourInput = String.Format(culture, "{0:HH}", inputDateTime);
+            minuteInput = String.Format(culture, "{0:mm}", inputDateTime);
+
+            result = dateInput + " " + hourInput + ":" + minuteInput;
+
+            return result;
+        }
+
+        public string getCustomStringFormatTime(DateTime inputDateTime)
+        {
+            string result = "";
+
+            string hourInput = "";
+            string minuteInput = "";
+
+            hourInput = String.Format(culture, "{0:HH}", inputDateTime);
+            minuteInput = String.Format(culture, "{0:mm}", inputDateTime);
+
+            result = hourInput + ":" + minuteInput;
 
             return result;
         }
