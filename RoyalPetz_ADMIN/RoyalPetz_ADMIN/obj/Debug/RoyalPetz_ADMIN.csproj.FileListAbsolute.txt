@@ -284,4 +284,3 @@ D:\_PROJECT_\RoyalPetz - WORKING Copy\RoyalPetz_ADMIN\RoyalPetz_ADMIN\obj\Debug\
 D:\_PROJECT_\RoyalPetz - WORKING Copy\RoyalPetz_ADMIN\RoyalPetz_ADMIN\obj\Debug\RoyalPetz_ADMIN.exe
 D:\_PROJECT_\RoyalPetz - WORKING Copy\RoyalPetz_ADMIN\RoyalPetz_ADMIN\obj\Debug\RoyalPetz_ADMIN.pdb
 D:\_PROJECT_\RoyalPetz - WORKING Copy\RoyalPetz_ADMIN\RoyalPetz_ADMIN\obj\Debug\RoyalPetz_ADMIN.csprojResolveAssemblyReference.cache
-D:\Project\RoyalPetz---WORKING-Copy\RoyalPetz_ADMIN\RoyalPetz_ADMIN\bin\Debug\RoyalPetz_ADMIN.exe.config

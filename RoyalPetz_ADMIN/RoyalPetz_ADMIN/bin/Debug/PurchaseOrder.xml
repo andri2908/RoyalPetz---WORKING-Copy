@@ -7,10 +7,10 @@
           <xs:element name="Table">
             <xs:complexType>
               <xs:sequence>
-                <xs:element name="TYPE" type="xs:string" minOccurs="0" />
-                <xs:element name="ORIGIN_INVOICE" type="xs:string" minOccurs="0" />
                 <xs:element name="TGL" type="xs:dateTime" minOccurs="0" />
+                <xs:element name="TERIMA" type="xs:dateTime" minOccurs="0" />
                 <xs:element name="INVOICE" type="xs:string" minOccurs="0" />
+                <xs:element name="SUPPLIER" type="xs:string" minOccurs="0" />
                 <xs:element name="PRODUK" type="xs:string" minOccurs="0" />
                 <xs:element name="HARGA" type="xs:double" minOccurs="0" />
                 <xs:element name="QTY" type="xs:double" minOccurs="0" />
@@ -23,23 +23,21 @@
     </xs:element>
   </xs:schema>
   <Table>
-    <TYPE>0</TYPE>
-    <ORIGIN_INVOICE>AA</ORIGIN_INVOICE>
     <TGL>2016-07-22T00:00:00+07:00</TGL>
-    <INVOICE>PR-1</INVOICE>
-    <PRODUK>ALPO ADLT DOG BEEF 10 KG</PRODUK>
-    <HARGA>248465</HARGA>
+    <INVOICE>PO-2</INVOICE>
+    <SUPPLIER>HI PET</SUPPLIER>
+    <PRODUK>ALPO PUPPY 1 KG</PRODUK>
+    <HARGA>26625</HARGA>
     <QTY>1</QTY>
-    <SUBTOTAL>248465</SUBTOTAL>
+    <SUBTOTAL>26625</SUBTOTAL>
   </Table>
   <Table>
-    <TYPE>0</TYPE>
-    <ORIGIN_INVOICE>AA</ORIGIN_INVOICE>
     <TGL>2016-07-22T00:00:00+07:00</TGL>
-    <INVOICE>PR-1</INVOICE>
-    <PRODUK>FF-012 CLEANSTER PP</PRODUK>
-    <HARGA>6650</HARGA>
-    <QTY>1</QTY>
-    <SUBTOTAL>6650</SUBTOTAL>
+    <INVOICE>PO-2</INVOICE>
+    <SUPPLIER>HI PET</SUPPLIER>
+    <PRODUK>A-1201 KALUNG</PRODUK>
+    <HARGA>5000</HARGA>
+    <QTY>2</QTY>
+    <SUBTOTAL>10000</SUBTOTAL>
   </Table>
 </NewDataSet>
