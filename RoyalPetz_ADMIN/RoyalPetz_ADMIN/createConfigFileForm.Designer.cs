@@ -76,9 +76,9 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.SteelBlue;
             this.panel1.Controls.Add(this.errorLabel);
-            this.panel1.Location = new System.Drawing.Point(0, 1);
+            this.panel1.Location = new System.Drawing.Point(1, 1);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(285, 29);
+            this.panel1.Size = new System.Drawing.Size(283, 29);
             this.panel1.TabIndex = 71;
             // 
             // errorLabel
@@ -251,6 +251,8 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "IP SERVER";
+            this.Activated += new System.EventHandler(this.createConfigFileForm_Activated);
+            this.Deactivate += new System.EventHandler(this.createConfigFileForm_Deactivate);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.createConfigFileForm_FormClosed);
             this.Load += new System.EventHandler(this.createConfigFileForm_Load);
             this.panel1.ResumeLayout(false);

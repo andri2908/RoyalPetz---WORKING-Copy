@@ -42,14 +42,22 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_CTRL_DEL;
         private Hotkeys.GlobalHotkey ghk_CTRL_ENTER;
 
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         private Data_Access DS = new Data_Access();
         private List<string> detailRequestQtyApproved = new List<string>();
         private List<string> productPriceList = new List<string>();
         private List<string> subtotalList = new List<string>();
 
+        private bool navKeyRegistered = false;
+        private bool delKeyRegistered = false;
 
         private globalUtilities gUtil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
+
+        barcodeForm displayBarcodeForm = null;
+        dataProdukForm browseProdukForm = null;
 
         public dataMutasiBarangDetailForm()
         {
@@ -134,13 +142,18 @@ namespace RoyalPetz_ADMIN
                     if (directMutasiBarang)
                     {
                         ROInvoiceTextBox.Focus();
-                        barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.MUTASI_BARANG);
 
-                        displayBarcodeForm.Top = this.Top + 5;
-                        displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        if (null == displayBarcodeForm || displayBarcodeForm.IsDisposed)
+                        { 
+                            barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.MUTASI_BARANG);
 
-                        displayBarcodeForm.ShowDialog(this);
-                        detailRequestOrderDataGridView.Focus();
+                            displayBarcodeForm.Top = this.Top + 5;
+                            displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        }
+
+                        displayBarcodeForm.Show();
+                        displayBarcodeForm.WindowState = FormWindowState.Normal;
+                        //                        detailRequestOrderDataGridView.Focus();
                     }
                     break;
 
@@ -161,9 +174,16 @@ namespace RoyalPetz_ADMIN
                     if (directMutasiBarang)
                     {
                         ROInvoiceTextBox.Focus();
-                        dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.MUTASI_BARANG, this);
-                        displayProdukForm.ShowDialog(this);
-                        detailRequestOrderDataGridView.Focus();
+
+                        if (null == browseProdukForm || browseProdukForm.IsDisposed)
+                        {
+                            browseProdukForm = new dataProdukForm(globalConstants.MUTASI_BARANG, this);
+                        }
+
+                        browseProdukForm.Show();
+                        browseProdukForm.WindowState = FormWindowState.Normal;
+
+                        //detailRequestOrderDataGridView.Focus();
                     }
                     break;
 
@@ -245,6 +265,8 @@ namespace RoyalPetz_ADMIN
             ghk_CTRL_ENTER = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Enter, this);
             ghk_CTRL_ENTER.Register();
 
+            registerNavigationKey();
+
         }
 
         private void unregisterGlobalHotkey()
@@ -257,6 +279,42 @@ namespace RoyalPetz_ADMIN
 
             //ghk_CTRL_DEL.Unregister();
             ghk_CTRL_ENTER.Unregister();
+
+            unregisterNavigationKey();
+        }
+
+        private void registerNavigationKey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterNavigationKey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void registerDelKey()
+        {
+            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            ghk_DEL.Register();
+
+            delKeyRegistered = true;
+        }
+
+        private void unregisterDelKey()
+        {
+            ghk_DEL.Unregister();
+
+            delKeyRegistered = false;
         }
 
         private bool productIDValid(string productID)
@@ -434,7 +492,7 @@ namespace RoyalPetz_ADMIN
             string[] arr = null;
             List<string> arrList = new List<string>();
 
-            sqlCommand = "SELECT PRODUCT_ID FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1";
+            sqlCommand = "SELECT PRODUCT_ID FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_IS_SERVICE = 0";
             rdr = DS.getData(sqlCommand);
 
             if (rdr.HasRows)
@@ -753,8 +811,8 @@ namespace RoyalPetz_ADMIN
 
                         selectedROInvoice = rdr.GetString("RO_INVOICE");
 
-                        totalLabel.Text = rdr.GetDouble("PM_TOTAL").ToString("C2", culture);
-                        totalApproved.Text = rdr.GetDouble("PM_TOTAL").ToString("C2", culture);
+                        totalLabel.Text = rdr.GetDouble("PM_TOTAL").ToString("C0", culture);
+                        totalApproved.Text = rdr.GetDouble("PM_TOTAL").ToString("C0", culture);
                         globalTotalValue = rdr.GetDouble("PM_TOTAL");
                     }
 
@@ -1458,6 +1516,9 @@ namespace RoyalPetz_ADMIN
         {
             errorLabel.Text = "";
             registerGlobalHotkey();
+
+            if (detailRequestOrderDataGridView.Focused)
+                registerDelKey();
         }
 
         private void deleteCurrentRow()
@@ -1703,6 +1764,9 @@ namespace RoyalPetz_ADMIN
         private void dataMutasiBarangDetailForm_Deactivate(object sender, EventArgs e)
         {
             unregisterGlobalHotkey();
+
+            if (delKeyRegistered)
+                unregisterDelKey();
         }
 
         private void detailRequestOrderDataGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
@@ -1731,6 +1795,9 @@ namespace RoyalPetz_ADMIN
             detailRequestQtyApproved.Add("0");
             productPriceList.Add("0");
             subtotalList.Add("0");
+
+            if (navKeyRegistered)
+                unregisterNavigationKey();
         }
 
         private void detailRequestOrderDataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -1747,6 +1814,32 @@ namespace RoyalPetz_ADMIN
                 e.Value = d.ToString(globalUtilities.CELL_FORMATTING_NUMERIC_FORMAT);
                 isLoading = false;
             }
+        }
+
+        private void detailRequestOrderDataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+
+            registerDelKey();
+        }
+
+        private void detailRequestOrderDataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerNavigationKey();
+
+            unregisterDelKey();
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            unregisterNavigationKey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerNavigationKey();
         }
     }
 }

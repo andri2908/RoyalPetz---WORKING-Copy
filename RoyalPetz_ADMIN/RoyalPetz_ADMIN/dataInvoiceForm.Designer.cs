@@ -38,7 +38,9 @@
             this.pelangganCombo = new System.Windows.Forms.ComboBox();
             this.pelangganComboHidden = new System.Windows.Forms.ComboBox();
             this.showAllCheckBox = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataInvoiceDataGridView)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -46,7 +48,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label1.Location = new System.Drawing.Point(7, 23);
+            this.label1.Location = new System.Drawing.Point(13, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(118, 18);
             this.label1.TabIndex = 35;
@@ -56,7 +58,7 @@
             // 
             this.noInvoiceTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.noInvoiceTextBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noInvoiceTextBox.Location = new System.Drawing.Point(147, 20);
+            this.noInvoiceTextBox.Location = new System.Drawing.Point(153, 21);
             this.noInvoiceTextBox.Name = "noInvoiceTextBox";
             this.noInvoiceTextBox.Size = new System.Drawing.Size(260, 27);
             this.noInvoiceTextBox.TabIndex = 36;
@@ -83,21 +85,24 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataInvoiceDataGridView.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataInvoiceDataGridView.Location = new System.Drawing.Point(0, 136);
+            this.dataInvoiceDataGridView.Location = new System.Drawing.Point(0, 135);
             this.dataInvoiceDataGridView.MultiSelect = false;
             this.dataInvoiceDataGridView.Name = "dataInvoiceDataGridView";
             this.dataInvoiceDataGridView.RowHeadersVisible = false;
-            this.dataInvoiceDataGridView.Size = new System.Drawing.Size(602, 449);
+            this.dataInvoiceDataGridView.Size = new System.Drawing.Size(602, 450);
             this.dataInvoiceDataGridView.TabIndex = 33;
             this.dataInvoiceDataGridView.DoubleClick += new System.EventHandler(this.dataInvoiceDataGridView_DoubleClick);
+            this.dataInvoiceDataGridView.Enter += new System.EventHandler(this.dataInvoiceDataGridView_Enter);
             this.dataInvoiceDataGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataInvoiceDataGridView_KeyDown);
+            this.dataInvoiceDataGridView.Leave += new System.EventHandler(this.dataInvoiceDataGridView_Leave);
             // 
             // displayButton
             // 
             this.displayButton.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.displayButton.Location = new System.Drawing.Point(147, 93);
+            this.displayButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.displayButton.Location = new System.Drawing.Point(428, 21);
             this.displayButton.Name = "displayButton";
-            this.displayButton.Size = new System.Drawing.Size(95, 37);
+            this.displayButton.Size = new System.Drawing.Size(95, 60);
             this.displayButton.TabIndex = 34;
             this.displayButton.Text = "DISPLAY";
             this.displayButton.UseVisualStyleBackColor = true;
@@ -108,7 +113,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.FloralWhite;
-            this.label2.Location = new System.Drawing.Point(7, 56);
+            this.label2.Location = new System.Drawing.Point(14, 63);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(117, 18);
             this.label2.TabIndex = 37;
@@ -116,16 +121,17 @@
             // 
             // pelangganCombo
             // 
-            this.pelangganCombo.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pelangganCombo.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.pelangganCombo.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.pelangganCombo.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pelangganCombo.FormattingEnabled = true;
-            this.pelangganCombo.Location = new System.Drawing.Point(147, 53);
+            this.pelangganCombo.Location = new System.Drawing.Point(153, 55);
             this.pelangganCombo.Name = "pelangganCombo";
             this.pelangganCombo.Size = new System.Drawing.Size(260, 26);
             this.pelangganCombo.TabIndex = 46;
             this.pelangganCombo.SelectedIndexChanged += new System.EventHandler(this.pelangganCombo_SelectedIndexChanged);
+            this.pelangganCombo.Enter += new System.EventHandler(this.pelangganCombo_Enter);
+            this.pelangganCombo.Leave += new System.EventHandler(this.pelangganCombo_Leave);
             this.pelangganCombo.Validated += new System.EventHandler(this.pelangganCombo_Validated);
             // 
             // pelangganComboHidden
@@ -141,11 +147,10 @@
             // 
             // showAllCheckBox
             // 
-            this.showAllCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.showAllCheckBox.AutoSize = true;
             this.showAllCheckBox.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.showAllCheckBox.ForeColor = System.Drawing.Color.FloralWhite;
-            this.showAllCheckBox.Location = new System.Drawing.Point(432, 57);
+            this.showAllCheckBox.Location = new System.Drawing.Point(153, 84);
             this.showAllCheckBox.Name = "showAllCheckBox";
             this.showAllCheckBox.Size = new System.Drawing.Size(101, 22);
             this.showAllCheckBox.TabIndex = 48;
@@ -153,20 +158,32 @@
             this.showAllCheckBox.UseVisualStyleBackColor = true;
             this.showAllCheckBox.Visible = false;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.showAllCheckBox);
+            this.groupBox1.Controls.Add(this.noInvoiceTextBox);
+            this.groupBox1.Controls.Add(this.displayButton);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.pelangganCombo);
+            this.groupBox1.Font = new System.Drawing.Font("Verdana", 12.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.Color.FloralWhite;
+            this.groupBox1.Location = new System.Drawing.Point(32, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(538, 117);
+            this.groupBox1.TabIndex = 49;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "FILTER";
+            // 
             // dataInvoiceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(602, 586);
-            this.Controls.Add(this.showAllCheckBox);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pelangganComboHidden);
-            this.Controls.Add(this.pelangganCombo);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.noInvoiceTextBox);
             this.Controls.Add(this.dataInvoiceDataGridView);
-            this.Controls.Add(this.displayButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "dataInvoiceForm";
@@ -174,10 +191,12 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DATA INVOICE";
             this.Activated += new System.EventHandler(this.dataInvoiceForm_Activated);
+            this.Deactivate += new System.EventHandler(this.dataInvoiceForm_Deactivate);
             this.Load += new System.EventHandler(this.dataInvoiceForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataInvoiceDataGridView)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -191,5 +210,6 @@
         private System.Windows.Forms.ComboBox pelangganCombo;
         private System.Windows.Forms.ComboBox pelangganComboHidden;
         private System.Windows.Forms.CheckBox showAllCheckBox;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }

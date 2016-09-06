@@ -27,6 +27,8 @@ namespace RoyalPetz_ADMIN
 
         private int selectedROID = 0;
         private string selectedROInvoice = "";
+        private bool navKeyRegistered = false;
+        private bool delKeyRegistered = false;
 
         private Hotkeys.GlobalHotkey ghk_F1;
         private Hotkeys.GlobalHotkey ghk_F2;
@@ -38,6 +40,9 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_CTRL_DEL;
         private Hotkeys.GlobalHotkey ghk_CTRL_ENTER;
 
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         private Data_Access DS = new Data_Access();
 
         private List<string> detailRequestQty = new List<string>();
@@ -47,6 +52,9 @@ namespace RoyalPetz_ADMIN
         private globalUtilities gUtil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
         private Button[] arrButton = new Button[3];
+
+        barcodeForm displayBarcodeForm = null;
+        dataProdukForm browseProdukForm = null;
 
         public permintaanProdukForm()
         {
@@ -76,12 +84,16 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F2:
-                    barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.NEW_REQUEST_ORDER);
+                    if (null == displayBarcodeForm || displayBarcodeForm.IsDisposed)
+                    { 
+                        displayBarcodeForm = new barcodeForm(this, globalConstants.NEW_REQUEST_ORDER);
 
-                    displayBarcodeForm.Top = this.Top + 5;
-                    displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        displayBarcodeForm.Top = this.Top + 5;
+                        displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                    }
 
-                    displayBarcodeForm.ShowDialog(this);
+                    displayBarcodeForm.Show();
+                    displayBarcodeForm.WindowState = FormWindowState.Normal;
                     break;
 
                 case Keys.F8:
@@ -94,8 +106,11 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case Keys.F11:
-                    dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.NEW_REQUEST_ORDER, this);
-                    displayProdukForm.ShowDialog(this);
+                    if (null == browseProdukForm || browseProdukForm.IsDisposed)
+                        browseProdukForm = new dataProdukForm(globalConstants.NEW_REQUEST_ORDER, this);
+
+                    browseProdukForm.Show();
+                    browseProdukForm.WindowState = FormWindowState.Normal;
                     break;
 
                 case Keys.Delete:
@@ -108,6 +123,14 @@ namespace RoyalPetz_ADMIN
                                 calculateTotal();
                             }
                         }
+                    break;
+
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
                     break;
             }
         }
@@ -168,8 +191,8 @@ namespace RoyalPetz_ADMIN
             ghk_F11 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F11, this);
             ghk_F11.Register();
 
-            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
-            ghk_DEL.Register();
+            //ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            //ghk_DEL.Register();
 
             //ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
             //ghk_CTRL_DEL.Register();
@@ -177,6 +200,7 @@ namespace RoyalPetz_ADMIN
             ghk_CTRL_ENTER = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Enter, this);
             ghk_CTRL_ENTER.Register();
 
+            registerNavigationKey();
         }
 
         private void unregisterGlobalHotkey()
@@ -186,10 +210,46 @@ namespace RoyalPetz_ADMIN
             //ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
-            ghk_DEL.Unregister();
+            //ghk_DEL.Unregister();
 
             //ghk_CTRL_DEL.Unregister();
             ghk_CTRL_ENTER.Unregister();
+
+            unregisterNavigationKey();
+        }
+
+        private void registerDelKey()
+        {
+            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            ghk_DEL.Register();
+
+            delKeyRegistered = true;
+        }
+
+        private void unregisterDelKey()
+        {
+            ghk_DEL.Unregister();
+
+            delKeyRegistered = false;
+        }
+
+        private void registerNavigationKey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterNavigationKey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
         }
 
         public void addNewRow()
@@ -1278,6 +1338,9 @@ namespace RoyalPetz_ADMIN
             }
 
             registerGlobalHotkey();
+
+            if (detailRequestOrderDataGridView.Focused)
+                registerDelKey();
         }
 
         private bool insertDataToHQ(Data_Access DAccess)
@@ -1524,6 +1587,9 @@ namespace RoyalPetz_ADMIN
         private void permintaanProdukForm_Deactivate(object sender, EventArgs e)
         {
             unregisterGlobalHotkey();
+
+            if (delKeyRegistered)
+                unregisterDelKey();
         }
 
         private void detailRequestOrderDataGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
@@ -1571,6 +1637,35 @@ namespace RoyalPetz_ADMIN
             subtotalList.Add("0");
             productPriceList.Add("0");
             detailRequestQty.Add("0");
+
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+        }
+
+        private void detailRequestOrderDataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+
+            registerDelKey();
+        }
+
+        private void detailRequestOrderDataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerNavigationKey();
+
+            unregisterDelKey();
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            unregisterNavigationKey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerNavigationKey();
         }
     }
 }

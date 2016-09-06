@@ -12,6 +12,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 
 using System.Text.RegularExpressions;
+using Hotkeys;
 
 namespace RoyalPetz_ADMIN
 {
@@ -37,7 +38,13 @@ namespace RoyalPetz_ADMIN
         private int options = 0;
         private bool isLoading = false;
         private stokPecahBarangForm parentForm;
-        
+
+        dataKategoriProdukForm selectKategoriForm = null;
+        dataSatuanForm selectSatuanForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         public dataProdukDetailForm()
         {
             InitializeComponent();
@@ -58,12 +65,56 @@ namespace RoyalPetz_ADMIN
             parentForm = thisParentForm;
         }
 
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+        }
+
         public void setSelectedUnitID(int unitID)
         {
             selectedUnitID = unitID;
+
+            loadUnitIDInformation();
         }
 
-        public void addSelectedKategoriID(int kategoriID)
+        public void addSelectedKategoriID(int kategoriID, bool immediatelyLoad = true)
         {
             bool exist = false;
             for (int i = 0; ((i<currentSelectedKategoriID.Count) && (exist == false));i++)
@@ -74,6 +125,9 @@ namespace RoyalPetz_ADMIN
 
             if (!exist)
                 currentSelectedKategoriID.Add(kategoriID);
+
+            if (immediatelyLoad == true)
+                loadKategoriIDInformation();
         }
 
         private bool checkRegEx(string textToCheck)
@@ -345,9 +399,17 @@ namespace RoyalPetz_ADMIN
                             nonAktifCheckbox.Checked = true;
                         
                         if (rdr.GetString("PRODUCT_IS_SERVICE").Equals("1"))
+                        { 
                             produkJasaCheckbox.Checked = true;
+                            stokAwalTextBox.Enabled = false;
+                            limitStokTextBox.Enabled = false;
+                        }
                         else
+                        { 
                             produkJasaCheckbox.Checked = false;
+                            stokAwalTextBox.Enabled = true;
+                            limitStokTextBox.Enabled = true;
+                        }
 
                         fileName = rdr.GetString("PRODUCT_PHOTO_1").Trim();
 
@@ -386,10 +448,13 @@ namespace RoyalPetz_ADMIN
                 {
                     while (rdr.Read())
                     {
-                        addSelectedKategoriID(rdr.GetInt32("CATEGORY_ID"));
+                        addSelectedKategoriID(rdr.GetInt32("CATEGORY_ID"), false);
                     }
                 }
             }
+
+            rdr.Close();
+            loadKategoriIDInformation();
         }
 
         private void loadUnitIDInformation()
@@ -429,12 +494,19 @@ namespace RoyalPetz_ADMIN
             produkKategoriTextBox.Text = kategoriName;
         }
 
+        private void clearUpProductCategory()
+        {
+            produkKategoriTextBox.Clear();
+            currentSelectedKategoriID.Clear();
+        }
+
         private void searchUnitButton_Click(object sender, EventArgs e)
         {
-            dataSatuanForm displayedForm = new dataSatuanForm(globalConstants.PRODUK_DETAIL_FORM, this);
-            displayedForm.ShowDialog(this);
+            if (null == selectSatuanForm || selectSatuanForm.IsDisposed)
+                selectSatuanForm = new dataSatuanForm(globalConstants.PRODUK_DETAIL_FORM, this);
 
-            loadUnitIDInformation();
+            selectSatuanForm.Show();
+            selectSatuanForm.WindowState = FormWindowState.Normal;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -460,10 +532,13 @@ namespace RoyalPetz_ADMIN
 
         private void searchKategoriButton_Click(object sender, EventArgs e)
         {
-            dataKategoriProdukForm displayedForm = new dataKategoriProdukForm(globalConstants.PRODUK_DETAIL_FORM, this);
-            displayedForm.ShowDialog(this);
+            if (null == selectKategoriForm || selectKategoriForm.IsDisposed)
+            {
+                selectKategoriForm = new dataKategoriProdukForm(globalConstants.PRODUK_DETAIL_FORM, this);
+            }
 
-            loadKategoriIDInformation();
+            selectKategoriForm.Show();
+            selectKategoriForm.WindowState = FormWindowState.Normal;
         }
 
         private bool dataValidated()
@@ -760,6 +835,16 @@ namespace RoyalPetz_ADMIN
             {
                 gUtil.showSuccess(options);
 
+                if (originModuleID == globalConstants.NEW_PRODUK)
+                {
+                    kodeProdukTextBox.Select();
+                }
+                else
+                {
+                    //barcodeTextBox.Select();
+                    this.Close();
+                }
+
                 if (originModuleID == globalConstants.STOK_PECAH_BARANG)
                 {
                     internalProductID = getInternalProductID(productID);
@@ -782,9 +867,7 @@ namespace RoyalPetz_ADMIN
                 }
 
                 gUtil.ResetAllControls(this);
-
-                currentSelectedKategoriID.Clear();
-                produkKategoriTextBox.Clear();
+                clearUpProductCategory();
 
                 stokAwalTextBox.Text = "0";
                 limitStokTextBox.Text = "0";
@@ -979,6 +1062,68 @@ namespace RoyalPetz_ADMIN
             DS.writeXML(sqlCommandx, globalConstants.PrintBarcodeXML);
             PrintBarcodeForm displayedForm = new PrintBarcodeForm();
             displayedForm.ShowDialog(this);
+        }
+
+        private void dataProdukDetailForm_Activated(object sender, EventArgs e)
+        {
+            registerGlobalHotkey();
+        }
+
+        private void dataProdukDetailForm_Deactivate(object sender, EventArgs e)
+        {
+            unregisterGlobalHotkey();
+        }
+
+        private void produkJasaCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (produkJasaCheckbox.Checked)
+            {
+                // PRODUCT IS SERVICE
+                stokAwalTextBox.Enabled = false;
+                limitStokTextBox.Enabled = false;
+            }
+            else
+            {
+                stokAwalTextBox.Enabled = true;
+                limitStokTextBox.Enabled = true;
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            clearUpProductCategory();
+        }
+
+        private void kodeProdukTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                barcodeTextBox.Select();
+            }
+        }
+
+        private void barcodeTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                namaProdukTextBox.Select();
+            }
+        }
+
+        private void produkKategoriTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F11)
+            {
+                searchKategoriButton.PerformClick();
+            }
+        }
+
+        private void unitTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F11)
+            {
+                searchUnitButton.PerformClick();
+            }
         }
     }
 }

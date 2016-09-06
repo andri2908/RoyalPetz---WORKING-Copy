@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataSatuanForm : Form
@@ -22,6 +24,13 @@ namespace RoyalPetz_ADMIN
         private dataProdukDetailForm parentForm;
 
         Data_Access DS = new Data_Access();
+
+        dataSatuanDetailForm displaySatuanDetailForm = null;
+        dataSatuanDetailForm editSatuanDetailForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
 
         public dataSatuanForm()
         {
@@ -35,13 +44,62 @@ namespace RoyalPetz_ADMIN
             parentForm = thisForm;
         }
 
-        private void newButton_Click(object sender, EventArgs e)
+        private void captureAll(Keys key)
         {
-            dataSatuanDetailForm displayedForm = new dataSatuanDetailForm(globalConstants.NEW_UNIT);
-            displayedForm.ShowDialog(this);
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
         }
 
-        private void loadUnitData()
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void newButton_Click(object sender, EventArgs e)
+        {
+            if (null == displaySatuanDetailForm || displaySatuanDetailForm.IsDisposed)
+                    displaySatuanDetailForm = new dataSatuanDetailForm(globalConstants.NEW_UNIT);
+
+            displaySatuanDetailForm.Show();
+            displaySatuanDetailForm.WindowState = FormWindowState.Normal;
+        }
+
+        private void loadUnitData(int options=0)
         {
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
@@ -53,13 +111,20 @@ namespace RoyalPetz_ADMIN
 
             unitNameParam = MySqlHelper.EscapeString(unitNameTextBox.Text);
             DS.mySqlConnect();
-            if (satuannonactiveoption.Checked == true)
+            if (options == 1)
             {
-                sqlCommand = "SELECT UNIT_ID, UNIT_NAME AS 'NAMA UNIT', UNIT_DESCRIPTION AS 'DESKRIPSI UNIT' FROM MASTER_UNIT WHERE UNIT_NAME LIKE '%" + unitNameParam + "%'";
+                sqlCommand = "SELECT UNIT_ID, UNIT_NAME AS 'NAMA UNIT', UNIT_DESCRIPTION AS 'DESKRIPSI UNIT' FROM MASTER_UNIT";
             }
             else
             {
-                sqlCommand = "SELECT UNIT_ID, UNIT_NAME AS 'NAMA UNIT', UNIT_DESCRIPTION AS 'DESKRIPSI UNIT' FROM MASTER_UNIT WHERE UNIT_ACTIVE = 1 AND UNIT_NAME LIKE '%" + unitNameParam + "%'";
+                if (satuannonactiveoption.Checked == true)
+                {
+                    sqlCommand = "SELECT UNIT_ID, UNIT_NAME AS 'NAMA UNIT', UNIT_DESCRIPTION AS 'DESKRIPSI UNIT' FROM MASTER_UNIT WHERE UNIT_NAME LIKE '%" + unitNameParam + "%'";
+                }
+                else
+                {
+                    sqlCommand = "SELECT UNIT_ID, UNIT_NAME AS 'NAMA UNIT', UNIT_DESCRIPTION AS 'DESKRIPSI UNIT' FROM MASTER_UNIT WHERE UNIT_ACTIVE = 1 AND UNIT_NAME LIKE '%" + unitNameParam + "%'";
+                }
             }
 
             using (rdr = DS.getData(sqlCommand))
@@ -84,6 +149,8 @@ namespace RoyalPetz_ADMIN
             {
                 loadUnitData();
             }
+
+            registerGlobalHotkey();
         }
         
         private void unitNameTextBox_TextChanged(object sender, EventArgs e)
@@ -108,9 +175,12 @@ namespace RoyalPetz_ADMIN
                     this.Close();
                     break;
 
-                default:                    
-                    dataSatuanDetailForm displayedForm = new dataSatuanDetailForm(globalConstants.EDIT_UNIT, selectedUnitID);
-                    displayedForm.ShowDialog(this);
+                default:           
+                    if (null == editSatuanDetailForm || editSatuanDetailForm.IsDisposed)
+                            editSatuanDetailForm = new dataSatuanDetailForm(globalConstants.EDIT_UNIT, selectedUnitID);
+
+                    editSatuanDetailForm.Show();
+                    editSatuanDetailForm.WindowState = FormWindowState.Normal;
                     break;
             }
         }
@@ -133,6 +203,7 @@ namespace RoyalPetz_ADMIN
         private void dataSatuanForm_Load(object sender, EventArgs e)
         {
             gutil.reArrangeTabOrder(this);
+            unitNameTextBox.Select();
         }
 
         private void dataUnitGridView_KeyDown(object sender, KeyEventArgs e)
@@ -140,6 +211,37 @@ namespace RoyalPetz_ADMIN
             if (dataUnitGridView.Rows.Count > 0)
                 if (e.KeyCode == Keys.Enter)
                     displaySpecificForm();
+        }
+
+        private void dataSatuanForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataUnitGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataUnitGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void unitNameTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode==Keys.Enter)
+            {
+                dataUnitGridView.Select();
+            }
+        }
+
+        private void AllButton_Click(object sender, EventArgs e)
+        {
+            loadUnitData(1);
         }
     }
 }

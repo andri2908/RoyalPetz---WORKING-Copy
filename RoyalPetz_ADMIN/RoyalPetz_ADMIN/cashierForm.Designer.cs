@@ -199,7 +199,10 @@
             this.cashierDataGridView.TabIndex = 8;
             this.cashierDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.cashierDataGridView_CellFormatting);
             this.cashierDataGridView.CellValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.cashierDataGridView_CellValidated);
+            this.cashierDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.cashierDataGridView_CellValueChanged);
             this.cashierDataGridView.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.cashierDataGridView_RowsAdded);
+            this.cashierDataGridView.Enter += new System.EventHandler(this.cashierDataGridView_Enter);
+            this.cashierDataGridView.Leave += new System.EventHandler(this.cashierDataGridView_Leave);
             // 
             // panel5
             // 
@@ -296,6 +299,8 @@
             this.paymentComboBox.TabIndex = 7;
             this.paymentComboBox.Text = "Cash";
             this.paymentComboBox.SelectedIndexChanged += new System.EventHandler(this.paymentComboBox_SelectedIndexChanged);
+            this.paymentComboBox.Enter += new System.EventHandler(this.paymentComboBox_Enter);
+            this.paymentComboBox.Leave += new System.EventHandler(this.paymentComboBox_Leave);
             // 
             // labelCaraBayar
             // 
@@ -358,6 +363,8 @@
             this.customerComboBox.TabIndex = 2;
             this.customerComboBox.Text = "P-UMUM";
             this.customerComboBox.SelectedIndexChanged += new System.EventHandler(this.customerComboBox_SelectedIndexChanged);
+            this.customerComboBox.Enter += new System.EventHandler(this.customerComboBox_Enter);
+            this.customerComboBox.Leave += new System.EventHandler(this.customerComboBox_Leave);
             // 
             // label3
             // 

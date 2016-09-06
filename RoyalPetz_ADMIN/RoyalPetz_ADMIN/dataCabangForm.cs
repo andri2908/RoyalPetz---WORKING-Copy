@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Hotkeys;
 
 namespace RoyalPetz_ADMIN
 {
@@ -22,9 +23,64 @@ namespace RoyalPetz_ADMIN
 
         private globalUtilities gutil = new globalUtilities();
 
+        dataCabangDetailForm newBranchForm = null;
+        dataCabangDetailForm editBranchForm = null;
+        pembayaranLumpSumForm pembayaranPiutangForm = null;
+
+        private bool navKeyRegistered = false;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         public dataCabangForm()
         {
             InitializeComponent();
+        }
+
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
         }
 
         public dataCabangForm(int moduleID)
@@ -35,15 +91,6 @@ namespace RoyalPetz_ADMIN
             newButton.Visible = false;
         }
 
-        private void newButton_Click(object sender, EventArgs e)
-        {
-            dataCabangDetailForm displayedForm = new dataCabangDetailForm(globalConstants.NEW_BRANCH, 0);
-            displayedForm.ShowDialog(this);
-            dataCabangGridView.DataSource = null;
-            if (!namaBranchTextbox.Text.Equals(""))
-                loadBranchData(namaBranchTextbox.Text);
-        }
-
         private void loadBranchData(string branchNameParam)
         {
             MySqlDataReader rdr;
@@ -52,13 +99,20 @@ namespace RoyalPetz_ADMIN
             string branchName = MySqlHelper.EscapeString(branchNameParam);
 
             DS.mySqlConnect();
-            if (cabangnonactiveoption.Checked)
+            if (branchNameParam.Equals("All"))
             {
-                sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME AS 'NAMA CABANG', branch_ip4 AS 'ALAMAT IP CABANG' FROM MASTER_BRANCH WHERE BRANCH_NAME LIKE '%" + branchName + "%'";
+                sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME AS 'NAMA CABANG', branch_ip4 AS 'ALAMAT IP CABANG' FROM MASTER_BRANCH";
             }
             else
             {
-                sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME AS 'NAMA CABANG', branch_ip4 AS 'ALAMAT IP CABANG' FROM MASTER_BRANCH WHERE BRANCH_ACTIVE = 1 AND BRANCH_NAME LIKE '%" + branchName + "%'";
+                if (cabangnonactiveoption.Checked)
+                {
+                    sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME AS 'NAMA CABANG', branch_ip4 AS 'ALAMAT IP CABANG' FROM MASTER_BRANCH WHERE BRANCH_NAME LIKE '%" + branchName + "%'";
+                }
+                else
+                {
+                    sqlCommand = "SELECT BRANCH_ID, BRANCH_NAME AS 'NAMA CABANG', branch_ip4 AS 'ALAMAT IP CABANG' FROM MASTER_BRANCH WHERE BRANCH_ACTIVE = 1 AND BRANCH_NAME LIKE '%" + branchName + "%'";
+                }
             }
 
             using (rdr = DS.getData(sqlCommand))
@@ -79,6 +133,8 @@ namespace RoyalPetz_ADMIN
         {
             if (!namaBranchTextbox.Text.Equals(""))  //for showing all???
                 loadBranchData(namaBranchTextbox.Text);
+
+            registerGlobalHotkey();
         }
 
         private void namaBranchTextbox_TextChanged(object sender, EventArgs e)
@@ -96,13 +152,19 @@ namespace RoyalPetz_ADMIN
 
             if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
             {
-                pembayaranLumpSumForm dataPiutangMutasi = new pembayaranLumpSumForm(originModuleID, selectedBranchID);
-                dataPiutangMutasi.ShowDialog(this);
+                if (null == pembayaranPiutangForm || pembayaranPiutangForm.IsDisposed)
+                    pembayaranPiutangForm = new pembayaranLumpSumForm(originModuleID, selectedBranchID);
+
+                pembayaranPiutangForm.Show();
+                pembayaranPiutangForm.WindowState = FormWindowState.Normal;
             }
             else
             {
-                dataCabangDetailForm displayedForm = new dataCabangDetailForm(globalConstants.EDIT_BRANCH, selectedBranchID);
-                displayedForm.ShowDialog(this);
+                if (null == editBranchForm || editBranchForm.IsDisposed)
+                        editBranchForm = new dataCabangDetailForm(globalConstants.EDIT_BRANCH, selectedBranchID);
+
+                editBranchForm.Show();
+                editBranchForm.WindowState = FormWindowState.Normal;
             }
         }
 
@@ -125,6 +187,8 @@ namespace RoyalPetz_ADMIN
                 newButton.Visible = true;
             else
                 newButton.Visible = false;
+
+            namaBranchTextbox.Select();
         }
 
         private void dataCabangGridView_KeyDown(object sender, KeyEventArgs e)
@@ -139,16 +203,64 @@ namespace RoyalPetz_ADMIN
                 if (originModuleID == globalConstants.DATA_PIUTANG_MUTASI)
                 {
                     gutil.saveSystemDebugLog(0, "CREATE PEMBAYARAN PIUTANG MUTASI, BRANCH ID [" + selectedBranchID + "]");
-                    pembayaranLumpSumForm dataPiutangMutasi = new pembayaranLumpSumForm(originModuleID , selectedBranchID);
-                    dataPiutangMutasi.ShowDialog(this);
+
+                    if (null == pembayaranPiutangForm || pembayaranPiutangForm.IsDisposed)
+                        pembayaranPiutangForm = new pembayaranLumpSumForm(originModuleID, selectedBranchID);
+
+                    pembayaranPiutangForm.Show();
+                    pembayaranPiutangForm.WindowState = FormWindowState.Normal;
                 }
                 else
                 {
                     gutil.saveSystemDebugLog(0, "CREATE DATA BRANCH DETAIL, BRANCH ID [" + selectedBranchID + "]");
-                    dataCabangDetailForm displayedForm = new dataCabangDetailForm(globalConstants.EDIT_BRANCH, selectedBranchID);
-                    displayedForm.ShowDialog(this);
+                    if (null == editBranchForm || editBranchForm.IsDisposed)
+                            editBranchForm = new dataCabangDetailForm(globalConstants.EDIT_BRANCH, selectedBranchID);
+
+                    editBranchForm.Show();
+                    editBranchForm.WindowState = FormWindowState.Normal;
                 }
             }
+        }
+
+        private void newButton_Click_1(object sender, EventArgs e)
+        {
+            dataCabangDetailForm displayedForm = new dataCabangDetailForm(globalConstants.NEW_BRANCH, 0);
+            displayedForm.ShowDialog(this);
+            dataCabangGridView.DataSource = null;
+            if (!namaBranchTextbox.Text.Equals(""))
+                loadBranchData(namaBranchTextbox.Text);
+        }
+		
+		private void AllButton_Click(object sender, EventArgs e)
+        {
+            loadBranchData("ALL");
+        }
+
+        private void dataCabangForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+		private void newButton_Click_2(object sender, EventArgs e)
+        {
+            dataCabangDetailForm displayedForm = new dataCabangDetailForm(globalConstants.NEW_BRANCH, 0);
+            displayedForm.ShowDialog(this);
+            dataCabangGridView.DataSource = null;
+            if (!namaBranchTextbox.Text.Equals(""))
+                loadBranchData(namaBranchTextbox.Text);
+        }
+		
+        private void dataCabangGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataCabangGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
         }
 
         private void dataCabangGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)

@@ -12,6 +12,8 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Globalization;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataPermintaanForm : Form
@@ -25,6 +27,14 @@ namespace RoyalPetz_ADMIN
 
         private globalUtilities gUtil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
+
+        permintaanProdukForm newPermintaanForm = null;
+        permintaanProdukForm editPermintaanForm = null;
+        dataMutasiBarangDetailForm browseDataMutasiDetailForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
 
         public dataPermintaanForm()
         {
@@ -41,7 +51,53 @@ namespace RoyalPetz_ADMIN
             //else if (moduleID == globalConstants.PERMINTAAN_BARANG)
             //    importButton.Visible = false;
         }
-        
+
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
         private void displaySpecificForm(int roID = 0)
         {
             switch (originModuleID)
@@ -49,19 +105,28 @@ namespace RoyalPetz_ADMIN
                 case globalConstants.PERMINTAAN_BARANG:
                     if (roID == 0)
                     {
-                        permintaanProdukForm requestOrderForm = new permintaanProdukForm(globalConstants.NEW_REQUEST_ORDER);
-                        requestOrderForm.ShowDialog(this);
+                        if (null == newPermintaanForm || newPermintaanForm.IsDisposed)
+                                newPermintaanForm = new permintaanProdukForm(globalConstants.NEW_REQUEST_ORDER);
+
+                        newPermintaanForm.Show();
+                        newPermintaanForm.WindowState = FormWindowState.Normal;
                     }
                     else
                     {
-                        permintaanProdukForm editRequestOrderForm = new permintaanProdukForm(globalConstants.EDIT_REQUEST_ORDER, roID);
-                        editRequestOrderForm.ShowDialog(this);
+                        if (null == editPermintaanForm || editPermintaanForm.IsDisposed)
+                                editPermintaanForm = new permintaanProdukForm(globalConstants.EDIT_REQUEST_ORDER, roID);
+
+                        editPermintaanForm.Show();
+                        editPermintaanForm.WindowState = FormWindowState.Normal;
                     }
                     break;
 
                 case globalConstants.CEK_DATA_MUTASI:
-                    dataMutasiBarangDetailForm displayedForm = new dataMutasiBarangDetailForm(globalConstants.CEK_DATA_MUTASI, roID);
-                    displayedForm.ShowDialog(this);
+                    if (null == browseDataMutasiDetailForm || browseDataMutasiDetailForm.IsDisposed)
+                            browseDataMutasiDetailForm = new dataMutasiBarangDetailForm(globalConstants.CEK_DATA_MUTASI, roID);
+
+                    browseDataMutasiDetailForm.Show();
+                    browseDataMutasiDetailForm.WindowState = FormWindowState.Normal;
                     break;
             }
         }
@@ -328,6 +393,8 @@ namespace RoyalPetz_ADMIN
             //if need something
             if (dataRequestOrderGridView.Rows.Count > 0)
                 displayButton.PerformClick();
+
+            registerGlobalHotkey();
         }
 
         private void dataRequestOrderGridView_KeyDown(object sender, KeyEventArgs e)
@@ -345,6 +412,35 @@ namespace RoyalPetz_ADMIN
             }
 
 
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerGlobalHotkey();
+        }
+
+        private void dataRequestOrderGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataRequestOrderGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void dataPermintaanForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
         }
     }
 }

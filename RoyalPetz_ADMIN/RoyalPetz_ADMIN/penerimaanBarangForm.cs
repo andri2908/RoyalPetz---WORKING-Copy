@@ -36,18 +36,29 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_CTRL_DEL;
         private Hotkeys.GlobalHotkey ghk_CTRL_ENTER;
 
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         Button[] arrButton = new Button[3];
 
         private List<string> detailRequestQty = new List<string>();
         private List<string> detailHpp = new List<string>();
         private List<string> subtotalList = new List<string>();
 
+        private bool forceUpOneLevel = false;
+        private bool navKeyRegistered = false;
+        private bool delKeyRegistered = false;
 
         string previousInput = "";
 
         globalUtilities gUtil = new globalUtilities();
         Data_Access DS = new Data_Access();
         private CultureInfo culture = new CultureInfo("id-ID");
+
+        dataPOForm browsePOForm = null;
+        dataMutasiBarangForm browseMutasiForm = null;
+        barcodeForm displayBarcodeForm = null;
+        dataProdukForm browseProdukForm = null;
 
         public penerimaanBarangForm()
         {
@@ -67,13 +78,18 @@ namespace RoyalPetz_ADMIN
                     if (detailGridView.ReadOnly == false)
                     {
                         PRDtPicker.Focus();
-                        barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.PENERIMAAN_BARANG);
 
-                        displayBarcodeForm.Top = this.Top + 5;
-                        displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        if (null == displayBarcodeForm || displayBarcodeForm.IsDisposed)
+                        { 
+                            displayBarcodeForm = new barcodeForm(this, globalConstants.PENERIMAAN_BARANG);
 
-                        displayBarcodeForm.ShowDialog(this);
-                        detailGridView.Focus();
+                            displayBarcodeForm.Top = this.Top + 5;
+                            displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        }
+
+                        displayBarcodeForm.Show();
+                        displayBarcodeForm.WindowState = FormWindowState.Normal;
+                        //detailGridView.Focus();
                     }
                     break;
 
@@ -94,9 +110,12 @@ namespace RoyalPetz_ADMIN
                     if (detailGridView.ReadOnly == false)
                     {
                         PRDtPicker.Focus();
-                        dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.PENERIMAAN_BARANG, this);
-                        displayProdukForm.ShowDialog(this);
-                        detailGridView.Focus();
+                        if (null == browseProdukForm || browseProdukForm.IsDisposed)
+                                browseProdukForm = new dataProdukForm(globalConstants.PENERIMAAN_BARANG, this);
+
+                        browseProdukForm.Show();
+                        browseProdukForm.WindowState = FormWindowState.Normal;
+                        //detailGridView.Focus();
                     }
                     break;
 
@@ -108,6 +127,14 @@ namespace RoyalPetz_ADMIN
                                     deleteCurrentRow();
                                     calculateTotal();
                                 }
+                    break;
+
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
                     break;
             }
         }
@@ -170,8 +197,8 @@ namespace RoyalPetz_ADMIN
             ghk_F11 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F11, this);
             ghk_F11.Register();
 
-            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
-            ghk_DEL.Register();
+            //ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            //ghk_DEL.Register();
 
             //ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
             //ghk_CTRL_DEL.Register();
@@ -179,6 +206,7 @@ namespace RoyalPetz_ADMIN
             ghk_CTRL_ENTER = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Enter, this);
             ghk_CTRL_ENTER.Register();
 
+            registerNavigationKey();
         }
 
         private void unregisterGlobalHotkey()
@@ -188,10 +216,46 @@ namespace RoyalPetz_ADMIN
             ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
-            ghk_DEL.Unregister();
+            //ghk_DEL.Unregister();
 
             // ghk_CTRL_DEL.Unregister();
             ghk_CTRL_ENTER.Unregister();
+
+            unregisterNavigationKey();
+        }
+
+        private void registerNavigationKey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterNavigationKey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void registerDelKey()
+        {
+            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+            ghk_DEL.Register();
+
+            delKeyRegistered = true;
+        }
+
+        private void unregisterDelKey()
+        {
+            ghk_DEL.Unregister();
+
+            delKeyRegistered = false;
         }
 
         public void addNewRow()
@@ -335,6 +399,12 @@ namespace RoyalPetz_ADMIN
             durationTextBox.Visible = true;
             label1.Visible = true;
             isLoading = false;
+
+            if (selectedInvoice.Length > 0)
+            {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "PO INVOICE TO RECEIVE [" + selectedInvoice + "]");
+                supplierCombo.Enabled = false;
+            }
         }
 
         public void setSelectedMutasi(string mutasiNo)
@@ -360,6 +430,12 @@ namespace RoyalPetz_ADMIN
             durationTextBox.Visible = false;
             label1.Visible = false;
             isLoading = false;
+
+            if (selectedMutasi.Length > 0)
+            {
+                gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "NO MUTASI TO RECEIVE [" + selectedMutasi + "]");
+                supplierCombo.Enabled = false;
+            }
         }
 
         private void initializeScreen()
@@ -646,6 +722,8 @@ namespace RoyalPetz_ADMIN
             detailHpp.Add("0");
             detailRequestQty.Add("0");
             subtotalList.Add("0");
+
+            prInvoiceTextBox.Select();
         }
 
         private double getHPPValue(string productID)
@@ -693,6 +771,7 @@ namespace RoyalPetz_ADMIN
                 textBox.TextChanged += TextBox_TextChanged;
                 textBox.PreviewKeyDown -= TextBox_previewKeyDown;
                 textBox.AutoCompleteMode = AutoCompleteMode.None;
+                textBox.KeyUp += Textbox_KeyUp; 
             }
 
             if ((detailGridView.CurrentCell.OwningColumn.Name == "productID") && e.Control is TextBox)
@@ -804,11 +883,22 @@ namespace RoyalPetz_ADMIN
                 {
                     updateSomeRowContents(selectedRow, rowSelectedIndex, currentValue);
                     detailGridView.CurrentCell = selectedRow.Cells["qtyReceived"];
+                    forceUpOneLevel = true;
                 }
                 else
                 {
                     clearUpSomeRowContents(selectedRow, rowSelectedIndex);
                 }
+            }
+        }
+
+        private void Textbox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (forceUpOneLevel)
+            {
+                int pos = detailGridView.CurrentCell.RowIndex;
+                detailGridView.CurrentCell = detailGridView.Rows[pos - 1].Cells["qty"];
+                forceUpOneLevel = false;
             }
         }
 
@@ -1534,28 +1624,23 @@ namespace RoyalPetz_ADMIN
         {
             gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "GET PO INVOICE TO RECEIVE");
 
-            dataPOForm displayedForm = new dataPOForm(globalConstants.PENERIMAAN_BARANG_DARI_PO, this);
-            displayedForm.ShowDialog(this);
+            if (null == browsePOForm || browsePOForm.IsDisposed)
+                browsePOForm = new dataPOForm(globalConstants.PENERIMAAN_BARANG_DARI_PO, this);
 
-            if (selectedInvoice.Length > 0)
-            {
-                gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "PO INVOICE TO RECEIVE [" + selectedInvoice + "]");
-                supplierCombo.Enabled = false;
-            }
+            browsePOForm.Show();
+            browsePOForm.WindowState = FormWindowState.Normal;
+
         }
 
         private void searchMutasiButton_Click(object sender, EventArgs e)
         {
             gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "GET NO MUTASI TO RECEIVE");
 
-            dataMutasiBarangForm displayedForm = new dataMutasiBarangForm(globalConstants.PENERIMAAN_BARANG, this);
-            displayedForm.ShowDialog(this);
+            if (null == browseMutasiForm || browseMutasiForm.IsDisposed)
+                    browseMutasiForm = new dataMutasiBarangForm(globalConstants.PENERIMAAN_BARANG, this);
 
-            if (selectedMutasi.Length > 0)
-            {
-                gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "NO MUTASI TO RECEIVE [" + selectedMutasi + "]");
-                supplierCombo.Enabled = false;
-            }
+            browseMutasiForm.Show();
+            browseMutasiForm.WindowState = FormWindowState.Normal;
         }
 
         private void resetButton_Click(object sender, EventArgs e)
@@ -1614,6 +1699,9 @@ namespace RoyalPetz_ADMIN
             detailHpp.Add("0");
             detailRequestQty.Add("0");
             subtotalList.Add("0");
+
+            if (navKeyRegistered)
+                unregisterNavigationKey();
         }
 
         private void durationTextBox_Enter(object sender, EventArgs e)
@@ -1627,11 +1715,17 @@ namespace RoyalPetz_ADMIN
         private void penerimaanBarangForm_Activated(object sender, EventArgs e)
         {
             registerGlobalHotkey();
+
+            if (detailGridView.Focused)
+                registerDelKey();
         }
 
         private void penerimaanBarangForm_Deactivate(object sender, EventArgs e)
         {
             unregisterGlobalHotkey();
+
+            if (delKeyRegistered)
+                unregisterDelKey();
         }
 
         private void reprintButton_Click(object sender, EventArgs e)
@@ -1684,6 +1778,22 @@ namespace RoyalPetz_ADMIN
                 e.Value = d.ToString(globalUtilities.CELL_FORMATTING_NUMERIC_FORMAT);
                 isLoading = false;
             }
+        }
+
+        private void detailGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+
+            registerDelKey();
+        }
+
+        private void detailGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerNavigationKey();
+
+            unregisterDelKey();
         }
     }
 }

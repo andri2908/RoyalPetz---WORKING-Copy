@@ -11,6 +11,8 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Globalization;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataTransaksiJurnalHarianDetailForm : Form
@@ -27,16 +29,71 @@ namespace RoyalPetz_ADMIN
         private int originModuleID = 0;
         private bool upd_mode = false;
         int selectedrowindex = -1;
+
+        dataNomorAkun browseNoAkunForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
+        private bool navKeyRegistered = false;
+
         public dataTransaksiJurnalHarianDetailForm()
         {
             InitializeComponent();
         }
+
         public dataTransaksiJurnalHarianDetailForm(int moduleID, int UserID)
         {
             selectedUserID = UserID;
             //originModuleID = moduleID;
 
             InitializeComponent();
+        }
+
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
         }
 
         private void loadtypeaccount()
@@ -189,6 +246,7 @@ namespace RoyalPetz_ADMIN
         {
             selectedAccountID = AccountID;
             //kodeAkunTextbox.Text = selectedAccountID.ToString();
+            loadDeskripsi(selectedAccountID);
         }
 
         private void loadDeskripsi(int accountID)
@@ -253,9 +311,11 @@ namespace RoyalPetz_ADMIN
 
         private void searchButton_Click(object sender, EventArgs e)
         {
-            dataNomorAkun displayedForm = new dataNomorAkun(globalConstants.TAMBAH_HAPUS_JURNAL_HARIAN, this);
-            displayedForm.ShowDialog(this);
-            loadDeskripsi(selectedAccountID);
+            if (null == browseNoAkunForm || browseNoAkunForm.IsDisposed)
+                browseNoAkunForm = new dataNomorAkun(globalConstants.TAMBAH_HAPUS_JURNAL_HARIAN, this);
+
+            browseNoAkunForm.Show();
+            browseNoAkunForm.WindowState = FormWindowState.Normal;
         }
 
         private void dataTransaksiJurnalHarianDetailForm_Load(object sender, EventArgs e)
@@ -273,6 +333,7 @@ namespace RoyalPetz_ADMIN
             errorLabel.Text = "";
             //TransaksiAccountGridView.Rows.Clear();
             //loadTransaksi();
+            registerGlobalHotkey();
         }
 
         private bool saveDataTransaction()
@@ -627,6 +688,33 @@ namespace RoyalPetz_ADMIN
                 double d = double.Parse(e.Value.ToString());
                 e.Value = d.ToString(globalUtilities.CELL_FORMATTING_NUMERIC_FORMAT);
             }
+        }
+
+        private void dataTransaksiJurnalHarianDetailForm_Deactivate(object sender, EventArgs e)
+        {
+            unregisterGlobalHotkey();
+        }
+
+        private void TransaksiAccountGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void TransaksiAccountGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            unregisterGlobalHotkey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerGlobalHotkey();
         }
     }
 }

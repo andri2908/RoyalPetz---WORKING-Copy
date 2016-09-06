@@ -12,6 +12,8 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Globalization;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataPOForm : Form
@@ -24,6 +26,14 @@ namespace RoyalPetz_ADMIN
         private globalUtilities gUtil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
         private Form parentForm;
+
+        purchaseOrderDetailForm newPOForm = null;
+        purchaseOrderDetailForm editPOForm = null;
+        pembayaranHutangForm displayPembayaranHutang = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
 
         public dataPOForm()
         {
@@ -43,10 +53,59 @@ namespace RoyalPetz_ADMIN
             parentForm = originForm;
         }
 
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
         private void newButton_Click(object sender, EventArgs e)
         {
-            purchaseOrderDetailForm displayedForm = new purchaseOrderDetailForm();
-            displayedForm.ShowDialog(this);
+            if (null == newPOForm || newPOForm.IsDisposed)
+                    newPOForm = new purchaseOrderDetailForm();
+
+            newPOForm.Show();
+            newPOForm.WindowState = FormWindowState.Normal;
         }
 
         private void fillInSupplierCombo()
@@ -215,12 +274,16 @@ namespace RoyalPetz_ADMIN
                 int rowSelectedIndex = (dataPurchaseOrder.SelectedCells[0].RowIndex);
                 DataGridViewRow selectedRow = dataPurchaseOrder.Rows[rowSelectedIndex];
 
-
                 if (originModuleID == 0)
                 {
-                    selectedPOID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
-                    purchaseOrderDetailForm displayedForm = new purchaseOrderDetailForm(globalConstants.EDIT_PURCHASE_ORDER, selectedPOID);
-                    displayedForm.ShowDialog(this);
+                    if (null == editPOForm || editPOForm.IsDisposed)
+                    { 
+                        selectedPOID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
+                        editPOForm = new purchaseOrderDetailForm(globalConstants.EDIT_PURCHASE_ORDER, selectedPOID);
+                    }
+
+                    editPOForm.Show();
+                    editPOForm.WindowState = FormWindowState.Normal;
                 }
                 else if (originModuleID == globalConstants.PENERIMAAN_BARANG_DARI_PO)
                 {
@@ -236,9 +299,14 @@ namespace RoyalPetz_ADMIN
                 }
                 else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
                 {
-                    selectedPurchaseInvoice = selectedRow.Cells["NO PURCHASE"].Value.ToString();
-                    pembayaranHutangForm displayedPembayaranForm = new pembayaranHutangForm(selectedPurchaseInvoice);
-                    displayedPembayaranForm.ShowDialog(this);
+                    if (null == displayPembayaranHutang || displayPembayaranHutang.IsDisposed)
+                    {
+                        selectedPurchaseInvoice = selectedRow.Cells["NO PURCHASE"].Value.ToString();
+                        displayPembayaranHutang = new pembayaranHutangForm(selectedPurchaseInvoice);
+                    }
+
+                    displayPembayaranHutang.Show();
+                    displayPembayaranHutang.WindowState = FormWindowState.Normal;
                 }
                 else if (originModuleID == globalConstants.REPRINT_PURCHASE_ORDER)
                 {
@@ -265,9 +333,14 @@ namespace RoyalPetz_ADMIN
 
             if (originModuleID == 0)
             {
-                selectedPOID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
-                purchaseOrderDetailForm displayedForm = new purchaseOrderDetailForm(globalConstants.EDIT_PURCHASE_ORDER, selectedPOID);
-                displayedForm.ShowDialog(this);
+                if (null == editPOForm || editPOForm.IsDisposed)
+                {
+                    selectedPOID = Convert.ToInt32(selectedRow.Cells["ID"].Value);
+                    editPOForm = new purchaseOrderDetailForm(globalConstants.EDIT_PURCHASE_ORDER, selectedPOID);
+                }
+
+                editPOForm.Show();
+                editPOForm.WindowState = FormWindowState.Normal;
             }
             else if (originModuleID == globalConstants.PENERIMAAN_BARANG_DARI_PO)
             {
@@ -283,9 +356,14 @@ namespace RoyalPetz_ADMIN
             }
             else if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
             {
-                selectedPurchaseInvoice = selectedRow.Cells["NO PURCHASE"].Value.ToString();
-                pembayaranHutangForm displayedPembayaranForm = new pembayaranHutangForm(selectedPurchaseInvoice);
-                displayedPembayaranForm.ShowDialog(this);
+                if (null == displayPembayaranHutang || displayPembayaranHutang.IsDisposed)
+                {
+                    selectedPurchaseInvoice = selectedRow.Cells["NO PURCHASE"].Value.ToString();
+                    displayPembayaranHutang = new pembayaranHutangForm(selectedPurchaseInvoice);
+                }
+
+                displayPembayaranHutang.Show();
+                displayPembayaranHutang.WindowState = FormWindowState.Normal;
             }
             else if (originModuleID == globalConstants.REPRINT_PURCHASE_ORDER)
             {
@@ -300,16 +378,42 @@ namespace RoyalPetz_ADMIN
         {
             if (noPOInvoiceTextBox.Text.Length > 0)
                 displayButton.PerformClick();
-        }
 
-        private void dataPurchaseOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            registerGlobalHotkey();
         }
 
         private void supplierCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             supplierID = Convert.ToInt32(supplierHiddenCombo.Items[supplierCombo.SelectedIndex].ToString());
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerGlobalHotkey();
+        }
+
+        private void dataPOForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataPurchaseOrder_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataPurchaseOrder_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
         }
     }
 }

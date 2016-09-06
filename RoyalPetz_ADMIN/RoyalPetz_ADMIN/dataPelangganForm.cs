@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataPelangganForm : Form
@@ -21,6 +23,17 @@ namespace RoyalPetz_ADMIN
         int originModuleID = 0;
 
         private Data_Access DS = new Data_Access();
+
+        dataPelangganDetailForm newPelangganForm = null;
+        dataPelangganDetailForm editPelangganForm = null;
+        dataReturPenjualanForm returPenjualanForm = null;
+        dataReturPenjualanForm unknownCustReturPenjualanForm = null;
+        pembayaranLumpSumForm pembayaranPiutangLumpSumForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
+
 
         public dataPelangganForm()
         {
@@ -67,13 +80,62 @@ namespace RoyalPetz_ADMIN
                 unknownCustomerButton.Visible = true;
         }
 
-        private void newButton_Click(object sender, EventArgs e)
+        private void captureAll(Keys key)
         {
-            dataPelangganDetailForm displayForm = new dataPelangganDetailForm(globalConstants.NEW_CUSTOMER);
-            displayForm.ShowDialog(this);
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
         }
 
-        private void loadCustomerData()
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void newButton_Click(object sender, EventArgs e)
+        {
+            if (null == newPelangganForm || newPelangganForm.IsDisposed)
+                    newPelangganForm = new dataPelangganDetailForm(globalConstants.NEW_CUSTOMER);
+
+            newPelangganForm.Show();
+            newPelangganForm.WindowState = FormWindowState.Normal;
+        }
+
+        private void loadCustomerData(int options=0)
         {
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
@@ -86,14 +148,20 @@ namespace RoyalPetz_ADMIN
                 return;
 
             namaPelangganParam = MySqlHelper.EscapeString(namaPelangganTextbox.Text);
-
-            if (pelanggangnonactiveoption.Checked == true)
+            if (options == 1)
             {
-                sqlCommand = "SELECT CUSTOMER_ID, CUSTOMER_FULL_NAME AS 'NAMA PELANGGAN', DATE_FORMAT(CUSTOMER_JOINED_DATE,'%d-%M-%Y') AS 'TANGGAL BERGABUNG', IF(CUSTOMER_GROUP = 1,'ECER', IF(CUSTOMER_GROUP = 2,'PARTAI', 'GROSIR')) AS 'GROUP CUSTOMER' FROM MASTER_CUSTOMER WHERE CUSTOMER_FULL_NAME LIKE '%" + namaPelangganParam + "%'";
+                sqlCommand = "SELECT CUSTOMER_ID, CUSTOMER_FULL_NAME AS 'NAMA PELANGGAN', DATE_FORMAT(CUSTOMER_JOINED_DATE,'%d-%M-%Y') AS 'TANGGAL BERGABUNG', IF(CUSTOMER_GROUP = 1,'ECER', IF(CUSTOMER_GROUP = 2,'PARTAI', 'GROSIR')) AS 'GROUP CUSTOMER' FROM MASTER_CUSTOMER";
+            } else
+            {
+                if (pelanggangnonactiveoption.Checked == true)
+                {
+                    sqlCommand = "SELECT CUSTOMER_ID, CUSTOMER_FULL_NAME AS 'NAMA PELANGGAN', DATE_FORMAT(CUSTOMER_JOINED_DATE,'%d-%M-%Y') AS 'TANGGAL BERGABUNG', IF(CUSTOMER_GROUP = 1,'ECER', IF(CUSTOMER_GROUP = 2,'PARTAI', 'GROSIR')) AS 'GROUP CUSTOMER' FROM MASTER_CUSTOMER WHERE CUSTOMER_FULL_NAME LIKE '%" + namaPelangganParam + "%'";
+                }
+                else {
+                    sqlCommand = "SELECT CUSTOMER_ID, CUSTOMER_FULL_NAME AS 'NAMA PELANGGAN', DATE_FORMAT(CUSTOMER_JOINED_DATE,'%d-%M-%Y') AS 'TANGGAL BERGABUNG', IF(CUSTOMER_GROUP = 1,'ECER', IF(CUSTOMER_GROUP = 2,'PARTAI', 'GROSIR')) AS 'GROUP CUSTOMER' FROM MASTER_CUSTOMER WHERE CUSTOMER_ACTIVE = 1 AND CUSTOMER_FULL_NAME LIKE '%" + namaPelangganParam + "%'";
+                }
             }
-            else {
-                sqlCommand = "SELECT CUSTOMER_ID, CUSTOMER_FULL_NAME AS 'NAMA PELANGGAN', DATE_FORMAT(CUSTOMER_JOINED_DATE,'%d-%M-%Y') AS 'TANGGAL BERGABUNG', IF(CUSTOMER_GROUP = 1,'ECER', IF(CUSTOMER_GROUP = 2,'PARTAI', 'GROSIR')) AS 'GROUP CUSTOMER' FROM MASTER_CUSTOMER WHERE CUSTOMER_ACTIVE = 1 AND CUSTOMER_FULL_NAME LIKE '%" + namaPelangganParam + "%'";
-            }
+            
 
             using (rdr = DS.getData(sqlCommand))
             {
@@ -117,6 +185,8 @@ namespace RoyalPetz_ADMIN
             {
                 loadCustomerData();
             }
+
+            registerGlobalHotkey();
         }
 
         private void namaPelangganTextbox_TextChanged(object sender, EventArgs e)
@@ -145,18 +215,27 @@ namespace RoyalPetz_ADMIN
             }
             else if (originModuleID == globalConstants.RETUR_PENJUALAN_STOCK_ADJUSTMENT)
             {
-                dataReturPenjualanForm displayedReturForm = new dataReturPenjualanForm(originModuleID, "", selectedCustomerID);
-                displayedReturForm.ShowDialog(this);
+                if (null == returPenjualanForm || returPenjualanForm.IsDisposed)
+                        returPenjualanForm = new dataReturPenjualanForm(originModuleID, "", selectedCustomerID);
+
+                returPenjualanForm.Show();
+                returPenjualanForm.WindowState = FormWindowState.Normal;
             }
             else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
             {
-                pembayaranLumpSumForm pembayaranForm = new pembayaranLumpSumForm(originModuleID, selectedCustomerID);
-                pembayaranForm.ShowDialog(this);
+                if (null == pembayaranPiutangLumpSumForm || pembayaranPiutangLumpSumForm.IsDisposed)
+                        pembayaranPiutangLumpSumForm = new pembayaranLumpSumForm(originModuleID, selectedCustomerID);
+
+                pembayaranPiutangLumpSumForm.Show();
+                pembayaranPiutangLumpSumForm.WindowState = FormWindowState.Normal;
             }
             else
             {
-                dataPelangganDetailForm displayedForm = new dataPelangganDetailForm(globalConstants.EDIT_CUSTOMER, selectedCustomerID);
-                displayedForm.ShowDialog(this);
+                if (null == editPelangganForm || editPelangganForm.IsDisposed)
+                        editPelangganForm = new dataPelangganDetailForm(globalConstants.EDIT_CUSTOMER, selectedCustomerID);
+
+                editPelangganForm.Show();
+                editPelangganForm.WindowState = FormWindowState.Normal;
             }
         }
 
@@ -195,26 +274,61 @@ namespace RoyalPetz_ADMIN
                 }
                 else if (originModuleID == globalConstants.RETUR_PENJUALAN_STOCK_ADJUSTMENT)
                 {
-                    dataReturPenjualanForm displayDataReturPenjualan = new dataReturPenjualanForm(originModuleID, "", selectedCustomerID);
-                    displayDataReturPenjualan.ShowDialog(this);
+                    if (null == returPenjualanForm || returPenjualanForm.IsDisposed)
+                        returPenjualanForm = new dataReturPenjualanForm(originModuleID, "", selectedCustomerID);
+
+                    returPenjualanForm.Show();
+                    returPenjualanForm.WindowState = FormWindowState.Normal;
                 }
                 else if (originModuleID == globalConstants.PEMBAYARAN_PIUTANG)
                 {
-                    pembayaranLumpSumForm pembayaranForm = new pembayaranLumpSumForm(originModuleID, selectedCustomerID);
-                    pembayaranForm.ShowDialog(this);
+                    if (null == pembayaranPiutangLumpSumForm || pembayaranPiutangLumpSumForm.IsDisposed)
+                        pembayaranPiutangLumpSumForm = new pembayaranLumpSumForm(originModuleID, selectedCustomerID);
+
+                    pembayaranPiutangLumpSumForm.Show();
+                    pembayaranPiutangLumpSumForm.WindowState = FormWindowState.Normal;
                 }
                 else 
                 {
-                    dataPelangganDetailForm displayedForm = new dataPelangganDetailForm(globalConstants.EDIT_CUSTOMER, selectedCustomerID);
-                    displayedForm.ShowDialog(this);
+                    if (null == editPelangganForm || editPelangganForm.IsDisposed)
+                        editPelangganForm = new dataPelangganDetailForm(globalConstants.EDIT_CUSTOMER, selectedCustomerID);
+
+                    editPelangganForm.Show();
+                    editPelangganForm.WindowState = FormWindowState.Normal;
                 }
             }
         }
 
         private void unknownCustomerButton_Click(object sender, EventArgs e)
         {
-            dataReturPenjualanForm displayedReturForm = new dataReturPenjualanForm(originModuleID, "", 0);
-            displayedReturForm.ShowDialog(this);
+            if (null == unknownCustReturPenjualanForm || unknownCustReturPenjualanForm.IsDisposed)
+                    unknownCustReturPenjualanForm = new dataReturPenjualanForm(originModuleID, "", 0);
+
+            unknownCustReturPenjualanForm.Show();
+            unknownCustReturPenjualanForm.WindowState = FormWindowState.Normal;
+        }
+
+        private void dataPelangganForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataPelangganDataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataPelangganDataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void AllButton_Click(object sender, EventArgs e)
+        {
+            loadCustomerData(1);
         }
     }
 }

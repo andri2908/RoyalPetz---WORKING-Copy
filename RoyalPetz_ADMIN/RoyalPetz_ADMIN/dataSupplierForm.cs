@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
+using Hotkeys;
+
 namespace RoyalPetz_ADMIN
 {
     public partial class dataSupplierForm : Form
@@ -21,6 +23,14 @@ namespace RoyalPetz_ADMIN
         private globalUtilities gutil = new globalUtilities();
 
         private Data_Access DS = new Data_Access();
+
+        dataSupplierDetailForm newSupplierForm = null;
+        dataSupplierDetailForm editSupplierForm = null;
+        pembayaranLumpSumForm pembayaranHutangForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
 
         public dataSupplierForm()
         {
@@ -35,13 +45,62 @@ namespace RoyalPetz_ADMIN
             newButton.Visible = false;
         }
 
-        private void newButton_Click(object sender, EventArgs e)
-        {          
-            dataSupplierDetailForm displayedForm = new dataSupplierDetailForm(globalConstants.NEW_SUPPLIER);
-            displayedForm.ShowDialog(this);
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
         }
 
-        private void loadSupplierData()
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void newButton_Click(object sender, EventArgs e)
+        {          
+            if (null == newSupplierForm || newSupplierForm.IsDisposed)
+                    newSupplierForm = new dataSupplierDetailForm(globalConstants.NEW_SUPPLIER);
+
+            newSupplierForm.Show();
+            newSupplierForm.WindowState = FormWindowState.Normal;
+        }
+
+        private void loadSupplierData(int options=0)
         {
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
@@ -54,13 +113,20 @@ namespace RoyalPetz_ADMIN
             //    return;
             namaSupplierParam = MySqlHelper.EscapeString(namaSupplierTextbox.Text);
 
-            if (suppliernonactiveoption.Checked == true)
+            if (options == 1)
             {
-               sqlCommand = "SELECT SUPPLIER_ID, SUPPLIER_FULL_NAME AS 'NAMA SUPPLIER' FROM MASTER_SUPPLIER WHERE SUPPLIER_FULL_NAME LIKE '%" + namaSupplierParam + "%'";
+                sqlCommand = "SELECT SUPPLIER_ID, SUPPLIER_FULL_NAME AS 'NAMA SUPPLIER' FROM MASTER_SUPPLIER";
             }
             else
             {
-               sqlCommand = "SELECT SUPPLIER_ID, SUPPLIER_FULL_NAME AS 'NAMA SUPPLIER' FROM MASTER_SUPPLIER WHERE SUPPLIER_ACTIVE = 1 AND SUPPLIER_FULL_NAME LIKE '%" + namaSupplierParam + "%'";
+                if (suppliernonactiveoption.Checked == true)
+                {
+                    sqlCommand = "SELECT SUPPLIER_ID, SUPPLIER_FULL_NAME AS 'NAMA SUPPLIER' FROM MASTER_SUPPLIER WHERE SUPPLIER_FULL_NAME LIKE '%" + namaSupplierParam + "%'";
+                }
+                else
+                {
+                    sqlCommand = "SELECT SUPPLIER_ID, SUPPLIER_FULL_NAME AS 'NAMA SUPPLIER' FROM MASTER_SUPPLIER WHERE SUPPLIER_ACTIVE = 1 AND SUPPLIER_FULL_NAME LIKE '%" + namaSupplierParam + "%'";
+                }
             }
 
             using (rdr = DS.getData(sqlCommand))
@@ -93,11 +159,8 @@ namespace RoyalPetz_ADMIN
             {
                 loadSupplierData();
             }
-        }
 
-        private void dataSupplierDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            registerGlobalHotkey();
         }
 
         private void dataSupplierDataGridView_DoubleClick(object sender, EventArgs e)
@@ -112,13 +175,19 @@ namespace RoyalPetz_ADMIN
 
             if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
             {
-                pembayaranLumpSumForm pembayaranHutangForm = new pembayaranLumpSumForm(originModuleID, selectedSupplierID);
-                pembayaranHutangForm.ShowDialog(this);
+                if (null == pembayaranHutangForm || pembayaranHutangForm.IsDisposed)
+                        pembayaranHutangForm = new pembayaranLumpSumForm(originModuleID, selectedSupplierID);
+
+                pembayaranHutangForm.Show();
+                pembayaranHutangForm.WindowState = FormWindowState.Normal;
             }
             else
             {
-                dataSupplierDetailForm displayedForm = new dataSupplierDetailForm(globalConstants.EDIT_SUPPLIER, selectedSupplierID);
-                displayedForm.ShowDialog(this);
+                if (null == editSupplierForm || editSupplierForm.IsDisposed)
+                        editSupplierForm = new dataSupplierDetailForm(globalConstants.EDIT_SUPPLIER, selectedSupplierID);
+
+                editSupplierForm.Show();
+                editSupplierForm.WindowState = FormWindowState.Normal;
             }
         }
 
@@ -149,15 +218,44 @@ namespace RoyalPetz_ADMIN
 
                 if (originModuleID == globalConstants.PEMBAYARAN_HUTANG)
                 {
-                    pembayaranLumpSumForm pembayaranHutangForm = new pembayaranLumpSumForm(originModuleID, selectedSupplierID);
-                    pembayaranHutangForm.ShowDialog(this);
+                    if (null == pembayaranHutangForm || pembayaranHutangForm.IsDisposed)
+                            pembayaranHutangForm = new pembayaranLumpSumForm(originModuleID, selectedSupplierID);
+
+                    pembayaranHutangForm.Show();
+                    pembayaranHutangForm.WindowState = FormWindowState.Normal;
                 }
                 else
                 {
-                    dataSupplierDetailForm displayedForm = new dataSupplierDetailForm(globalConstants.EDIT_SUPPLIER, selectedSupplierID);
-                    displayedForm.ShowDialog(this);
+                    if (null == editSupplierForm || editSupplierForm.IsDisposed)
+                            editSupplierForm = new dataSupplierDetailForm(globalConstants.EDIT_SUPPLIER, selectedSupplierID);
+
+                    editSupplierForm.Show();
+                    editSupplierForm.WindowState = FormWindowState.Normal;
                 }
             }
+        }
+
+        private void dataSupplierForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataSupplierDataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void dataSupplierDataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void AllButton_Click(object sender, EventArgs e)
+        {
+            loadSupplierData(1);
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Hotkeys;
 
 namespace RoyalPetz_ADMIN
 {
@@ -21,6 +22,14 @@ namespace RoyalPetz_ADMIN
         private dataProdukDetailForm parentForm;
         private globalUtilities gutil = new globalUtilities();
         Data_Access DS = new Data_Access();
+
+        pengaturanKategoriProdukForm displayPengaturanKategoriForm = null;
+        dataKategoriProdukDetailForm editKategoriForm = null;
+        dataKategoriProdukDetailForm newKategoriForm = null;
+
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+        private bool navKeyRegistered = false;
 
         public dataKategoriProdukForm()
         {
@@ -45,25 +54,78 @@ namespace RoyalPetz_ADMIN
             //newButton.Visible = false;
         }
 
-        private void loadKategoriData()
+        private void captureAll(Keys key)
+        {
+            switch (key)
+            {
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
+                    break;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Constants.WM_HOTKEY_MSG_ID)
+            {
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                int modifier = (int)m.LParam & 0xFFFF;
+
+                if (modifier == Constants.NOMOD)
+                    captureAll(key);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private void registerGlobalHotkey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterGlobalHotkey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void loadKategoriData(int options = 0)
         {
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
             string sqlCommand;
             string categoryNameParam;
 
-            if (categoryNameTextBox.Text.Equals(""))
+            if (options !=1 && categoryNameTextBox.Text.Equals(""))
                 return;
 
-            categoryNameParam = MySqlHelper.EscapeString(categoryNameTextBox.Text);
             DS.mySqlConnect();
-
-            if (tagnonactiveoption.Checked == true)
+            if (options == 1)
             {
-                sqlCommand = "SELECT CATEGORY_ID, CATEGORY_NAME AS 'NAMA KATEGORI', CATEGORY_DESCRIPTION AS 'DESKRIPSI KATEGORI' FROM MASTER_CATEGORY WHERE CATEGORY_NAME LIKE '%" + categoryNameParam + "%'";
+                sqlCommand = "SELECT CATEGORY_ID, CATEGORY_NAME AS 'NAMA KATEGORI', CATEGORY_DESCRIPTION AS 'DESKRIPSI KATEGORI' FROM MASTER_CATEGORY";
             }
-            else {
-                sqlCommand = "SELECT CATEGORY_ID, CATEGORY_NAME AS 'NAMA KATEGORI', CATEGORY_DESCRIPTION AS 'DESKRIPSI KATEGORI' FROM MASTER_CATEGORY WHERE CATEGORY_ACTIVE = 1 AND CATEGORY_NAME LIKE '%" + categoryNameParam + "%'";
+            else
+            {
+                categoryNameParam = MySqlHelper.EscapeString(categoryNameTextBox.Text);
+                if (tagnonactiveoption.Checked == true)
+                {
+                    sqlCommand = "SELECT CATEGORY_ID, CATEGORY_NAME AS 'NAMA KATEGORI', CATEGORY_DESCRIPTION AS 'DESKRIPSI KATEGORI' FROM MASTER_CATEGORY WHERE CATEGORY_NAME LIKE '%" + categoryNameParam + "%'";
+                }
+                else
+                {
+                    sqlCommand = "SELECT CATEGORY_ID, CATEGORY_NAME AS 'NAMA KATEGORI', CATEGORY_DESCRIPTION AS 'DESKRIPSI KATEGORI' FROM MASTER_CATEGORY WHERE CATEGORY_ACTIVE = 1 AND CATEGORY_NAME LIKE '%" + categoryNameParam + "%'";
+                }
             }
 
             using (rdr = DS.getData(sqlCommand))
@@ -96,21 +158,30 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.PENGATURAN_KATEGORI_PRODUK:
-                    pengaturanKategoriProdukForm pengaturanKategoriForm = new pengaturanKategoriProdukForm(selectedCategoryID);
-                    pengaturanKategoriForm.ShowDialog(this);
+                    if (null == displayPengaturanKategoriForm || displayPengaturanKategoriForm.IsDisposed)
+                            displayPengaturanKategoriForm = new pengaturanKategoriProdukForm(selectedCategoryID);
+
+                    displayPengaturanKategoriForm.Show();
+                    displayPengaturanKategoriForm.WindowState = FormWindowState.Normal;
                     break;
 
                 default:
-                    dataKategoriProdukDetailForm displayedForm = new dataKategoriProdukDetailForm(globalConstants.EDIT_CATEGORY, selectedCategoryID);
-                    displayedForm.ShowDialog(this);
+                    if (null == editKategoriForm || editKategoriForm.IsDisposed)
+                        editKategoriForm = new dataKategoriProdukDetailForm(globalConstants.EDIT_CATEGORY, selectedCategoryID);
+
+                    editKategoriForm.Show();
+                    editKategoriForm.WindowState = FormWindowState.Normal;
                     break;
             }
         }
 
         private void newButton_Click_1(object sender, EventArgs e)
         {
-            dataKategoriProdukDetailForm displayForm = new dataKategoriProdukDetailForm(globalConstants.NEW_CATEGORY);
-            displayForm.ShowDialog(this);
+            if (null == newKategoriForm || newKategoriForm.IsDisposed)
+                 newKategoriForm = new dataKategoriProdukDetailForm(globalConstants.NEW_CATEGORY);
+
+            newKategoriForm.Show();
+            newKategoriForm.WindowState = FormWindowState.Normal;
         }
 
         private void tagProdukDataGridView_DoubleClick(object sender, EventArgs e)
@@ -133,6 +204,8 @@ namespace RoyalPetz_ADMIN
             {
                 loadKategoriData();
             }
+
+            registerGlobalHotkey();
         }
 
         private void dataKategoriProdukForm_Load(object sender, EventArgs e)
@@ -146,6 +219,7 @@ namespace RoyalPetz_ADMIN
                 newButton.Visible = true;
             else
                 newButton.Visible = false;
+            categoryNameTextBox.Select();
         }
 
         private void groupnonactiveoption_CheckedChanged(object sender, EventArgs e)
@@ -162,6 +236,37 @@ namespace RoyalPetz_ADMIN
             if (e.KeyCode == Keys.Enter)
                 if (kategoriProdukDataGridView.Rows.Count > 0)
                     displaySpecificForm();
+        }
+
+		private void AllButton_Click(object sender, EventArgs e)
+        {
+            loadKategoriData(1);
+        }
+		
+        private void dataKategoriProdukForm_Deactivate(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void kategoriProdukDataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterGlobalHotkey();
+        }
+
+        private void kategoriProdukDataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerGlobalHotkey();
+        }
+
+        private void categoryNameTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                kategoriProdukDataGridView.Select();
+            }
         }
     }
 }

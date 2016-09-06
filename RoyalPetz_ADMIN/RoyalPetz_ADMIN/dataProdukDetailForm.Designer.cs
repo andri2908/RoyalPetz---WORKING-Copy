@@ -66,6 +66,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.resetbutton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.barcodeTextBox = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -73,7 +75,6 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
-            this.barcodeTextBox = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -126,6 +127,7 @@
             this.kodeProdukTextBox.Size = new System.Drawing.Size(228, 26);
             this.kodeProdukTextBox.TabIndex = 15;
             this.kodeProdukTextBox.TextChanged += new System.EventHandler(this.kodeProdukTextBox_TextChanged);
+            this.kodeProdukTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.kodeProdukTextBox_KeyUp);
             // 
             // label16
             // 
@@ -150,6 +152,7 @@
             this.produkJasaCheckbox.TabIndex = 34;
             this.produkJasaCheckbox.Text = "Produk Jasa / Servis (non-inventory)";
             this.produkJasaCheckbox.UseVisualStyleBackColor = true;
+            this.produkJasaCheckbox.CheckedChanged += new System.EventHandler(this.produkJasaCheckbox_CheckedChanged);
             // 
             // namaProdukTextBox
             // 
@@ -236,7 +239,7 @@
             // 
             this.stokAwalTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.stokAwalTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.stokAwalTextBox.Location = new System.Drawing.Point(133, 27);
+            this.stokAwalTextBox.Location = new System.Drawing.Point(134, 27);
             this.stokAwalTextBox.Name = "stokAwalTextBox";
             this.stokAwalTextBox.Size = new System.Drawing.Size(175, 26);
             this.stokAwalTextBox.TabIndex = 71;
@@ -359,6 +362,7 @@
             this.unitTextBox.ReadOnly = true;
             this.unitTextBox.Size = new System.Drawing.Size(286, 26);
             this.unitTextBox.TabIndex = 17;
+            this.unitTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.unitTextBox_KeyUp);
             // 
             // noRakBarisTextBox
             // 
@@ -378,15 +382,16 @@
             this.produkKategoriTextBox.Location = new System.Drawing.Point(133, 134);
             this.produkKategoriTextBox.Name = "produkKategoriTextBox";
             this.produkKategoriTextBox.ReadOnly = true;
-            this.produkKategoriTextBox.Size = new System.Drawing.Size(573, 26);
+            this.produkKategoriTextBox.Size = new System.Drawing.Size(477, 26);
             this.produkKategoriTextBox.TabIndex = 17;
+            this.produkKategoriTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.produkKategoriTextBox_KeyUp);
             // 
             // searchKategoriButton
             // 
             this.searchKategoriButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.searchKategoriButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("searchKategoriButton.BackgroundImage")));
             this.searchKategoriButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.searchKategoriButton.Location = new System.Drawing.Point(712, 135);
+            this.searchKategoriButton.Location = new System.Drawing.Point(616, 134);
             this.searchKategoriButton.Name = "searchKategoriButton";
             this.searchKategoriButton.Size = new System.Drawing.Size(26, 26);
             this.searchKategoriButton.TabIndex = 18;
@@ -494,6 +499,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.barcodeTextBox);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.merkTextBox);
@@ -522,6 +528,30 @@
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ID PRODUK";
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(653, 134);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(85, 26);
+            this.button3.TabIndex = 80;
+            this.button3.Text = "CLEAR";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // barcodeTextBox
+            // 
+            this.barcodeTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.barcodeTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.barcodeTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.barcodeTextBox.Location = new System.Drawing.Point(468, 25);
+            this.barcodeTextBox.MaxLength = 15;
+            this.barcodeTextBox.Name = "barcodeTextBox";
+            this.barcodeTextBox.Size = new System.Drawing.Size(174, 26);
+            this.barcodeTextBox.TabIndex = 79;
+            this.barcodeTextBox.TextChanged += new System.EventHandler(this.barcodeTextBox_TextChanged);
+            this.barcodeTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.barcodeTextBox_KeyUp);
             // 
             // button2
             // 
@@ -614,18 +644,6 @@
             this.label25.TabIndex = 76;
             this.label25.Text = "HARGA JUAL PARTAI";
             // 
-            // barcodeTextBox
-            // 
-            this.barcodeTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.barcodeTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.barcodeTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barcodeTextBox.Location = new System.Drawing.Point(468, 25);
-            this.barcodeTextBox.MaxLength = 15;
-            this.barcodeTextBox.Name = "barcodeTextBox";
-            this.barcodeTextBox.Size = new System.Drawing.Size(174, 26);
-            this.barcodeTextBox.TabIndex = 79;
-            this.barcodeTextBox.TextChanged += new System.EventHandler(this.barcodeTextBox_TextChanged);
-            // 
             // dataProdukDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -648,7 +666,9 @@
             this.Name = "dataProdukDetailForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "DATA PRODUK ";
+            this.Text = "DETAIL DATA PRODUK ";
+            this.Activated += new System.EventHandler(this.dataProdukDetailForm_Activated);
+            this.Deactivate += new System.EventHandler(this.dataProdukDetailForm_Deactivate);
             this.Load += new System.EventHandler(this.dataProdukDetailForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -709,5 +729,6 @@
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox barcodeTextBox;
+        private System.Windows.Forms.Button button3;
     }
 }

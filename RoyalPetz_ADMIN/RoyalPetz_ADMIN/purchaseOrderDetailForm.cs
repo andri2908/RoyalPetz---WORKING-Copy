@@ -39,12 +39,21 @@ namespace RoyalPetz_ADMIN
         private Hotkeys.GlobalHotkey ghk_CTRL_DEL;
         private Hotkeys.GlobalHotkey ghk_CTRL_ENTER;
 
+        private Hotkeys.GlobalHotkey ghk_UP;
+        private Hotkeys.GlobalHotkey ghk_DOWN;
+
         int originModuleID = globalConstants.NEW_PURCHASE_ORDER;
         string selectedROInvoice = "";        
         private int selectedSupplierID = 0;
         private int selectedPOID = 0;
-       // private string selectedPOInvoice = "";
+        private bool navKeyRegistered = false;
+        private bool delKeyRegistered = false;
+
+        // private string selectedPOInvoice = "";
         Button[] arrButton = new Button[2];
+
+        barcodeForm displayBarcodeForm = null;
+        dataProdukForm browseProdukForm = null;
 
         public purchaseOrderDetailForm()
         {
@@ -78,13 +87,17 @@ namespace RoyalPetz_ADMIN
                     if (detailPODataGridView.ReadOnly == false)
                     {
                         PODateTimePicker.Focus();
-                        barcodeForm displayBarcodeForm = new barcodeForm(this, globalConstants.NEW_PURCHASE_ORDER);
+                        if (null == displayBarcodeForm || displayBarcodeForm.IsDisposed)
+                        { 
+                            displayBarcodeForm = new barcodeForm(this, globalConstants.NEW_PURCHASE_ORDER);
 
-                        displayBarcodeForm.Top = this.Top + 5;
-                        displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                            displayBarcodeForm.Top = this.Top + 5;
+                            displayBarcodeForm.Left = this.Left + 5;//(Screen.PrimaryScreen.Bounds.Width / 2) - (displayBarcodeForm.Width / 2);
+                        }
 
-                        displayBarcodeForm.ShowDialog(this);
-                        detailPODataGridView.Focus();
+                        displayBarcodeForm.Show();
+                        displayBarcodeForm.WindowState = FormWindowState.Normal;
+                        //detailPODataGridView.Focus();
                     }
                     break;
 
@@ -105,9 +118,12 @@ namespace RoyalPetz_ADMIN
                     if (detailPODataGridView.ReadOnly == false)
                     {
                         PODateTimePicker.Focus();
-                        dataProdukForm displayProdukForm = new dataProdukForm(globalConstants.NEW_PURCHASE_ORDER, this);
-                        displayProdukForm.ShowDialog(this);
-                        detailPODataGridView.Focus();
+                        if (null == browseProdukForm || browseProdukForm.IsDisposed)
+                                browseProdukForm = new dataProdukForm(globalConstants.NEW_PURCHASE_ORDER, this);
+
+                        browseProdukForm.Show();
+                        browseProdukForm.WindowState = FormWindowState.Normal;
+                        //detailPODataGridView.Focus();
                     }
                     break;
 
@@ -121,6 +137,14 @@ namespace RoyalPetz_ADMIN
                                 calculateTotal();
                             }
                         }
+                    break;
+
+                case Keys.Up:
+                    SendKeys.Send("+{TAB}");
+                    break;
+
+                case Keys.Down:
+                    SendKeys.Send("{TAB}");
                     break;
             }
         }
@@ -182,8 +206,8 @@ namespace RoyalPetz_ADMIN
             ghk_F11 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F11, this);
             ghk_F11.Register();
 
-            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
-            ghk_DEL.Register();
+            //ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Delete, this);
+           // ghk_DEL.Register();
 
             //ghk_CTRL_DEL = new Hotkeys.GlobalHotkey(Constants.CTRL, Keys.Delete, this);
             //ghk_CTRL_DEL.Register();
@@ -201,10 +225,44 @@ namespace RoyalPetz_ADMIN
             ghk_F9.Unregister();
             ghk_F11.Unregister();
 
-            ghk_DEL.Unregister();
+           // ghk_DEL.Unregister();
 
             //ghk_CTRL_DEL.Unregister();
             ghk_CTRL_ENTER.Unregister();
+        }
+
+        private void registerNavigationKey()
+        {
+            ghk_UP = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_UP.Register();
+
+            ghk_DOWN = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Down, this);
+            ghk_DOWN.Register();
+
+            navKeyRegistered = true;
+        }
+
+        private void unregisterNavigationKey()
+        {
+            ghk_UP.Unregister();
+            ghk_DOWN.Unregister();
+
+            navKeyRegistered = false;
+        }
+
+        private void registerDelKey()
+        {
+            ghk_DEL = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.Up, this);
+            ghk_DEL.Register();
+
+            delKeyRegistered = true;
+        }
+
+        private void unregisterDelKey()
+        {
+            ghk_DEL.Unregister();
+
+            delKeyRegistered = false;
         }
 
         public void addNewRow()
@@ -1341,11 +1399,17 @@ namespace RoyalPetz_ADMIN
         private void purchaseOrderDetailForm_Activated(object sender, EventArgs e)
         {
             registerGlobalHotkey();
+
+            if (detailPODataGridView.Focused)
+                registerDelKey();
         }
 
         private void purchaseOrderDetailForm_Deactivate(object sender, EventArgs e)
         {
             unregisterGlobalHotkey();
+
+            if (delKeyRegistered)
+                unregisterDelKey();
         }
 
         private void detailPODataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -1361,6 +1425,32 @@ namespace RoyalPetz_ADMIN
                 e.Value = d.ToString(globalUtilities.CELL_FORMATTING_NUMERIC_FORMAT);
                 isLoading = false;
             }
+        }
+
+        private void detailPODataGridView_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+
+            registerDelKey();
+        }
+
+        private void detailPODataGridView_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerNavigationKey();
+
+            unregisterDelKey();
+        }
+
+        private void genericControl_Enter(object sender, EventArgs e)
+        {
+            unregisterNavigationKey();
+        }
+
+        private void genericControl_Leave(object sender, EventArgs e)
+        {
+            registerNavigationKey();
         }
     }
 }
