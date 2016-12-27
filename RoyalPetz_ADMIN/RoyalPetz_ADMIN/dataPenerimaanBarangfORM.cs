@@ -127,9 +127,9 @@ namespace RoyalPetz_ADMIN
             else
                 newButton.Visible = false;
 
-            arrButton[0] = displayButton;
-            arrButton[1] = newButton;
-            gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
+            //arrButton[0] = displayButton;
+            //arrButton[1] = newButton;
+            //gUtil.reArrangeButtonPosition(arrButton, arrButton[0].Top, this.Width);
 
             gUtil.reArrangeTabOrder(this);
         }
@@ -201,7 +201,7 @@ namespace RoyalPetz_ADMIN
             if (e.KeyCode == Keys.Enter)
             { 
                 if (dataPenerimaanBarang.Rows.Count <= 0)
-                return;
+                    return;
 
                 int rowSelectedIndex = (dataPenerimaanBarang.SelectedCells[0].RowIndex);
                 DataGridViewRow selectedRow = dataPenerimaanBarang.Rows[rowSelectedIndex];
@@ -209,7 +209,7 @@ namespace RoyalPetz_ADMIN
                 selectedPOInvoice = selectedRow.Cells["PURCHASE_INVOICE"].Value.ToString();
                 selectedPMInvoice = selectedRow.Cells["PM_INVOICE"].Value.ToString();
 
-                if (DialogResult.Yes == MessageBox.Show("PRINT RECEIPT ? ", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                if (DialogResult.Yes == MessageBox.Show("PRINT RECEIPT ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                 {
                     smallPleaseWait pleaseWait = new smallPleaseWait();
                     pleaseWait.Show();

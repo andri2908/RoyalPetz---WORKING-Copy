@@ -56,9 +56,12 @@ namespace RoyalPetz_ADMIN
         private Data_Access DS = new Data_Access();
         private globalUtilities gutil = new globalUtilities();
         private CultureInfo culture = new CultureInfo("id-ID");
+        private expiryModuleUtil expUtil = new expiryModuleUtil();
 
         barcodeForm displayBarcodeForm = null;
         dataProdukForm browseProdukForm = null;
+
+        DateTimePicker oDateTimePicker = new DateTimePicker();
 
         public dataReturPenjualanForm()
         {
@@ -91,6 +94,7 @@ namespace RoyalPetz_ADMIN
         private void captureAll(Keys key)
         {
             string searchParam = "";
+            int rowcount = 0;
             switch (key)
             {
                 case Keys.F1:
@@ -120,8 +124,10 @@ namespace RoyalPetz_ADMIN
                 case Keys.F8:
                     if (detailReturDataGridView.ReadOnly == false)
                     { 
-                        detailReturDataGridView.Focus();
-                        addNewRow();
+                        //detailReturDataGridView.Focus();
+                        rowcount = detailReturDataGridView.RowCount;
+                        detailReturDataGridView.CurrentCell = detailReturDataGridView.Rows[rowcount - 1].Cells["productID"];
+                        //addNewRow();
                     }
                     break;
 
@@ -209,8 +215,8 @@ namespace RoyalPetz_ADMIN
             ghk_F2 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F2, this);
             ghk_F2.Register();
 
-            //ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
-            //ghk_F8.Register();
+            ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
+            ghk_F8.Register();
 
             ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
             ghk_F9.Register();
@@ -235,7 +241,7 @@ namespace RoyalPetz_ADMIN
         {
             ghk_F1.Unregister();
             ghk_F2.Unregister();
-            //ghk_F8.Unregister();
+            ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
 
@@ -280,7 +286,6 @@ namespace RoyalPetz_ADMIN
 
             delKeyRegistered = false;
         }
-
 
         public void addNewRow()
         {
@@ -377,9 +382,9 @@ namespace RoyalPetz_ADMIN
 
             if (!found)
             {
-                selectedRow.Cells["qty"].Value = 1;
-                returnQty[rowSelectedIndex] = "1";
-                currQty = 1;
+                selectedRow.Cells["qty"].Value = 0;
+                returnQty[rowSelectedIndex] = "0";
+                currQty = 0;
             }
             else
             {
@@ -421,7 +426,8 @@ namespace RoyalPetz_ADMIN
             productNameColumn.HeaderText = "NAMA PRODUK";
             productNameColumn.Name = "productName";
             productNameColumn.Width = 300;
-            productNameColumn.ReadOnly = true;
+            productNameColumn.DefaultCellStyle.BackColor = Color.LightBlue;
+            //productNameColumn.ReadOnly = true;
             detailReturDataGridView.Columns.Add(productNameColumn);
 
             retailPriceColumn.HeaderText = "SALES PRICE";
@@ -469,6 +475,23 @@ namespace RoyalPetz_ADMIN
             subtotalColumn.ReadOnly = true;
             detailReturDataGridView.Columns.Add(subtotalColumn);
 
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                DataGridViewTextBoxColumn expiryDate_textBox = new DataGridViewTextBoxColumn();
+                expiryDate_textBox.Name = "expiryDate";
+                expiryDate_textBox.HeaderText = "KADALUARSA";
+                expiryDate_textBox.ReadOnly = true;
+                expiryDate_textBox.Width = 150;
+                detailReturDataGridView.Columns.Add(expiryDate_textBox);
+
+                DataGridViewTextBoxColumn expiryDateValue_textBox = new DataGridViewTextBoxColumn();
+                expiryDateValue_textBox.Name = "expiryDateValue";
+                expiryDateValue_textBox.HeaderText = "KADALUARSA";
+                expiryDateValue_textBox.ReadOnly = true;
+                expiryDateValue_textBox.Width = 150;
+                expiryDateValue_textBox.Visible = false;
+                detailReturDataGridView.Columns.Add(expiryDateValue_textBox);
+            }
         }
 
         private bool noReturExist()
@@ -559,7 +582,7 @@ namespace RoyalPetz_ADMIN
             {
                 while (rdr.Read())
                 {
-                    arrList.Add(rdr.GetString("PRODUCT_ID"));
+                    arrList.Add(rdr.GetString("PRODUCT_NAME"));
                 }
                 AutoCompleteStringCollection collection = new AutoCompleteStringCollection();
                 arr = arrList.ToArray();
@@ -576,8 +599,15 @@ namespace RoyalPetz_ADMIN
             if ((detailReturDataGridView.CurrentCell.OwningColumn.Name == "productID") && e.Control is TextBox)
             {
                 TextBox productIDTextBox = e.Control as TextBox;
-                productIDTextBox.TextChanged -= TextBox_TextChanged;
                 productIDTextBox.PreviewKeyDown += TextBox_previewKeyDown;
+                productIDTextBox.CharacterCasing = CharacterCasing.Upper;
+                productIDTextBox.AutoCompleteMode = AutoCompleteMode.None;
+            }
+
+            if ((detailReturDataGridView.CurrentCell.OwningColumn.Name == "productName") && e.Control is TextBox)
+            {
+                TextBox productIDTextBox = e.Control as TextBox;
+                productIDTextBox.PreviewKeyDown += productName_previewKeyDown;
                 productIDTextBox.CharacterCasing = CharacterCasing.Upper;
                 productIDTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 productIDTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -587,8 +617,8 @@ namespace RoyalPetz_ADMIN
             if (detailReturDataGridView.CurrentCell.OwningColumn.Name == "qty" && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
-                textBox.TextChanged += TextBox_TextChanged;
-                textBox.PreviewKeyDown -= TextBox_previewKeyDown;
+           //     textBox.TextChanged += TextBox_TextChanged;
+           //     textBox.PreviewKeyDown -= TextBox_previewKeyDown;
                 textBox.AutoCompleteMode = AutoCompleteMode.None;
             }
         }
@@ -619,7 +649,7 @@ namespace RoyalPetz_ADMIN
             isLoading = false;
         }
 
-        private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue)
+        private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue, bool isProductID = true)
         {
             int numRow = 0;
             string selectedProductID = "";
@@ -634,19 +664,31 @@ namespace RoyalPetz_ADMIN
             double disc2 = 0;
             double discRP = 0;
 
-            numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+            //numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+
+            if (isProductID)
+                numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+            else
+                numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_NAME = '" + currentValue + "'"));
 
             if (numRow > 0)
             {
-                selectedProductID = currentValue;
+                if (isProductID)
+                {
+                    selectedProductID = currentValue;
+                    selectedProductName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME,'') FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'").ToString();
+                }
+                else
+                {
+                    selectedProductName = currentValue;
+                    selectedProductID = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_ID,'') FROM MASTER_PRODUCT WHERE PRODUCT_NAME = '" + currentValue + "'").ToString();
+                }
 
                 if (null != selectedRow.Cells["productID"].Value)
                     currentProductID = selectedRow.Cells["productID"].Value.ToString();
 
                 if (null != selectedRow.Cells["productName"].Value)
                     currentProductName = selectedRow.Cells["productName"].Value.ToString();
-
-                selectedProductName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME,'') FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'").ToString();
 
                 selectedRow.Cells["productId"].Value = selectedProductID;
                 selectedRow.Cells["productName"].Value = selectedProductName;
@@ -714,6 +756,33 @@ namespace RoyalPetz_ADMIN
                 if (currentValue.Length > 0)
                 {
                     updateSomeRowContents(selectedRow, rowSelectedIndex, currentValue);
+                    detailReturDataGridView.CurrentCell = selectedRow.Cells["qty"];
+                }
+                else
+                {
+                    clearUpSomeRowContents(selectedRow, rowSelectedIndex);
+                }
+            }
+        }
+
+        private void productName_previewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            string currentValue = "";
+            int rowSelectedIndex = 0;
+            DataGridViewTextBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
+
+            if (detailReturDataGridView.CurrentCell.OwningColumn.Name != "productName")
+                return;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                currentValue = dataGridViewComboBoxEditingControl.Text;
+                rowSelectedIndex = detailReturDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailReturDataGridView.Rows[rowSelectedIndex];
+
+                if (currentValue.Length > 0)
+                {
+                    updateSomeRowContents(selectedRow, rowSelectedIndex, currentValue, false);
                     detailReturDataGridView.CurrentCell = selectedRow.Cells["qty"];
                 }
                 else
@@ -947,24 +1016,56 @@ namespace RoyalPetz_ADMIN
 
         private bool dataValidated()
         {
-            bool dataExist = true;
+            //bool dataExist = true;
             int i = 0;
             if (noReturTextBox.Text.Length <= 0)
             {
                 errorLabel.Text = "NO RETUR TIDAK BOLEH KOSONG";
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "dataValidated [NO RETUR TIDAK BOLEH KOSONG]");
                 return false;   
             }
 
             if (globalTotalValue <= 0)
             {
                 errorLabel.Text = "NILAI RETUR 0";
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "dataValidated [NILAI RETUR 0]");
                 return false;   
             }
 
             if (detailReturDataGridView.Rows.Count <= 0)
             {
                 errorLabel.Text = "TIDAK ADA BARANG YANG DIRETUR";
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "dataValidated [TIDAK ADA BARANG YANG DIRETUR]");
                 return false;
+            }
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                bool dataValid = true;
+                DateTime checkDate;
+                string productID = "";
+                // CHECK VALIDITY OF EXPIRED DATE 
+                for (i = 0; i < detailReturDataGridView.Rows.Count && dataValid; i++)
+                {
+                    if (null != detailReturDataGridView.Rows[i].Cells["expiryDateValue"].Value)
+                        dataValid = true;
+                    else
+                        dataValid = false;
+
+                    if (dataValid)
+                    {
+                        productID = detailReturDataGridView.Rows[i].Cells["expiryDateValue"].Value.ToString();
+                        checkDate = Convert.ToDateTime(detailReturDataGridView.Rows[i].Cells["expiryDateValue"].Value);
+                        if (!expUtil.isExpiryDateExist(checkDate, productID))
+                            dataValid = false;
+                    }
+                }
+
+                if (!dataValid)
+                {
+                    errorLabel.Text = "TANGGAL KADALUARSA PADA BARIS [" + i + "] INVALID";
+                    return false;
+                }
             }
 
             //for (i = 0; i < detailReturDataGridView.Rows.Count && dataExist; i++)
@@ -1037,7 +1138,7 @@ namespace RoyalPetz_ADMIN
                     sqlCommand = "INSERT INTO RETURN_SALES_HEADER (RS_INVOICE, SALES_INVOICE, CUSTOMER_ID, RS_DATETIME, RS_TOTAL) VALUES " +
                                     "('" + returID + "', '" + selectedSalesInvoice + "', " + selectedCustomerID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), " + gutil.validateDecimalNumericInput(returTotal) + ")";
 
-                gutil.saveSystemDebugLog(originModuleID, "INSERT INTO RETURN SALES HEADER [" + returID + "]");
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "INSERT INTO RETURN SALES HEADER [" + returID + "]");
 
                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                     throw internalEX;
@@ -1066,75 +1167,90 @@ namespace RoyalPetz_ADMIN
                     sqlCommand = "INSERT INTO RETURN_SALES_DETAIL (RS_INVOICE, PRODUCT_ID, PRODUCT_SALES_PRICE, PRODUCT_SALES_QTY, PRODUCT_RETURN_QTY, RS_DESCRIPTION, RS_SUBTOTAL) VALUES " +
                                         "('" + returID + "', '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "', " + hppValue + ", " + soQty + ", " + qtyValue + ", '" + descriptionValue + "', " + gutil.validateDecimalNumericInput(Convert.ToDouble(subtotalList[i])) + ")";
 
-                    gutil.saveSystemDebugLog(originModuleID, "INSERT INTO RETURN SALES DETAIL [" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + ", " + hppValue + ", " + soQty + ", " + qtyValue + "]");
+                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "INSERT INTO RETURN SALES DETAIL [" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + ", " + hppValue + ", " + soQty + ", " + qtyValue + "]");
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
 
                     // UPDATE MASTER PRODUCT
                     sqlCommand = "UPDATE MASTER_PRODUCT SET PRODUCT_STOCK_QTY = PRODUCT_STOCK_QTY + " + qtyValue + " WHERE PRODUCT_ID = '" + detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "'";
 
-                    gutil.saveSystemDebugLog(originModuleID, "UPDATE MASTER PRODUCT QTY ["+ detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "]");
+                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE MASTER PRODUCT QTY ["+ detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString() + "]");
                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                         throw internalEX;
+
+                    if (globalFeatureList.EXPIRY_MODULE == 1)
+                    {
+                        // UPDATE PRODUCT EXPIRY TABLE
+                        DateTime expiryDate;
+                        int lotID = 0;
+                        string productID = detailReturDataGridView.Rows[i].Cells["productID"].Value.ToString();
+                        expiryDate = Convert.ToDateTime(detailReturDataGridView.Rows[i].Cells["expiryDateValue"].Value);
+                        lotID = expUtil.getLotIDBasedOnExpiryDate(expiryDate, productID);
+                        sqlCommand = "UPDATE PRODUCT_EXPIRY SET PRODUCT_AMOUNT = PRODUCT_AMOUNT + " + qtyValue + " WHERE ID = " + lotID;
+
+                        gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE PRODUCT EXPIRY QTY [" + detailReturDataGridView.Rows[i].Cells["expiryDateValue"].Value.ToString() + "]");
+                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                            throw internalEX;
+                    }
                 }
 
                 extraAmount = 0;
                 // IF THERE'S ANY CREDIT LEFT FOR THAT PARTICULAR INVOICE
-                gutil.saveSystemDebugLog(originModuleID, "CHECK FOR ANY OUTSTANDING AMOUNT FOR THE INVOICE");
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "CHECK FOR ANY OUTSTANDING AMOUNT FOR THE INVOICE");
                 if (originModuleID == globalConstants.RETUR_PENJUALAN)
                 {
                     totalCredit = getTotalCredit();
                     selectedCreditID = getCreditID();
 
-                    gutil.saveSystemDebugLog(originModuleID, "selectedCreditID [" + selectedCreditID + "]");
+                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "selectedCreditID [" + selectedCreditID + "]");
                     if (selectedCreditID > 0)
                     {
                         if (totalCredit >= globalTotalValue)
                         {
                             // RETUR VALUE LESS THAN OR EQUAL TOTAL CREDIT
                             // add retur as cash payment with description retur no
-                            gutil.saveSystemDebugLog(originModuleID, "RETUR VALUE LESS THAN OR EQUAL TOTAL CREDIT");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "RETUR VALUE LESS THAN OR EQUAL TOTAL CREDIT");
                             sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE, PAYMENT_CONFIRMED_DATE) VALUES " +
                                                 "(" + selectedCreditID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), 1, " + gutil.validateDecimalNumericInput(globalTotalValue) + ", 'RETUR [" + returID + "]', 1, STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'))";
 
-                            gutil.saveSystemDebugLog(originModuleID, "INSERT INTO PAYMENT CREDIT [" + selectedCreditID + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "INSERT INTO PAYMENT CREDIT [" + selectedCreditID + ", " + gutil.validateDecimalNumericInput(globalTotalValue) + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         }
                         else
                         {
                             // RETUR VALUE BIGGER THAN TOTAL CREDIT
-                            gutil.saveSystemDebugLog(originModuleID, "RETUR VALUE BIGGER THAN TOTAL CREDIT");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "RETUR VALUE BIGGER THAN TOTAL CREDIT");
                             // return the extra amount as cash
                             extraAmount = globalTotalValue - totalCredit;
-                            gutil.saveSystemDebugLog(originModuleID, "extraAmount [" + extraAmount + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "extraAmount [" + extraAmount + "]");
                             sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE, PAYMENT_CONFIRMED_DATE) VALUES " +
                                                 "(" + selectedCreditID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), 1, " + gutil.validateDecimalNumericInput(totalCredit) + ", 'RETUR [" + noReturTextBox.Text + "]', 1, STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'))";
 
-                            gutil.saveSystemDebugLog(originModuleID, "INSERT INTO PAYMENT CREDIT [" + selectedCreditID + ", " + gutil.validateDecimalNumericInput(totalCredit) + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "INSERT INTO PAYMENT CREDIT [" + selectedCreditID + ", " + gutil.validateDecimalNumericInput(totalCredit) + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         }
 
                         if (totalCredit <= globalTotalValue)
                         {
-                            gutil.saveSystemDebugLog(originModuleID, "RETUR VALUE BIGGER THAN TOTAL CREDIT VALUE, MEANS FULLY PAID");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "RETUR VALUE BIGGER THAN TOTAL CREDIT VALUE, MEANS FULLY PAID");
                             
                             // UPDATE SALES HEADER TABLE
                             sqlCommand = "UPDATE SALES_HEADER SET SALES_PAID = 1 WHERE SALES_INVOICE = '" + selectedSalesInvoice + "'";
-                            gutil.saveSystemDebugLog(originModuleID, "UPDATE SALES HEADER [" + selectedSalesInvoice + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE SALES HEADER [" + selectedSalesInvoice + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
 
                             // UPDATE SALES HEADER TAX TABLE
                             sqlCommand = "UPDATE SALES_HEADER_TAX SET SALES_PAID = 1 WHERE ORIGIN_SALES_INVOICE = '" + selectedSalesInvoice + "'";
-                            gutil.saveSystemDebugLog(originModuleID, "UPDATE SALES HEADER TAX [" + selectedSalesInvoice + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE SALES HEADER TAX [" + selectedSalesInvoice + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
 
                             // UPDATE CREDIT TABLE
                             sqlCommand = "UPDATE CREDIT SET CREDIT_PAID = 1 WHERE CREDIT_ID = " + selectedCreditID;
-                            gutil.saveSystemDebugLog(originModuleID, "UPDATE CREDIT [" + selectedCreditID + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE CREDIT [" + selectedCreditID + "]");
                             if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                 throw internalEX;
                         }
@@ -1144,7 +1260,7 @@ namespace RoyalPetz_ADMIN
                 }
                 else if (originModuleID == globalConstants.RETUR_PENJUALAN_STOCK_ADJUSTMENT)
                 {
-                    gutil.saveSystemDebugLog(originModuleID, "GET LIST OF OUTSTANDING CREDIT AND PAY FROM THE OLDEST CREDIT");
+                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "GET LIST OF OUTSTANDING CREDIT AND PAY FROM THE OLDEST CREDIT");
                     if (returnCash)
                         extraAmount = globalTotalValue;
                     else
@@ -1163,7 +1279,7 @@ namespace RoyalPetz_ADMIN
 
                         if (dt.Rows.Count > 0)
                         {
-                            gutil.saveSystemDebugLog(originModuleID, "AMOUNT OF RETUR ["+ returNominal + "] NUM OF OUTSTANDING CREDIT [" + dt.Rows.Count + "]");
+                            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "AMOUNT OF RETUR ["+ returNominal + "] NUM OF OUTSTANDING CREDIT [" + dt.Rows.Count + "]");
                             rowCounter = 0;
                             while (returNominal > 0 && rowCounter < dt.Rows.Count)
                             {
@@ -1173,24 +1289,24 @@ namespace RoyalPetz_ADMIN
                                 currentCreditID = Convert.ToInt32(dt.Rows[rowCounter]["CREDIT_ID"].ToString());
                                 outstandingCreditAmount = Convert.ToDouble(dt.Rows[rowCounter]["SISA PIUTANG"].ToString());
 
-                                gutil.saveSystemDebugLog(originModuleID, "currentCreditID [" + currentCreditID + "] outstandingCreditAmount [" + outstandingCreditAmount + "]");
+                                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "currentCreditID [" + currentCreditID + "] outstandingCreditAmount [" + outstandingCreditAmount + "]");
 
                                 if (outstandingCreditAmount <= returNominal && outstandingCreditAmount > 0)
                                 {
-                                    gutil.saveSystemDebugLog(originModuleID, "currentCreditID [" + currentCreditID + "] FULLY PAID");
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "currentCreditID [" + currentCreditID + "] FULLY PAID");
                                     actualReturAmount = outstandingCreditAmount;
                                     fullyPaid = true;
                                 }
                                 else
                                 {
                                     actualReturAmount = returNominal;
-                                    gutil.saveSystemDebugLog(originModuleID, "currentCreditID [" + currentCreditID + "] NOT FULLY PAID [" + actualReturAmount + "]");
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "currentCreditID [" + currentCreditID + "] NOT FULLY PAID [" + actualReturAmount + "]");
                                 }
 
                                 sqlCommand = "INSERT INTO PAYMENT_CREDIT (CREDIT_ID, PAYMENT_DATE, PM_ID, PAYMENT_NOMINAL, PAYMENT_DESCRIPTION, PAYMENT_CONFIRMED, PAYMENT_DUE_DATE, PAYMENT_CONFIRMED_DATE) VALUES " +
                                                     "(" + currentCreditID + ", STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), 1, " + gutil.validateDecimalNumericInput(actualReturAmount) + ", 'RETUR [" + returID + "]', 1, STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'), STR_TO_DATE('" + ReturDateTime + "', '%d-%m-%Y'))";
 
-                                gutil.saveSystemDebugLog(originModuleID, "INSERT TO PAYMENT CREDIT [" + currentCreditID + ", " + gutil.validateDecimalNumericInput(actualReturAmount) + "]");
+                                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "INSERT TO PAYMENT CREDIT [" + currentCreditID + ", " + gutil.validateDecimalNumericInput(actualReturAmount) + "]");
                                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                     throw internalEX;
 
@@ -1198,28 +1314,28 @@ namespace RoyalPetz_ADMIN
                                 {
                                     // UPDATE CREDIT TABLE
                                     sqlCommand = "UPDATE CREDIT SET CREDIT_PAID = 1 WHERE CREDIT_ID = " + currentCreditID;
-                                    gutil.saveSystemDebugLog(originModuleID, "UPDATE CREDIT [" + currentCreditID + "] TO FULLY PAID");
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE CREDIT [" + currentCreditID + "] TO FULLY PAID");
                                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                         throw internalEX;
 
                                     // UPDATE SALES HEADER TABLE
                                     sqlCommand = "UPDATE SALES_HEADER SET SALES_PAID = 1 WHERE SALES_INVOICE = " + currentSalesInvoice;
-                                    gutil.saveSystemDebugLog(originModuleID, "UPDATE SALES_HEADER [" + currentSalesInvoice + "] TO FULLY PAID");
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE SALES_HEADER [" + currentSalesInvoice + "] TO FULLY PAID");
                                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                         throw internalEX;
 
                                     // UPDATE SALES HEADER TAX TABLE
                                     sqlCommand = "UPDATE SALES_HEADER_TAX SET SALES_PAID = 1 WHERE ORIGIN_SALES_INVOICE = " + currentSalesInvoice;
-                                    gutil.saveSystemDebugLog(originModuleID, "UPDATE SALES_HEADER_TAX [" + currentSalesInvoice + "] TO FULLY PAID");
+                                    gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "UPDATE SALES_HEADER_TAX [" + currentSalesInvoice + "] TO FULLY PAID");
                                     if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                         throw internalEX;
 
                                 }
 
                                 returNominal = returNominal - actualReturAmount;
-                                gutil.saveSystemDebugLog(originModuleID, "returNominal [" + returNominal + "]");
+                                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "returNominal [" + returNominal + "]");
                                 rowCounter += 1;
-                                gutil.saveSystemDebugLog(originModuleID, "rowCounter [" + rowCounter + "]");
+                                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "rowCounter [" + rowCounter + "]");
                             }
                         }
                     }
@@ -1230,7 +1346,7 @@ namespace RoyalPetz_ADMIN
             }
             catch (Exception e)
             {
-                gutil.saveSystemDebugLog(originModuleID, "EXCEPTION THROWN [" + e.Message + "]");
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "EXCEPTION THROWN [" + e.Message + "]");
                 try
                 {
                     DS.rollBack();
@@ -1362,22 +1478,21 @@ namespace RoyalPetz_ADMIN
             string nm, almt, tlpn, email;
             //event printing
 
-            int startY = 5;
-            int Offset = 15;
+            int startY = 0;
+            int Offset = 5;
             int offset_plus = 3;
+            Font font = new Font("Courier New", 9);
+            int rowheight = (int)Math.Ceiling(font.GetHeight());
+            int add_offset = rowheight;
+            int totalLengthPage = startY + Offset;
             string sqlCommand = "";
-            int totalLengthPage = startY + Offset; ;
 
             String ucapan = "";
 
             //event printing
 
             gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "printDocument1_PrintPage, print POS size receipt");
-
-            int startX = 5;
-            int colxwidth = 93; //31x3
-            int totrowwidth = 310; //310/10=31
-            int totrowheight = 20;
+                   
             string customer = "";
             string tgl = "";
             string group = "";
@@ -1390,9 +1505,9 @@ namespace RoyalPetz_ADMIN
 
             loadInfoToko(2, out nm, out almt, out tlpn, out email);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
 
-            Offset = Offset + 10;
+            Offset = Offset + add_offset;
 
             if (!email.Equals(""))
             {
@@ -1472,18 +1587,41 @@ namespace RoyalPetz_ADMIN
 
         private void printReceipt()
         {
-            int paperLength;
+            string sqlCommandx;
+            int papermode = gutil.getPaper();
 
-            paperLength = calculatePageLength();
-            PaperSize psize = new PaperSize("Custom", 320, paperLength);//820);
-            printDocument1.DefaultPageSettings.PaperSize = psize;
-            DialogResult result;
-            printPreviewDialog1.Width = 512;
-            printPreviewDialog1.Height = 768;
-            result = printPreviewDialog1.ShowDialog();
-            if (result == DialogResult.OK)
+            if (papermode == 0) //kertas POS
             {
-                printDocument1.Print();
+                int paperLength;
+
+                paperLength = calculatePageLength();
+                PaperSize psize = new PaperSize("Custom", 320, paperLength);//820);
+                printDocument1.DefaultPageSettings.PaperSize = psize;
+                DialogResult result;
+                printPreviewDialog1.Width = 512;
+                printPreviewDialog1.Height = 768;
+                result = printPreviewDialog1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    printDocument1.Print();
+                }
+            }
+            else
+            {
+                //sqlCommandx = "SELECT SH.SALES_INVOICE, SH.SALES_TOTAL, SH.SALES_DISCOUNT_FINAL, SH.SALES_TOP, SH.SALES_TOP_DATE, PC.PAYMENT_DATE, PC.PAYMENT_CONFIRMED, PC.PAYMENT_CONFIRMED_DATE, PC.PAYMENT_NOMINAL, IF(PC.PAYMENT_CONFIRMED = 1, PC.PAYMENT_NOMINAL, 0) AS ACTUAL_PAYMENT " +
+                //                                  "FROM SALES_HEADER SH, CREDIT C, PAYMENT_CREDIT PC " +
+                //                                  "WHERE C.SALES_INVOICE = SH.SALES_INVOICE AND PC.CREDIT_ID = C.CREDIT_ID AND SH.SALES_INVOICE = '" + invoiceNoTextBox.Text + "'";
+
+                sqlCommandx = "SELECT RH.SALES_INVOICE, MP.PRODUCT_NAME, RD.PRODUCT_SALES_PRICE, RD.PRODUCT_RETURN_QTY, RD.RS_DESCRIPTION, RD.RS_SUBTOTAL " +
+                                     "FROM MASTER_PRODUCT MP, RETURN_SALES_DETAIL RD, RETURN_SALES_HEADER RH, " +
+                                     "(SELECT MAX(RS_INVOICE) AS INVOICE " +
+                                     "FROM RETURN_SALES_HEADER " +
+                                     "GROUP BY SALES_INVOICE) TAB1 " +
+                                     "WHERE RD.PRODUCT_ID = MP.PRODUCT_ID AND RH.RS_INVOICE = TAB1.INVOICE AND RD.RS_INVOICE = RH.RS_INVOICE AND RH.SALES_INVOICE = '" + invoiceInfoTextBox.Text + "'";
+
+                DS.writeXML(sqlCommandx, globalConstants.returPenjualanXML);
+                dataReturPenjualanPrintOutForm displayForm = new dataReturPenjualanPrintOutForm();
+                displayForm.ShowDialog(this);
             }
         }
 
@@ -1534,6 +1672,11 @@ namespace RoyalPetz_ADMIN
                 noReturTextBox.Enabled = false;
                 rsDateTimePicker.Enabled = false;
             }
+            else
+            {
+                MessageBox.Show("FAIL TO SAVE");
+                gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "FAILED TO SAVE");
+            }
         }
         
         private void dataReturPenjualanForm_Load(object sender, EventArgs e)
@@ -1560,27 +1703,36 @@ namespace RoyalPetz_ADMIN
             returnQty.Add("0");
             productPriceList.Add("0");
             subtotalList.Add("0");
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+                oDateTimePicker.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         }
 
         private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
             String ucapan = "";
             string nm, almt, tlpn, email;
+            
 
             //event printing
 
             gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "printDocument1_PrintPage, print POS size receipt");
 
             Graphics graphics = e.Graphics;
-            Font font = new Font("Courier New", 10);
-            float fontHeight = font.GetHeight();
             int startX = 5;
             int colxwidth = 93; //31x3
             int totrowwidth = 310; //310/10=31
-            int totrowheight = 20;
-            int startY = 5;
-            int Offset = 15;
+
+            int startY = 0;
+            int Offset = 5;
             int offset_plus = 3;
+
+            Font font = new Font("Courier New", 9);
+            float fontHeight = font.GetHeight();
+            int rowheight = (int)Math.Ceiling(font.GetHeight());
+            int add_offset = rowheight;
+            int totalLengthPage = startY + Offset;
+
             string sqlCommand = "";
             string customer = "";
             string tgl = "";
@@ -1596,24 +1748,24 @@ namespace RoyalPetz_ADMIN
             sf.Alignment = StringAlignment.Center;
 
             //set whole printing area
-            System.Drawing.RectangleF rect = new System.Drawing.RectangleF(startX, startY + Offset, totrowwidth, totrowheight);
+            System.Drawing.RectangleF rect = new System.Drawing.RectangleF(startX, startY + Offset, totrowwidth, rowheight);
             //set right print area
-            System.Drawing.RectangleF rectright = new System.Drawing.RectangleF(totrowwidth - colxwidth - startX, startY + Offset, colxwidth, totrowheight);
+            System.Drawing.RectangleF rectright = new System.Drawing.RectangleF(totrowwidth - colxwidth - startX, startY + Offset, colxwidth, rowheight);
             //set middle print area
-            System.Drawing.RectangleF rectcenter = new System.Drawing.RectangleF((startX + (totrowwidth / 2) - colxwidth - startX), startY + Offset, (totrowwidth / 2) - startX, totrowheight);
+            System.Drawing.RectangleF rectcenter = new System.Drawing.RectangleF((startX + (totrowwidth / 2) - colxwidth - startX), startY + Offset, (totrowwidth / 2) - startX, rowheight);
 
             loadInfoToko(2, out nm, out almt, out tlpn, out email);
 
             graphics.DrawString(nm, new Font("Courier New", 9),
                                 new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             graphics.DrawString(almt,
                      new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 10;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             graphics.DrawString(tlpn,
                      new Font("Courier New", 7),
@@ -1621,14 +1773,14 @@ namespace RoyalPetz_ADMIN
 
             if (!email.Equals(""))
             {
-                Offset = Offset + 10;
+                Offset = Offset + add_offset;
                 rect.Y = startY + Offset;
                 graphics.DrawString(email,
                          new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
             }
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             String underLine = "-------------------------------------";  //37 character
             graphics.DrawString(underLine, new Font("Courier New", 9),
@@ -1641,7 +1793,7 @@ namespace RoyalPetz_ADMIN
 
             DS.mySqlConnect();
             //load customer id
-            sqlCommand = "SELECT RS.RS_INVOICE, RS.SALES_INVOICE AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER',DATE_FORMAT(RS.RS_DATETIME, '%d-%M-%Y') AS 'DATE',RS.RS_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM RETURN_SALES_HEADER RS,MASTER_CUSTOMER C WHERE RS.CUSTOMER_ID = C.CUSTOMER_ID AND RS.RS_INVOICE = '" + returID + "'" +
+            sqlCommand = "SELECT RS.RS_INVOICE, IFNULL(RS.SALES_INVOICE, '') AS 'INVOICE', C.CUSTOMER_FULL_NAME AS 'CUSTOMER', DATE_FORMAT(RS.RS_DATETIME, '%d-%M-%Y') AS 'DATE', RS.RS_TOTAL AS 'TOTAL', IF(C.CUSTOMER_GROUP=1,'RETAIL',IF(C.CUSTOMER_GROUP=2,'GROSIR','PARTAI')) AS 'GROUP' FROM RETURN_SALES_HEADER RS,MASTER_CUSTOMER C WHERE RS.CUSTOMER_ID = C.CUSTOMER_ID AND RS.RS_INVOICE = '" + returID + "'" +
                 " UNION " +
                 "SELECT RS.RS_INVOICE, RS.SALES_INVOICE AS 'INVOICE', 'P-UMUM' AS 'CUSTOMER', DATE_FORMAT(RS.RS_DATETIME, '%d-%M-%Y') AS 'DATE', RS.RS_TOTAL AS 'TOTAL', 'RETAIL' AS 'GROUP' FROM RETURN_SALES_HEADER RS WHERE RS.CUSTOMER_ID = 0 AND RS.RS_INVOICE = '" + returID+ "'" +
                 "ORDER BY DATE ASC";
@@ -1659,9 +1811,9 @@ namespace RoyalPetz_ADMIN
             }
             DS.mySqlClose();
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            Offset = Offset + add_offset;
             rect.Width = 280;
             //SET TO LEFT MARGIN
             sf.LineAlignment = StringAlignment.Near;
@@ -1671,13 +1823,13 @@ namespace RoyalPetz_ADMIN
                      new SolidBrush(Color.Black), rect, sf);
 
             //2. CUSTOMER NAME
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "PELANGGAN : " + customer + " [" + group + "]";
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -1686,14 +1838,14 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.Width = totrowwidth;
             ucapan = "BUKTI RETUR     ";
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15 + offset_plus;
+            Offset = Offset + add_offset + offset_plus;
             rect.Y = startY + Offset;
             rect.X = startX + 15;
             rect.Width = 280;
@@ -1703,9 +1855,9 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15 + offset_plus;
+            Offset = Offset + add_offset + offset_plus;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + add_offset;
             rect.Width = 280;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
@@ -1713,19 +1865,19 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TOTAL    : " + total.ToString("C2", culture);
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TANGGAL  : " + tgl;
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 12;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             string nama = "";
             loadNamaUser(gutil.getUserID(), out nama);
@@ -1733,7 +1885,7 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -1769,7 +1921,7 @@ namespace RoyalPetz_ADMIN
                         product_qty = rdr.GetDouble("PRODUCT_RETURN_QTY");
                         product_price = rdr.GetDouble("PRODUCT_SALES_PRICE");
                         product_desc = rdr.GetString("RS_DESCRIPTION");
-                        Offset = Offset + 15;
+                        Offset = Offset + add_offset;
                         rect.Y = startY + Offset;
                         rect.X = startX + 15;
                         rect.Width = 280;
@@ -1793,9 +1945,9 @@ namespace RoyalPetz_ADMIN
 
                         if (product_desc.Length>0)
                         {
-                            Offset = Offset + 15;
+                            Offset = Offset + add_offset;
                             rect.Y = startY + Offset;
-                            rect.X = startX + 15;
+                            rect.X = startX + add_offset;
                             rect.Width = 280;
                             sf.LineAlignment = StringAlignment.Near;
                             sf.Alignment = StringAlignment.Near;
@@ -1813,7 +1965,7 @@ namespace RoyalPetz_ADMIN
             }
 
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -1822,9 +1974,9 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + add_offset;
             rect.Width = 260;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
@@ -1841,9 +1993,9 @@ namespace RoyalPetz_ADMIN
 
             total_qty = Convert.ToDouble(DS.getDataSingleValue("SELECT IFNULL(SUM(PRODUCT_RETURN_QTY), 0) FROM RETURN_SALES_DETAIL RD, MASTER_PRODUCT MP WHERE RD.PRODUCT_ID = MP.PRODUCT_ID AND RD.RS_INVOICE = '" + returID+ "'"));
 
-            Offset = Offset + 25 + offset_plus;
+            Offset = Offset + add_offset + offset_plus;
             rect.Y = startY + Offset;
-            rect.X = startX + 15;
+            rect.X = startX + add_offset;
             rect.Width = 280;
             sf.LineAlignment = StringAlignment.Near;
             sf.Alignment = StringAlignment.Near;
@@ -1854,7 +2006,7 @@ namespace RoyalPetz_ADMIN
 
             //FOOTER
 
-            Offset = Offset + 13;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             rect.X = startX;
             rect.Width = totrowwidth;
@@ -1863,19 +2015,19 @@ namespace RoyalPetz_ADMIN
             graphics.DrawString(underLine, new Font("Courier New", 9),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TERIMA KASIH ATAS KUNJUNGAN ANDA";
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "MAAF BARANG YANG SUDAH DIBELI";
             graphics.DrawString(ucapan, new Font("Courier New", 7),
                      new SolidBrush(Color.Black), rect, sf);
 
-            Offset = Offset + 15;
+            Offset = Offset + add_offset;
             rect.Y = startY + Offset;
             ucapan = "TIDAK DAPAT DITUKAR/ DIKEMBALIKKAN";
             graphics.DrawString(ucapan, new Font("Courier New", 7),
@@ -1961,6 +2113,242 @@ namespace RoyalPetz_ADMIN
         private void rsDateTimePicker_Leave(object sender, EventArgs e)
         {
             registerNavigationKey();
+        }
+
+        private void detailReturDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailReturDataGridView[e.ColumnIndex, e.RowIndex];
+            int rowSelectedIndex = 0;
+
+            double subTotal = 0;
+            double productPrice = 0;
+            double soQTY = 0;
+            bool validQty = false;
+            string tempString;
+            double tempVal = 0;
+            string cellValue = "";
+            string columnName = "";
+
+            columnName = cell.OwningColumn.Name;
+            gutil.saveSystemDebugLog(globalConstants.MENU_RETUR_PENJUALAN, "RETUR PENJUALAN : detailReturDataGridView_CellValueChanged [" + columnName + "]");
+
+            rowSelectedIndex = e.RowIndex;
+            DataGridViewRow selectedRow = detailReturDataGridView.Rows[rowSelectedIndex];
+
+            if (null != selectedRow.Cells[columnName].Value)
+                cellValue = selectedRow.Cells[columnName].Value.ToString();
+            else
+                cellValue = "";
+
+            if (cell.OwningColumn.Name == "productName")
+            {
+                if (cellValue.Length > 0)
+                {
+                    updateSomeRowContents(selectedRow, rowSelectedIndex, cellValue, false);
+                    //int pos = cashierDataGridView.CurrentCell.RowIndex;
+
+                    //if (pos > 0)
+                    //    cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+
+                    //forceUpOneLevel = true;
+                }
+            }
+            else if (columnName == "qty")
+            {
+                if (cellValue.Length <= 0)
+                {
+                    // IF TEXTBOX IS EMPTY, DEFAULT THE VALUE TO 0 AND EXIT THE CHECKING
+                    isLoading = true;
+                    // reset subTotal Value and recalculate total
+                    selectedRow.Cells["subtotal"].Value = 0;
+                    subtotalList[rowSelectedIndex] = "0";
+
+                    if (returnQty.Count > rowSelectedIndex)
+                        returnQty[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells[columnName].Value = "0";
+
+                    calculateTotal();
+
+                    return;
+                }
+
+                if (returnQty.Count > rowSelectedIndex)
+                    previousInput = returnQty[rowSelectedIndex];
+                else
+                    previousInput = "0";
+
+                if (previousInput == "0")
+                {
+                    tempString = cellValue;
+                    if (tempString.IndexOf('0') == 0 && tempString.Length > 1 && tempString.IndexOf("0.") < 0)
+                        selectedRow.Cells[columnName].Value = tempString.Remove(tempString.IndexOf('0'), 1);
+                }
+
+                if (originModuleID == globalConstants.RETUR_PENJUALAN)
+                {
+                    if (null != selectedRow.Cells["SOqty"].Value)
+                        soQTY = Convert.ToDouble(selectedRow.Cells["SOqty"].Value);
+
+                    if (Double.TryParse(cellValue, out tempVal))
+                    {
+                        if (soQTY >= Convert.ToDouble(cellValue))
+                            validQty = true;
+                        else
+                            validQty = false;
+                    }
+                    else
+                    {
+                        validQty = false;
+                    }
+                }
+                else
+                    validQty = true;
+
+                if (gutil.matchRegEx(cellValue, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
+                    && (cellValue.Length > 0) && validQty
+                    )
+                {
+                    if (returnQty.Count > rowSelectedIndex)
+                        returnQty[rowSelectedIndex] = cellValue;
+                    else
+                        returnQty.Add(cellValue);
+                }
+                else
+                {
+                    selectedRow.Cells[columnName].Value = previousInput;
+                }
+
+                productPrice = Convert.ToDouble(productPriceList[rowSelectedIndex]);
+
+                subTotal = Math.Round((productPrice * Convert.ToDouble(returnQty[rowSelectedIndex])), 2);
+
+                if (originModuleID == globalConstants.RETUR_PENJUALAN)
+                {
+                    if (null != selectedRow.Cells["disc1"].Value)
+                    {
+                        subTotal = subTotal - Math.Round((subTotal * Convert.ToDouble(selectedRow.Cells["disc1"].Value) / 100), 2);
+                    }
+
+                    if (null != selectedRow.Cells["disc2"].Value)
+                    {
+                        subTotal = subTotal - Math.Round((subTotal * Convert.ToDouble(selectedRow.Cells["disc2"].Value) / 100), 2);
+                    }
+
+                    if (null != selectedRow.Cells["discRP"].Value)
+                    {
+                        subTotal = subTotal - Convert.ToDouble(selectedRow.Cells["discRP"].Value);
+                    }
+                }
+
+                selectedRow.Cells["subtotal"].Value = subTotal;
+                subtotalList[rowSelectedIndex] = subTotal.ToString();
+
+                calculateTotal();
+            }
+        }
+
+        private void detailReturDataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            detailReturDataGridView.SuspendLayout();
+
+            if (navKeyRegistered)
+            {
+                unregisterNavigationKey();
+            }
+
+            if (!delKeyRegistered)
+                registerDelKey();
+
+        }
+
+        private void detailReturDataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            detailReturDataGridView.ResumeLayout();
+        }
+
+        private void detailReturDataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (detailReturDataGridView.IsCurrentCellDirty)
+            {
+                detailReturDataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void ChangePrinterButton_Click(object sender, EventArgs e)
+        {
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "RETUR PENJUALAN FORM : ChangePrinterButton_Click, DISPLAY PRINTER SELECTION FORM");
+            SetPrinterForm displayedForm = new SetPrinterForm();
+            displayedForm.ShowDialog(this);
+        }
+
+        private void addDateTimePickerToDataGrid(int columnIndex, int rowIndex)
+        {
+            detailReturDataGridView.Controls.Add(oDateTimePicker);
+            oDateTimePicker.Visible = false;
+            oDateTimePicker.Format = DateTimePickerFormat.Custom;
+            oDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
+            oDateTimePicker.TextChanged += new EventHandler(oDateTimePicker_OnTextChanged);
+            if (null != detailReturDataGridView.Rows[rowIndex].Cells["expiryDateValue"].Value)
+                oDateTimePicker.Value = Convert.ToDateTime(detailReturDataGridView.Rows[rowIndex].Cells["expiryDateValue"].Value);
+
+            oDateTimePicker.Visible = true;
+
+            Rectangle oRectangle = detailReturDataGridView.GetCellDisplayRectangle(columnIndex, rowIndex, true);
+            oDateTimePicker.Size = new Size(oRectangle.Width, oRectangle.Height);
+            oDateTimePicker.Location = new Point(oRectangle.X, oRectangle.Y);
+            oDateTimePicker.CloseUp += new EventHandler(oDateTimePicker_CloseUp);
+        }
+
+        private void detailReturDataGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailReturDataGridView[e.ColumnIndex, e.RowIndex];
+            string columnName = "";
+
+            if (detailReturDataGridView.Rows.Count <= 0)
+                return;
+
+            columnName = cell.OwningColumn.Name;
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                if (columnName == "expiryDate")
+                {
+                    addDateTimePickerToDataGrid(e.ColumnIndex, e.RowIndex);
+                }
+            }
+        }
+
+        private void detailReturDataGridView_CellLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailReturDataGridView[e.ColumnIndex, e.RowIndex];
+            string columnName = "";
+
+            if (detailReturDataGridView.Rows.Count <= 0)
+                return;
+
+            columnName = cell.OwningColumn.Name;
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                if (columnName == "expiryDate")
+                {
+                    oDateTimePicker.Visible = false;
+                }
+            }
+        }
+
+        private void oDateTimePicker_OnTextChanged(object sender, EventArgs e)
+        {
+            int rowIndex = detailReturDataGridView.CurrentCell.RowIndex;
+
+            detailReturDataGridView.CurrentCell.Value = oDateTimePicker.Text.ToString();
+            detailReturDataGridView.Rows[rowIndex].Cells["expiryDateValue"].Value = oDateTimePicker.Value.ToString();
+        }
+
+        private void oDateTimePicker_CloseUp(object sender, EventArgs e)
+        {
+            oDateTimePicker.Visible = false;
         }
     }
 }

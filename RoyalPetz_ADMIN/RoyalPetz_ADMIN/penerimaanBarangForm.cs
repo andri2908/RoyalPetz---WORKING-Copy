@@ -60,6 +60,8 @@ namespace RoyalPetz_ADMIN
         barcodeForm displayBarcodeForm = null;
         dataProdukForm browseProdukForm = null;
 
+        DateTimePicker oDateTimePicker = new DateTimePicker();
+
         public penerimaanBarangForm()
         {
             InitializeComponent();
@@ -67,6 +69,7 @@ namespace RoyalPetz_ADMIN
 
         private void captureAll(Keys key)
         {
+            int rowcount = 0;
             switch (key)
             {
                 case Keys.F1:
@@ -95,10 +98,14 @@ namespace RoyalPetz_ADMIN
 
                 case Keys.F8:
                     if (detailGridView.ReadOnly == false)
-                        //if (originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_PO && originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
-                        {
-                            addNewRow();
-                        }
+                    {
+                        rowcount = detailGridView.RowCount;
+                        detailGridView.CurrentCell = detailGridView.Rows[rowcount - 1].Cells["productID"];
+                    }
+                    //if (originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_PO && originModuleId != globalConstants.PENERIMAAN_BARANG_DARI_MUTASI)
+                    //{
+                    //    addNewRow();
+                    //}
                     break;
 
                 case Keys.F9:
@@ -644,7 +651,7 @@ namespace RoyalPetz_ADMIN
 
             namaProduct_textBox.Name = "productName";
             namaProduct_textBox.HeaderText = "NAMA PRODUK";
-            namaProduct_textBox.ReadOnly = true;
+            namaProduct_textBox.DefaultCellStyle.BackColor = Color.LightBlue;
             namaProduct_textBox.Width = 200;
             detailGridView.Columns.Add(namaProduct_textBox);
 
@@ -681,6 +688,24 @@ namespace RoyalPetz_ADMIN
             subtotal_textBox.ReadOnly = true;
             subtotal_textBox.Width = 150;
             detailGridView.Columns.Add(subtotal_textBox);
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                DataGridViewTextBoxColumn expiryDate_textBox = new DataGridViewTextBoxColumn();
+                expiryDate_textBox.Name = "expiryDate";
+                expiryDate_textBox.HeaderText = "KADALUARSA";
+                expiryDate_textBox.ReadOnly = true;
+                expiryDate_textBox.Width = 150;
+                detailGridView.Columns.Add(expiryDate_textBox);
+
+                DataGridViewTextBoxColumn expiryDateValue_textBox = new DataGridViewTextBoxColumn();
+                expiryDateValue_textBox.Name = "expiryDateValue";
+                expiryDateValue_textBox.HeaderText = "KADALUARSA";
+                expiryDateValue_textBox.ReadOnly = true;
+                expiryDateValue_textBox.Width = 150;
+                expiryDateValue_textBox.Visible = false;
+                detailGridView.Columns.Add(expiryDateValue_textBox);
+            }
         }
 
         private void penerimaanBarangForm_Load(object sender, EventArgs e)
@@ -724,6 +749,9 @@ namespace RoyalPetz_ADMIN
             subtotalList.Add("0");
 
             prInvoiceTextBox.Select();
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+                oDateTimePicker.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         }
 
         private double getHPPValue(string productID)
@@ -744,14 +772,14 @@ namespace RoyalPetz_ADMIN
             string[] arr = null;
             List<string> arrList = new List<string>();
 
-            sqlCommand = "SELECT PRODUCT_ID FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1";
+            sqlCommand = "SELECT PRODUCT_NAME FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1";
             rdr = DS.getData(sqlCommand);
 
             if (rdr.HasRows)
             {
                 while (rdr.Read())
                 {
-                    arrList.Add(rdr.GetString("PRODUCT_ID"));
+                    arrList.Add(rdr.GetString("PRODUCT_NAME"));
                 }
                 AutoCompleteStringCollection collection = new AutoCompleteStringCollection();
                 arr = arrList.ToArray();
@@ -768,7 +796,7 @@ namespace RoyalPetz_ADMIN
             if ((detailGridView.CurrentCell.OwningColumn.Name == "hpp" || detailGridView.CurrentCell.OwningColumn.Name == "qtyReceived") && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
-                textBox.TextChanged += TextBox_TextChanged;
+//                textBox.TextChanged += TextBox_TextChanged;
                 textBox.PreviewKeyDown -= TextBox_previewKeyDown;
                 textBox.AutoCompleteMode = AutoCompleteMode.None;
                 textBox.KeyUp += Textbox_KeyUp; 
@@ -777,8 +805,17 @@ namespace RoyalPetz_ADMIN
             if ((detailGridView.CurrentCell.OwningColumn.Name == "productID") && e.Control is TextBox)
             {
                 TextBox productIDTextBox = e.Control as TextBox;
-                productIDTextBox.TextChanged -= TextBox_TextChanged;
+//                productIDTextBox.TextChanged -= TextBox_TextChanged;
                 productIDTextBox.PreviewKeyDown += TextBox_previewKeyDown;
+                productIDTextBox.CharacterCasing = CharacterCasing.Upper;
+                productIDTextBox.AutoCompleteMode = AutoCompleteMode.None;
+            }
+
+            if ((detailGridView.CurrentCell.OwningColumn.Name == "productName") && e.Control is TextBox)
+            {
+                TextBox productIDTextBox = e.Control as TextBox;
+//                productIDTextBox.TextChanged -= TextBox_TextChanged;
+                productIDTextBox.PreviewKeyDown += productName_previewKeyDown;
                 productIDTextBox.CharacterCasing = CharacterCasing.Upper;
                 productIDTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 productIDTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -806,7 +843,7 @@ namespace RoyalPetz_ADMIN
             isLoading = false;
         }
 
-        private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue)
+        private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue, bool isProductID = true)
         {
             int numRow = 0;
             string selectedProductID = "";
@@ -817,19 +854,31 @@ namespace RoyalPetz_ADMIN
             string currentProductName = "";
             bool changed = false;
 
-            numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+            //numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+
+            if (isProductID)
+                numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'"));
+            else
+                numRow = Convert.ToInt32(DS.getDataSingleValue("SELECT COUNT(1) FROM MASTER_PRODUCT WHERE PRODUCT_NAME = '" + currentValue + "'"));
 
             if (numRow > 0)
             {
-                selectedProductID = currentValue;
+                if (isProductID)
+                {
+                    selectedProductID = currentValue;
+                    selectedProductName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME,'') FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'").ToString();
+                }
+                else
+                {
+                    selectedProductName = currentValue;
+                    selectedProductID = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_ID,'') FROM MASTER_PRODUCT WHERE PRODUCT_NAME = '" + currentValue + "'").ToString();
+                }
 
                 if (null != selectedRow.Cells["productID"].Value)
                     currentProductID = selectedRow.Cells["productID"].Value.ToString();
 
                 if (null != selectedRow.Cells["productName"].Value)
                     currentProductName = selectedRow.Cells["productName"].Value.ToString();
-
-                selectedProductName = DS.getDataSingleValue("SELECT IFNULL(PRODUCT_NAME,'') FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + currentValue + "'").ToString();
 
                 selectedRow.Cells["productId"].Value = selectedProductID;
                 selectedRow.Cells["productName"].Value = selectedProductName;
@@ -892,12 +941,40 @@ namespace RoyalPetz_ADMIN
             }
         }
 
+        private void productName_previewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            string currentValue = "";
+            int rowSelectedIndex = 0;
+            DataGridViewTextBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
+
+            if (detailGridView.CurrentCell.OwningColumn.Name != "productName")
+                return;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                currentValue = dataGridViewComboBoxEditingControl.Text;
+                rowSelectedIndex = detailGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
+
+                if (currentValue.Length > 0)
+                {
+                    updateSomeRowContents(selectedRow, rowSelectedIndex, currentValue, false);
+                    detailGridView.CurrentCell = selectedRow.Cells["qtyReceived"];
+                    forceUpOneLevel = true;
+                }
+                else
+                {
+                    clearUpSomeRowContents(selectedRow, rowSelectedIndex);
+                }
+            }
+        }
+
         private void Textbox_KeyUp(object sender, KeyEventArgs e)
         {
             if (forceUpOneLevel)
             {
                 int pos = detailGridView.CurrentCell.RowIndex;
-                detailGridView.CurrentCell = detailGridView.Rows[pos - 1].Cells["qty"];
+                detailGridView.CurrentCell = detailGridView.Rows[pos - 1].Cells["qtyReceived"];
                 forceUpOneLevel = false;
             }
         }
@@ -1030,7 +1107,7 @@ namespace RoyalPetz_ADMIN
         private void calculateTotal()
         {
             double total = 0;
-            for (int i =0;i<detailGridView.Rows.Count-1;i++)
+            for (int i =0;i<detailGridView.Rows.Count;i++)
             {
                 total = total + Convert.ToDouble(subtotalList[i]);
             }
@@ -1086,18 +1163,22 @@ namespace RoyalPetz_ADMIN
                 return false;
             }
 
-            //for (i = 0; i < detailGridView.Rows.Count && dataExist; i ++)
-            //{
-            //    if (null != detailGridView.Rows[i].Cells["productID"].Value)
-            //        dataExist = gUtil.isProductIDExist(detailGridView.Rows[i].Cells["productID"].Value.ToString());
-            //    else
-            //        dataExist = false;
-            //}
-            //if (!dataExist)
-            //{
-            //    errorLabel.Text = "PRODUCT ID PADA BARIS ["+ i +"] INVALID";
-            //    return false;
-            //}
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            { 
+                for (i = 0; i < detailGridView.Rows.Count && dataExist; i++)
+                {
+                    if (null != detailGridView.Rows[i].Cells["expiryDateValue"].Value)
+                        dataExist = true;
+                    else
+                        dataExist = false;
+                }
+
+                if (!dataExist)
+                {
+                    errorLabel.Text = "TANGGAL KADALUARSA PADA BARIS [" + i + "] INVALID";
+                    return false;
+                }
+            }
 
             if (globalTotalValue <= 0)
             {
@@ -1294,6 +1375,29 @@ namespace RoyalPetz_ADMIN
                         gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "UPDATE MASTER PRODUCT DATA [" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "]");
                         if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                             throw internalEX;
+
+                        if (globalFeatureList.EXPIRY_MODULE == 1)
+                        {
+                            // INSERT TO PRODUCT_EXPIRY
+                            DateTime productExpiryDateValue = Convert.ToDateTime(detailGridView.Rows[i].Cells["expiryDateValue"].Value.ToString());
+                            string productExpiryDate = String.Format(culture, "{0:dd-MM-yyyy}", productExpiryDateValue);
+                            int lotID = 0;
+                            string productID = detailGridView.Rows[i].Cells["productID"].Value.ToString();
+                            expiryModuleUtil expUtil = new expiryModuleUtil();
+
+                            // CHECK WHETHER THE PRODUCT WITH SAME EXPIRY DATE EXIST
+                            lotID = expUtil.getLotIDBasedOnExpiryDate(productExpiryDateValue, productID);
+
+                            if (lotID == 0)
+                                //sqlCommand = "INSERT INTO PRODUCT_EXPIRY (PRODUCT_ID, PRODUCT_EXPIRY_DATE, PRODUCT_AMOUNT, PR_INVOICE) VALUES ( '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', STR_TO_DATE('" + productExpiryDate + "', '%d-%m-%Y'), " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ", '" + PRInvoice + "')";
+                                sqlCommand = "INSERT INTO PRODUCT_EXPIRY (PRODUCT_ID, PRODUCT_EXPIRY_DATE, PRODUCT_AMOUNT) VALUES ( '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', STR_TO_DATE('" + productExpiryDate + "', '%d-%m-%Y'), " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ")";
+                            else
+                                sqlCommand = "UPDATE PRODUCT_EXPIRY SET PRODUCT_AMOUNT = PRODUCT_AMOUNT + " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + " WHERE ID = " + lotID;
+
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "INSERT TO PRODUCT EXPIRY [" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "]");
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
+                        }
 
                         if (originModuleId == 0) // DIRECT PENERIMAAN BARANG
                         {
@@ -1745,23 +1849,23 @@ namespace RoyalPetz_ADMIN
 
         private void detailGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
-            var cell = detailGridView[e.ColumnIndex, e.RowIndex];
-            DataGridViewRow selectedRow = detailGridView.Rows[e.RowIndex];
+            //var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            //DataGridViewRow selectedRow = detailGridView.Rows[e.RowIndex];
 
-            if (cell.OwningColumn.Name == "productID")
-            {
-                if (null != cell.Value)
-                {
-                    if (cell.Value.ToString().Length > 0)
-                    {
-                        updateSomeRowContents(selectedRow, e.RowIndex, cell.Value.ToString());
-                    }
-                    else
-                    {
-                        clearUpSomeRowContents(selectedRow, e.RowIndex);
-                    }
-                }
-            }
+            //if (cell.OwningColumn.Name == "productID")
+            //{
+            //    if (null != cell.Value)
+            //    {
+            //        if (cell.Value.ToString().Length > 0)
+            //        {
+            //            updateSomeRowContents(selectedRow, e.RowIndex, cell.Value.ToString());
+            //        }
+            //        else
+            //        {
+            //            clearUpSomeRowContents(selectedRow, e.RowIndex);
+            //        }
+            //    }
+            //}
         }
 
         private void detailGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -1794,6 +1898,270 @@ namespace RoyalPetz_ADMIN
                 registerNavigationKey();
 
             unregisterDelKey();
+        }
+
+        private void detailGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            int rowSelectedIndex = 0;
+
+            double subTotal = 0;
+            double productQty = 0;
+            double hppValue = 0;
+            string tempString;
+            string cellValue = "";
+            string columnName = "";
+
+            columnName = cell.OwningColumn.Name;
+            gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "PENERIMAAN BARANG : detailGridView_CellValueChanged [" + columnName + "]");
+
+            rowSelectedIndex = e.RowIndex;
+            DataGridViewRow selectedRow = detailGridView.Rows[rowSelectedIndex];
+
+            if (null != selectedRow.Cells[columnName].Value)
+                cellValue = selectedRow.Cells[columnName].Value.ToString();
+            else
+                cellValue = "";
+
+            if (columnName == "productName")
+            {
+                if (cellValue.Length > 0)
+                {
+                    updateSomeRowContents(selectedRow, rowSelectedIndex, cellValue, false);
+                    //int pos = cashierDataGridView.CurrentCell.RowIndex;
+
+                    //if (pos > 0)
+                    //    cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+
+                    //forceUpOneLevel = true;
+                }
+            }
+            else if (columnName == "hpp" ||
+                columnName == "qtyReceived")
+            { 
+                if (cellValue.Length <= 0)
+                {
+                    // IF TEXTBOX IS EMPTY, DEFAULT THE VALUE TO 0 AND EXIT THE CHECKING
+                    isLoading = true;
+                    // reset subTotal Value and recalculate total
+                    selectedRow.Cells["subTotal"].Value = 0;
+                    subtotalList[rowSelectedIndex] = "0";
+
+                    if (detailRequestQty.Count >= rowSelectedIndex + 1)
+                        if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                            detailHpp[rowSelectedIndex] = "0";
+                        else
+                            detailRequestQty[rowSelectedIndex] = "0";
+
+                    selectedRow.Cells[columnName].Value = "0";
+
+                    calculateTotal();
+
+                    return;
+                }
+
+                if (detailRequestQty.Count >= rowSelectedIndex + 1)
+                    if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                        previousInput = detailHpp[rowSelectedIndex];
+                    else
+                        previousInput = detailRequestQty[rowSelectedIndex];
+                else
+                    previousInput = "0";
+
+                if (previousInput == "0")
+                {
+                    tempString = cellValue;
+                    if (tempString.IndexOf('0') == 0 && tempString.Length > 1 && tempString.IndexOf("0.") < 0)
+                        selectedRow.Cells[columnName].Value = tempString.Remove(tempString.IndexOf('0'), 1);
+                }
+
+                if (detailRequestQty.Count < rowSelectedIndex + 1)
+                {
+                    if (gUtil.matchRegEx(cellValue, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
+                        && (cellValue.Length > 0))
+                    {
+                        if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                            detailHpp.Add(cellValue);
+                        else
+                            detailRequestQty.Add(cellValue);
+                    }
+                    else
+                    {
+                        selectedRow.Cells[columnName].Value = previousInput;
+                    }
+                }
+                else
+                {
+                    if (gUtil.matchRegEx(cellValue, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
+                        && (cellValue.Length > 0))
+                    {
+                        if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                            detailHpp[rowSelectedIndex] = cellValue;
+                        else
+                            detailRequestQty[rowSelectedIndex] = cellValue;
+                    }
+                    else
+                    {
+                        if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                            selectedRow.Cells[columnName].Value = detailHpp[rowSelectedIndex];
+                        else
+                            selectedRow.Cells[columnName].Value = detailRequestQty[rowSelectedIndex];
+                    }
+                }
+
+                try
+                {
+                    if (detailGridView.CurrentCell.OwningColumn.Name == "hpp")
+                    {
+                        //changes on hpp
+                        hppValue = Convert.ToDouble(cellValue);
+                        productQty = Convert.ToDouble(detailRequestQty[rowSelectedIndex]);
+                    }
+                    else
+                    {
+                        //changes on qty
+                        productQty = Convert.ToDouble(cellValue);
+                        hppValue = Convert.ToDouble(detailHpp[rowSelectedIndex]);
+                    }
+
+                    subTotal = Math.Round((hppValue * productQty), 2);
+
+                    selectedRow.Cells["subtotal"].Value = subTotal;
+                    subtotalList[rowSelectedIndex] = subTotal.ToString();
+
+                    calculateTotal();
+                }
+                catch (Exception ex)
+                {
+                    //dataGridViewTextBoxEditingControl.Text = previousInput;
+                }
+            }
+        }
+
+        private void detailGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            detailGridView.SuspendLayout();
+
+            if (navKeyRegistered)
+            {
+                unregisterNavigationKey();
+            }
+
+            if (!delKeyRegistered)
+                registerDelKey();
+        }
+
+        private void detailGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            detailGridView.ResumeLayout();
+        }
+
+        private void detailGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (detailGridView.IsCurrentCellDirty)
+            {
+                detailGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void addDateTimePickerToDataGrid(int columnIndex, int rowIndex)
+        {
+            detailGridView.Controls.Add(oDateTimePicker);
+            oDateTimePicker.Visible = false;
+            oDateTimePicker.Format = DateTimePickerFormat.Custom;
+            oDateTimePicker.CustomFormat = globalUtilities.CUSTOM_DATE_FORMAT;
+            oDateTimePicker.TextChanged += new EventHandler(oDateTimePicker_OnTextChanged);
+            if (null != detailGridView.Rows[rowIndex].Cells["expiryDateValue"].Value)
+                oDateTimePicker.Value = Convert.ToDateTime(detailGridView.Rows[rowIndex].Cells["expiryDateValue"].Value);
+
+            oDateTimePicker.Visible = true;
+
+            Rectangle oRectangle = detailGridView.GetCellDisplayRectangle(columnIndex, rowIndex, true);
+            oDateTimePicker.Size = new Size(oRectangle.Width, oRectangle.Height);
+            oDateTimePicker.Location = new Point(oRectangle.X, oRectangle.Y);
+            oDateTimePicker.CloseUp += new EventHandler(oDateTimePicker_CloseUp);
+        }
+        
+        private void detailGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            //string columnName = "";
+
+            //if (detailGridView.Rows.Count <= 0)
+            //    return;
+
+            //columnName = cell.OwningColumn.Name;
+
+            //if (globalFeatureList.EXPIRY_MODULE == 1)
+            //{
+            //    if (columnName == "expiryDate")
+            //    {
+            //        addDateTimePickerToDataGrid(e.ColumnIndex, e.RowIndex);
+            //    }
+            //}
+        }
+
+        private void oDateTimePicker_OnTextChanged(object sender, EventArgs e)
+        {
+            int rowIndex = detailGridView.CurrentCell.RowIndex;
+
+            detailGridView.CurrentCell.Value = oDateTimePicker.Text.ToString();
+            detailGridView.Rows[rowIndex].Cells["expiryDateValue"].Value = oDateTimePicker.Value.ToString();            
+        }
+
+        private void oDateTimePicker_CloseUp(object sender, EventArgs e)
+        {
+            oDateTimePicker.Visible = false;
+        }
+
+        private void detailGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            string columnName = "";
+
+            if (detailGridView.Rows.Count <= 0)
+                return;
+
+            columnName = cell.OwningColumn.Name;
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                if (columnName == "expiryDate")
+                {
+                    addDateTimePickerToDataGrid(e.ColumnIndex, e.RowIndex);
+                }
+            }
+        }
+
+        private void detailGridView_CellLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            var cell = detailGridView[e.ColumnIndex, e.RowIndex];
+            string columnName = "";
+
+            if (detailGridView.Rows.Count <= 0)
+                return;
+
+            columnName = cell.OwningColumn.Name;
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                if (columnName == "expiryDate")
+                {
+                    oDateTimePicker.Visible = false;
+                }
+            }
+        }
+
+        private void supplierCombo_Enter(object sender, EventArgs e)
+        {
+            if (navKeyRegistered)
+                unregisterNavigationKey();
+        }
+
+        private void supplierCombo_Leave(object sender, EventArgs e)
+        {
+            if (!navKeyRegistered)
+                registerNavigationKey();
         }
     }
 }

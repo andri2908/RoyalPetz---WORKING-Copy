@@ -81,8 +81,6 @@ namespace RoyalPetz_ADMIN
         dataProdukForm browseProdukForm = null;
         dataPelangganForm browsePelangganForm = null;
 
-        bool fromCellValueChanged = false;
-
         public cashierForm()
         {
             InitializeComponent();
@@ -117,6 +115,8 @@ namespace RoyalPetz_ADMIN
 
         private void captureAll(Keys key)
         {
+            int posindex = 0;
+            int rowcount = 0;
             switch (key)
             {
                 case Keys.F1:
@@ -181,12 +181,22 @@ namespace RoyalPetz_ADMIN
                                 reprintInvoice();
                     break;
 
-                case Keys.F8: // NOT USED
+                case Keys.F8: // USED
                     if (originModuleID != globalConstants.COPY_NOTA)
                     {
                         gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : HOTKEY TO ADD NEW ROW PRESSED");
-
-                        addNewRow();
+                        //focus to row below
+                        rowcount = cashierDataGridView.RowCount;
+                        cashierDataGridView.CurrentCell = cashierDataGridView.Rows[rowcount - 1].Cells["productID"];
+                        //if (rowcount > 1)
+                        //{
+                        //    posindex = cashierDataGridView.CurrentCell.RowIndex;
+                        //    if (posindex < rowcount - 1)
+                        //    {
+                        //        cashierDataGridView.CurrentCell = cashierDataGridView.Rows[posindex + 1].Cells["productID"];
+                        //    }
+                        //}
+                        //addNewRow();
                     }
                     break;
 
@@ -346,8 +356,8 @@ namespace RoyalPetz_ADMIN
             ghk_F7 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F7, this);
             ghk_F7.Register();
 
-            //ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
-            //ghk_F8.Register();
+            ghk_F8 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F8, this);
+            ghk_F8.Register();
 
             ghk_F9 = new Hotkeys.GlobalHotkey(Constants.NOMOD, Keys.F9, this);
             ghk_F9.Register();
@@ -424,7 +434,7 @@ namespace RoyalPetz_ADMIN
             ghk_F4.Unregister();
             //ghk_F5.Unregister();
             ghk_F7.Unregister();
-            //ghk_F8.Unregister();
+            ghk_F8.Unregister();
             ghk_F9.Unregister();
             ghk_F11.Unregister();
 
@@ -488,10 +498,14 @@ namespace RoyalPetz_ADMIN
             disc2.Add("0");
             discRP.Add("0");
 
-
             selectedPelangganID = 0;
             globalTotalValue = 0;
             discValue = 0;
+            sisaBayar = 0;
+            bayarAmount = 0;
+            bayarAmountText = "0";
+            discAmountText = "0";
+        
             totalLabel.Text = globalTotalValue.ToString("C0", culture);
             gutil.ResetAllControls(this);
 
@@ -627,8 +641,6 @@ namespace RoyalPetz_ADMIN
 
         private void addNewRow(bool isActive = true)
         {
-            //prevent blink
-            cashierDataGridView.SuspendLayout();
 
             int prevValue = 0;
             bool allowToAdd = true;
@@ -692,8 +704,6 @@ namespace RoyalPetz_ADMIN
                 cashierDataGridView.Focus();
                 cashierDataGridView.CurrentCell = cashierDataGridView.Rows[newRowIndex].Cells["productID"];
             }
-            //prevent blink
-            cashierDataGridView.ResumeLayout();
         }
 
         public void addNewRowFromBarcode(string productID, string productName)
@@ -780,11 +790,15 @@ namespace RoyalPetz_ADMIN
             }
 
             selectedRow.Cells["jumlah"].Value = calculateSubTotal(rowSelectedIndex, Convert.ToDouble(selectedRow.Cells["productPrice"].Value));
+            jumlahList[rowSelectedIndex] = selectedRow.Cells["jumlah"].Value.ToString();
             calculateTotal();
+
             cashierDataGridView.CurrentCell = selectedRow.Cells["qty"];
             cashierDataGridView.AllowUserToAddRows = true;
             //comboSelectedIndexChangeMethod(rowSelectedIndex, i, selectedRow);
             //cashierDataGridView.CurrentCell = cashierDataGridView.Rows[rowSelectedIndex].Cells["qty"];
+
+            cashierDataGridView.Select();
         }
 
         private bool productIDValid(string productID)
@@ -1078,6 +1092,40 @@ namespace RoyalPetz_ADMIN
                                 gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "REDUCE STOCK AT MASTER PRODUCT [" + cashierDataGridView.Rows[i].Cells["productID"].Value.ToString() + "]");
                                 if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
                                     throw internalEX;
+
+                                // REDUCE FROM PRODUCT EXPIRY
+                                if (globalFeatureList.EXPIRY_MODULE == 1)
+                                {
+                                    // GET THE NEAREST PRODUCT LOT THAT'S GOING TO EXPIRE
+                                    expiryModuleUtil expiryUtil = new expiryModuleUtil();
+                                    int[] listOfLotID;
+                                    double currentLotAmount = 0;
+                                    string expiryProductID = cashierDataGridView.Rows[i].Cells["productID"].Value.ToString();
+                                    double expiryProductAmt = Convert.ToDouble(cashierDataGridView.Rows[i].Cells["qty"].Value);
+                                    listOfLotID = expiryUtil.getListOfLotProductID(expiryProductID, expiryProductAmt);
+
+                                    // UPDATE THE PRODUCT AMOUNT
+                                    for (int j =0; j<listOfLotID.Count();j++)
+                                    {
+                                        // get current LOT amount 
+                                        sqlCommand = "SELECT PRODUCT_AMOUNT FROM PRODUCT_EXPIRY WHERE ID = " + listOfLotID[j];
+                                        currentLotAmount = Convert.ToInt32(DS.getDataSingleValue(sqlCommand));
+
+                                        if (currentLotAmount <= expiryProductAmt)
+                                        {
+                                            expiryProductAmt = expiryProductAmt - currentLotAmount;
+                                            currentLotAmount = 0;
+                                        }
+                                        else
+                                            currentLotAmount = currentLotAmount - expiryProductAmt;
+
+                                        sqlCommand = "UPDATE PRODUCT_EXPIRY SET PRODUCT_AMOUNT = " + currentLotAmount + " WHERE ID = " + listOfLotID[j];
+
+                                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "REDUCE STOCK AT PRODUCT_EXPIRY LOT [" + listOfLotID[j] + "]");
+                                        if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                            throw internalEX;
+                                    }
+                                }
                             }
 
                             // SAVE OR UPDATE TO CUSTOMER_PRODUCT_DISC
@@ -1182,7 +1230,7 @@ namespace RoyalPetz_ADMIN
         {
             string message = "";
 
-            if (printoutCheckBox.Checked == true)
+            if (printoutCheckBox.Checked == false)
                 message = "SAVE AND PRINT OUT ?";
             else
                 message = "SAVE DATA ?";
@@ -1336,7 +1384,7 @@ namespace RoyalPetz_ADMIN
             double totalAfterDisc = 0;
 
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : calculateTotal");
-            for (int i = 0; i < cashierDataGridView.Rows.Count-1; i++)
+            for (int i = 0; i < cashierDataGridView.Rows.Count; i++)
             {
                 if (null != cashierDataGridView.Rows[i].Cells["jumlah"].Value)
                     total = total + Convert.ToDouble(jumlahList[i]);
@@ -1474,7 +1522,9 @@ namespace RoyalPetz_ADMIN
                 setTextBoxCustomSource(productNameTextBox);
             }
 
-            if ((cashierDataGridView.CurrentCell.OwningColumn.Name == "qty" || cashierDataGridView.CurrentCell.OwningColumn.Name == "productPrice") && e.Control is TextBox)
+            if (
+                (cashierDataGridView.CurrentCell.OwningColumn.Name == "productPrice" || cashierDataGridView.CurrentCell.OwningColumn.Name == "qty" || cashierDataGridView.CurrentCell.OwningColumn.Name == "disc1" || cashierDataGridView.CurrentCell.OwningColumn.Name == "disc2" || cashierDataGridView.CurrentCell.OwningColumn.Name == "discRP")
+                && e.Control is TextBox)
             {
                 TextBox textBox = e.Control as TextBox;
                 //textBox.KeyPress += TextBox_KeyPress;
@@ -1483,18 +1533,6 @@ namespace RoyalPetz_ADMIN
                 //textBox.TextChanged += QTY_textBox_TextChanged;
                 textBox.AutoCompleteMode = AutoCompleteMode.None;
             }
-
-            //if (
-            //    (cashierDataGridView.CurrentCell.OwningColumn.Name == "productPrice" || cashierDataGridView.CurrentCell.OwningColumn.Name == "qty" || cashierDataGridView.CurrentCell.OwningColumn.Name == "disc1" || cashierDataGridView.CurrentCell.OwningColumn.Name == "disc2" || cashierDataGridView.CurrentCell.OwningColumn.Name == "discRP")
-            //    && e.Control is TextBox)
-            //{
-            //    TextBox textBox = e.Control as TextBox;
-            //    textBox.KeyPress += TextBox_KeyPress;
-            //    textBox.KeyDown += TextBox_KeyDown;
-            //    textBox.KeyUp += TextBox_KeyUp;
-            //    textBox.TextChanged += TextBox_TextChanged;
-            //    textBox.AutoCompleteMode = AutoCompleteMode.None;
-            //}
 
             /*
             // -=
@@ -1526,14 +1564,10 @@ namespace RoyalPetz_ADMIN
         {
             gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : clearUpSomeRowContents");
 
-            //prevent blink
-            cashierDataGridView.SuspendLayout();
-
             selectedRow.Cells["productName"].Value = "";
             selectedRow.Cells["hpp"].Value = "0";
             selectedRow.Cells["productPrice"].Value = "0";
             productPriceList[rowSelectedIndex] = "0";
-
             selectedRow.Cells["qty"].Value = "0";
             salesQty[rowSelectedIndex] = "0";
 
@@ -1550,22 +1584,16 @@ namespace RoyalPetz_ADMIN
             jumlahList[rowSelectedIndex] = "0";
 
             calculateTotal();
-
-            //prevent blink
-            cashierDataGridView.ResumeLayout();
         }
 
         private void updateSomeRowContents(DataGridViewRow selectedRow, int rowSelectedIndex, string currentValue, bool isProductID = true)
         {
-            //prevent blink
-            cashierDataGridView.SuspendLayout();
 
             int numRow = 0;
             string selectedProductID = "";
             string selectedProductName = "";
 
             double hpp = 0;
-            double subTotal = 0;
             MySqlDataReader rdr;
             string currentProductID = "";
             string currentProductName = "";
@@ -1670,9 +1698,6 @@ namespace RoyalPetz_ADMIN
             {
                 clearUpSomeRowContents(selectedRow, rowSelectedIndex);
             }
-
-            //prevent blink
-            cashierDataGridView.ResumeLayout();
         }
 
         private void Combobox_KeyUp(object sender, KeyEventArgs e)
@@ -1682,21 +1707,16 @@ namespace RoyalPetz_ADMIN
             if (forceUpOneLevel)
             {
                 int pos = cashierDataGridView.CurrentCell.RowIndex;
-                cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+
+                if (pos>0)
+                    cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+
                 forceUpOneLevel = false;
-            }
-            //blink prevention
-            if (e.KeyCode == Keys.Enter)
-            {
-                cashierDataGridView.ResumeLayout();
             }
         }
 
         private void Combobox_previewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            //blink prevention
-            cashierDataGridView.SuspendLayout();
-
             string currentValue = "";
             int rowSelectedIndex = 0;
             DataGridViewTextBoxEditingControl dataGridViewComboBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
@@ -1727,20 +1747,14 @@ namespace RoyalPetz_ADMIN
 
         private void TextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            //blink prevention
-            cashierDataGridView.ResumeLayout();
         }
 
         private void TextBox_KeyDown(Object o, KeyEventArgs e)
         {
-            //blink prevention
-            cashierDataGridView.SuspendLayout();
         }
 
         private void TextBox_KeyPress(Object o, KeyPressEventArgs e)
         {
-            //blink prevention
-            cashierDataGridView.SuspendLayout();
         }
         
         private void productName_previewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1771,174 +1785,6 @@ namespace RoyalPetz_ADMIN
                     clearUpSomeRowContents(selectedRow, rowSelectedIndex);
                 }
             }
-        }
-
-        private void QTY_textBox_TextChanged(object sender, EventArgs e)
-        {
-            DataGridViewTextBoxEditingControl dataGridViewTextBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
-
-            if (fromCellValueChanged)
-                return;
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : QTY_textBox_TextChanged");
-
-            if (gutil.matchRegEx(dataGridViewTextBoxEditingControl.Text, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
-                && (dataGridViewTextBoxEditingControl.Text.Length > 0 && dataGridViewTextBoxEditingControl.Text != ".")
-                )
-            {
-            }
-        }
-
-        private void TextBox_TextChanged(object sender, EventArgs e)
-        {
-            int rowSelectedIndex = 0;
-            double subTotal = 0;
-            double productPrice = 0;
-            string productID = "";
-            string previousInput = "";
-            string tempString = "";
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, isLoading [" + isLoading.ToString() + "]");
-
-            if (isLoading)
-                return;
-
-            DataGridViewTextBoxEditingControl dataGridViewTextBoxEditingControl = sender as DataGridViewTextBoxEditingControl;
-
-            rowSelectedIndex = cashierDataGridView.SelectedCells[0].RowIndex;
-            DataGridViewRow selectedRow = cashierDataGridView.Rows[rowSelectedIndex];
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, rowSelectedIndex [" + rowSelectedIndex + "]");
-
-            if (cashierDataGridView.CurrentCell.OwningColumn.Name != "productPrice" && 
-                cashierDataGridView.CurrentCell.OwningColumn.Name != "qty" && 
-                cashierDataGridView.CurrentCell.OwningColumn.Name != "disc1" && 
-                cashierDataGridView.CurrentCell.OwningColumn.Name != "disc2" && 
-                cashierDataGridView.CurrentCell.OwningColumn.Name != "discRP")
-
-                return;
-
-            if (dataGridViewTextBoxEditingControl.Text.Length <= 0)
-            {
-                // IF TEXTBOX IS EMPTY, DEFAULT THE VALUE TO 0 AND EXIT THE CHECKING
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, empty texbox, reset ["+ cashierDataGridView.CurrentCell.OwningColumn.Name + "] value to 0");
-                isLoading = true;
-
-                // reset subTotal Value and recalculate total
-                selectedRow.Cells["jumlah"].Value = 0;
-                jumlahList[rowSelectedIndex] = "0";
-
-                switch (cashierDataGridView.CurrentCell.OwningColumn.Name)
-                {
-                    case "qty":
-                        salesQty[rowSelectedIndex] = "0";
-                        break;
-                    case "disc1":
-                        disc1[rowSelectedIndex] = "0";
-                        break;
-                    case "disc2":
-                        disc2[rowSelectedIndex] = "0";
-                        break;
-                    case "discRP":
-                        discRP[rowSelectedIndex] = "0";
-                        break;
-                    case "productPrice":
-                        productPriceList[rowSelectedIndex] = "0";
-                        break;
-                }
-
-                dataGridViewTextBoxEditingControl.Text = "0";
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, recalculate total value");
-                calculateTotal();
-
-                dataGridViewTextBoxEditingControl.SelectionStart = dataGridViewTextBoxEditingControl.Text.Length;
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, set the cursor to end of textbox");
-                isLoading = false;
-                return;
-            }
-
-            if (null != selectedRow.Cells["productID"].Value)
-                productID = selectedRow.Cells["productID"].Value.ToString();
-
-            switch (cashierDataGridView.CurrentCell.OwningColumn.Name)
-            {
-                case "qty":
-                    previousInput = salesQty[rowSelectedIndex];
-                    break;
-                case "disc1":
-                    previousInput = disc1[rowSelectedIndex];
-                    break;
-                case "disc2":
-                    previousInput = disc2[rowSelectedIndex];
-                    break;
-                case "discRP":
-                    previousInput = discRP[rowSelectedIndex];
-                    break;
-                case "productPrice":
-                    previousInput = productPriceList[rowSelectedIndex];
-                    break;
-            }
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, previousInput [" + previousInput + "]");
-
-            if (previousInput == dataGridViewTextBoxEditingControl.Text)
-                return;
-
-            isLoading = true;
-            if (previousInput == "0")
-            {
-                tempString = dataGridViewTextBoxEditingControl.Text;
-                if (tempString.IndexOf('0') == 0 && tempString.Length > 1 && tempString.IndexOf("0.") < 0)
-                    dataGridViewTextBoxEditingControl.Text = tempString.Remove(tempString.IndexOf('0'), 1);
-
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, dataGridViewTextBoxEditingControl.Text [" + dataGridViewTextBoxEditingControl.Text + "]");
-            }
-            
-            if (gutil.matchRegEx(dataGridViewTextBoxEditingControl.Text, globalUtilities.REGEX_NUMBER_WITH_2_DECIMAL)
-                && (dataGridViewTextBoxEditingControl.Text.Length > 0 && dataGridViewTextBoxEditingControl.Text != ".")
-                )
-            {
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, dataGridViewTextBoxEditingControl.Text pass REGEX Checking");
-                switch (cashierDataGridView.CurrentCell.OwningColumn.Name)
-                {
-                    case "qty":                            
-                        if (stockIsEnough(productID, Convert.ToDouble(dataGridViewTextBoxEditingControl.Text)))
-                            salesQty[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
-                        else
-                            dataGridViewTextBoxEditingControl.Text = salesQty[rowSelectedIndex];
-                        break;
-                    case "disc1":
-                        disc1[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
-                        break;
-                    case "disc2":
-                        disc2[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
-                        break;
-                    case "discRP":
-                        discRP[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
-                        break;
-                    case "productPrice":
-                        productPriceList[rowSelectedIndex] = dataGridViewTextBoxEditingControl.Text;
-                        break;
-                }
-            }
-            else
-            {
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, dataGridViewTextBoxEditingControl.Text did not pass REGEX Checking");
-                dataGridViewTextBoxEditingControl.Text = previousInput;
-            }
-
-            productPrice = Convert.ToDouble(productPriceList[rowSelectedIndex]);
-
-            subTotal = calculateSubTotal(rowSelectedIndex, productPrice);
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, subtotal value [" + subTotal + "]");
-            selectedRow.Cells["jumlah"].Value = subTotal;
-            jumlahList[rowSelectedIndex] = subTotal.ToString();
-
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, attempt to calculate total value");
-            calculateTotal();
-            dataGridViewTextBoxEditingControl.SelectionStart = dataGridViewTextBoxEditingControl.Text.Length;
-
-            isLoading = false;
         }
 
         private void cashierForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -2502,8 +2348,19 @@ namespace RoyalPetz_ADMIN
             {
                 if (rdr.HasRows)
                 {
+                    int i = 0;
                     while (rdr.Read())
                     {
+                        if (i == 0)
+                        {
+                            Offset = Offset + add_offset;
+                        }
+                        else
+                        {
+                            i = 1;
+                            Offset = Offset + add_offset + Offsetplus;
+                        }
+                    
                         Offset = Offset + add_offset;
                         Offset = Offset + add_offset;
                     }
@@ -2976,7 +2833,6 @@ namespace RoyalPetz_ADMIN
 
         private void cashierDataGridView_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
-            fromCellValueChanged = false;
             //var cell = cashierDataGridView[e.ColumnIndex, e.RowIndex];
             //DataGridViewRow selectedRow = cashierDataGridView.Rows[e.RowIndex];
 
@@ -3020,11 +2876,12 @@ namespace RoyalPetz_ADMIN
             productPriceList.Add("0");
             jumlahList.Add("0");
 
-            if (navKeyRegistered)
-            { 
-                unregisterNavigationKey();
-                registerDelKey();
-            }
+            //if (cashierDataGridView.Focused)
+            //    if (navKeyRegistered)
+            //    { 
+            //        unregisterNavigationKey();
+            //        registerDelKey();
+            //    }
         }
 
         private void bayarTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -3133,7 +2990,7 @@ namespace RoyalPetz_ADMIN
         private void cashierDataGridView_Enter(object sender, EventArgs e)
         {
             if (navKeyRegistered)
-            { 
+            {
                 unregisterNavigationKey();
             }
             registerDelKey();
@@ -3182,26 +3039,39 @@ namespace RoyalPetz_ADMIN
             double subTotal = 0;
             string columnName = "";
 
-            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged");
+            if (isLoading)
+                return;
 
-            
-            if (cell.OwningColumn.Name == "qty" || cell.OwningColumn.Name == "productPrice" ||
+            columnName = cell.OwningColumn.Name;
+            gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged [" + columnName + "]");
+
+            if (null != selectedRow.Cells[columnName].Value)
+                cellValue = selectedRow.Cells[columnName].Value.ToString();
+            else
+                cellValue = "";
+
+            if (cell.OwningColumn.Name == "productName")
+            {
+                if (cellValue.Length > 0)
+                {
+                    updateSomeRowContents(selectedRow, rowSelectedIndex, cellValue, false);
+                    //int pos = cashierDataGridView.CurrentCell.RowIndex;
+
+                    //if (pos > 0)
+                    //    cashierDataGridView.CurrentCell = cashierDataGridView.Rows[pos - 1].Cells["qty"];
+
+                    //forceUpOneLevel = true;
+                }
+            }
+            else if (cell.OwningColumn.Name == "qty" || cell.OwningColumn.Name == "productPrice" ||
                     cell.OwningColumn.Name == "disc1" || cell.OwningColumn.Name == "disc2" || cell.OwningColumn.Name == "discRP"
                     )
             {
-                columnName = cell.OwningColumn.Name;
-                gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged [" + columnName + "]");
-                cellValue = selectedRow.Cells[columnName].Value.ToString();
-
                 if (cellValue.Length <= 0)
                 {
                     // IF TEXTBOX IS EMPTY, DEFAULT THE VALUE TO 0 AND EXIT THE CHECKING
                     gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged, empty texbox, reset [" + columnName + "] value to 0");
                     isLoading = true;
-
-                    // reset subTotal Value and recalculate total
-                    selectedRow.Cells["jumlah"].Value = 0;
-                    jumlahList[rowSelectedIndex] = "0";
 
                     switch (columnName)
                     {
@@ -3223,10 +3093,28 @@ namespace RoyalPetz_ADMIN
                     }
 
                     selectedRow.Cells[columnName].Value = "0";
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged, recalculate total value");
+
+                    if (columnName == "qty" || columnName == "productPrice")
+                    {
+                        // reset subTotal Value and recalculate total
+                        selectedRow.Cells["jumlah"].Value = 0;
+                        jumlahList[rowSelectedIndex] = "0";
+                    }
+                    else
+                    {
+                        productPrice = Convert.ToDouble(selectedRow.Cells["productPrice"].Value);
+
+                        subTotal = calculateSubTotal(rowSelectedIndex, productPrice);
+                        gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, subtotal value [" + subTotal + "]");
+                        selectedRow.Cells["jumlah"].Value = subTotal;
+                        jumlahList[rowSelectedIndex] = subTotal.ToString();
+                    }
+
+                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : TextBox_TextChanged, recalculate total value");
                     calculateTotal();
 
-                    gutil.saveSystemDebugLog(globalConstants.MENU_PENJUALAN, "CASHIER FORM : cashierDataGridView_CellValueChanged, set the cursor to end of textbox");
+                    isLoading = false;
+
                     return;
                 }
 
@@ -3312,6 +3200,38 @@ namespace RoyalPetz_ADMIN
                 calculateTotal();
             }
 
+            isLoading = false;
+        }
+
+        private void cashierDataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (cashierDataGridView.IsCurrentCellDirty)
+            {
+                cashierDataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void cashierDataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            cashierDataGridView.SuspendLayout();
+
+            if (navKeyRegistered)
+            {
+                unregisterNavigationKey();
+            }
+
+            if (!delKeyRegistered)
+                registerDelKey();
+        }
+
+        private void cashierDataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            cashierDataGridView.ResumeLayout();
+        }
+
+        private void cashierDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+  
         }
     }
 }

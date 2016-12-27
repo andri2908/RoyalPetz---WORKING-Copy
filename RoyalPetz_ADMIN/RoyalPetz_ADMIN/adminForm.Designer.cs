@@ -137,6 +137,7 @@
             this.pembayaranPiutangToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Separator_7 = new System.Windows.Forms.ToolStripSeparator();
             this.deviasiAdjustmentStokToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stokProdukToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stokDibawahLimitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returBarangToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pembelianToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -967,6 +968,7 @@
             this.pembayaranPiutangToolStripMenuItem,
             this.Separator_7,
             this.deviasiAdjustmentStokToolStripMenuItem,
+            this.stokProdukToolStripMenuItem,
             this.stokDibawahLimitToolStripMenuItem,
             this.returBarangToolStripMenuItem,
             this.Separator_9,
@@ -1270,6 +1272,15 @@
             this.deviasiAdjustmentStokToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
             this.deviasiAdjustmentStokToolStripMenuItem.Text = "Deviasi (Adjustment) Stok";
             this.deviasiAdjustmentStokToolStripMenuItem.Click += new System.EventHandler(this.deviasiAdjustmentStokToolStripMenuItem_Click);
+            // 
+            // stokProdukToolStripMenuItem
+            // 
+            this.stokProdukToolStripMenuItem.BackColor = System.Drawing.Color.SteelBlue;
+            this.stokProdukToolStripMenuItem.ForeColor = System.Drawing.Color.FloralWhite;
+            this.stokProdukToolStripMenuItem.Name = "stokProdukToolStripMenuItem";
+            this.stokProdukToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
+            this.stokProdukToolStripMenuItem.Text = "Stok Produk";
+            this.stokProdukToolStripMenuItem.Click += new System.EventHandler(this.stokProdukToolStripMenuItem_Click);
             // 
             // stokDibawahLimitToolStripMenuItem
             // 
@@ -1910,6 +1921,7 @@
         private System.Windows.Forms.ToolStripMenuItem MENU_CopyNota;
         private System.Windows.Forms.ToolStripMenuItem uSBToolStripMenuItem;
         private System.Windows.Forms.Timer timerMessage;
+        private System.Windows.Forms.ToolStripMenuItem stokProdukToolStripMenuItem;
         //private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }

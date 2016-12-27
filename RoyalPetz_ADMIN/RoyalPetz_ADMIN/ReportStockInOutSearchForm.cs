@@ -73,10 +73,10 @@ namespace RoyalPetz_ADMIN
 
         private void LoadCustomer()
         {
+            ErrorLabel1.Visible = false;
             CustomercomboBox.DataSource = null;
             MySqlDataReader rdr;
             DataTable dt = new DataTable();
-
             DS.mySqlConnect();
 
             string SQLcommand = "";
@@ -91,24 +91,19 @@ namespace RoyalPetz_ADMIN
 
             using (rdr = DS.getData(SQLcommand))
             {
-                if (rdr.HasRows)
-                {
-                    CustomercomboBox.Visible = true;
-                    nonactivecheckbox1.Visible = true;
-                    ErrorLabel1.Visible = false;
-                    dt.Load(rdr);
-                    CustomercomboBox.DataSource = dt;
-                    CustomercomboBox.ValueMember = "ID";
-                    CustomercomboBox.DisplayMember = "NAME";
-                    CustomercomboBox.SelectedIndex = 0;
-                }
-                else
-                {
-                    CustomercomboBox.Visible = false;
-                    nonactivecheckbox1.Visible = false;
-                    ErrorLabel1.Visible = true;
-                }
+                dt.Load(rdr);
+
+                DataRow workRow = dt.NewRow();
+                workRow["ID"] = "0";
+                workRow["NAME"] = "P-UMUM";
+
+                dt.Rows.Add(workRow);
+
+                CustomercomboBox.DataSource = dt;
+                CustomercomboBox.ValueMember = "ID";
+                CustomercomboBox.DisplayMember = "NAME";
             }
+            CustomercomboBox.SelectedIndex = CustomercomboBox.FindStringExact("P-UMUM");
         }
         private void loadProduct()
         {
@@ -132,8 +127,8 @@ namespace RoyalPetz_ADMIN
             {
                 if (rdr.HasRows)
                 {
-                    SupplierNameCombobox.Visible = true;
-                    nonactivecheckbox1.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     ErrorLabel2.Visible = false;
                     dt.Load(rdr);
                     ProductcomboBox.DataSource = dt;
@@ -144,71 +139,146 @@ namespace RoyalPetz_ADMIN
                 else
                 {
                     ProductcomboBox.Visible = false;
-                    nonactivecheckbox1.Visible = false;
+                    nonactivecheckbox2.Visible = false;
                     ErrorLabel2.Visible = true;
+
                 }
             }
         }
+
+        private void loadTags()
+        {
+            TagsComboBox.DataSource = null;
+            MySqlDataReader rdr;
+            DataTable dt = new DataTable();
+
+            DS.mySqlConnect();
+
+            string SQLcommand = "";
+            if (nonactivecheckbox2.Checked)
+            {
+                SQLcommand = "SELECT CATEGORY_ID AS 'ID', CATEGORY_NAME AS 'NAME' FROM MASTER_CATEGORY";
+            }
+            else
+            {
+                SQLcommand = "SELECT CATEGORY_ID AS 'ID', CATEGORY_NAME AS 'NAME' FROM MASTER_CATEGORY WHERE CATEGORY_ACTIVE = 1";
+            }
+
+            using (rdr = DS.getData(SQLcommand))
+            {
+                if (rdr.HasRows)
+                {
+                    TagsComboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
+                    ErrorLabel2.Visible = false;
+                    dt.Load(rdr);
+
+                    //DataRow workRow = dt.NewRow();
+                    //workRow["ID"] = "0";
+                    //workRow["NAME"] = "SEMUA";
+                    //dt.Rows.Add(workRow);
+
+                    TagsComboBox.DataSource = dt;
+                    TagsComboBox.ValueMember = "ID";
+                    TagsComboBox.DisplayMember = "NAME";
+                    TagsComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    TagsComboBox.Visible = false;
+                    nonactivecheckbox2.Visible = false;
+                    ErrorLabel2.Visible = true;
+
+                }
+            }
+        }
+
         private void ReportStockInOutSearchForm_Load(object sender, EventArgs e)
         {
             ErrorLabel1.Visible = false;
             ErrorLabel2.Visible = false;
             gutil.reArrangeTabOrder(this);
 
-            LabelOptions1.Text = "Supplier";
-            SupplierNameCombobox.Visible = true;
+            //LabelOptions1.Text = "Supplier";
+            //SupplierNameCombobox.Visible = true;
             //LabelOptions2.Text = "Produk";
 
             switch (originModuleID)
             {
                 case globalConstants.REPORT_PURCHASE_RETURN:
-                    checkBox1.Enabled = true;
-                    SupplierNameCombobox.Enabled = true;
-                    nonactivecheckbox1.Enabled = true;
-                    checkBox2.Enabled = true;
-                    ProductcomboBox.Enabled = true;
-                    nonactivecheckbox2.Enabled = true;
+                    LabelOptions1.Text = "Supplier";
+                    checkBox1.Visible = true;
+                    SupplierNameCombobox.Visible = true;
+                    CustomercomboBox.Visible = false;
+                    nonactivecheckbox1.Visible = true;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     LoadSupplier();
                     loadProduct();
                     break;
                 case globalConstants.REPORT_SALES_RETURN:
                     LabelOptions1.Text = "Pelanggan";
-                    checkBox1.Enabled = true;
+                    checkBox1.Visible = true;
                     SupplierNameCombobox.Visible = false;
                     CustomercomboBox.Visible = true;
-                    nonactivecheckbox1.Enabled = true;
-                    checkBox2.Enabled = true;
-                    ProductcomboBox.Enabled = true;
-                    nonactivecheckbox2.Enabled = true;
+                    nonactivecheckbox1.Visible = true;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     LoadCustomer();
                     loadProduct();
                     break;
                 case globalConstants.REPORT_REQUEST_RETURN:
-                    checkBox1.Enabled = false;
-                    SupplierNameCombobox.Enabled = false;
-                    nonactivecheckbox1.Enabled = false;
-                    checkBox2.Enabled = true;
-                    ProductcomboBox.Enabled = true;
-                    nonactivecheckbox2.Enabled = true;
+                    checkBox1.Visible = false;
+                    nonactivecheckbox1.Visible = false;
+                    LabelOptions1.Visible = false;
+                    SupplierNameCombobox.Visible= false;
+                    CustomercomboBox.Visible = false;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     loadProduct();
                     break;
                 case globalConstants.REPORT_PRODUCT_MUTATION:
-                    checkBox1.Enabled = false;
-                    SupplierNameCombobox.Enabled = false;
-                    nonactivecheckbox1.Enabled = false;
-                    checkBox2.Enabled = true;
-                    ProductcomboBox.Enabled = true;
-                    nonactivecheckbox2.Enabled = true;
+                    checkBox1.Visible = false;
+                    nonactivecheckbox1.Visible = false;
+                    LabelOptions1.Visible = false;
+                    SupplierNameCombobox.Visible = false;
+                    CustomercomboBox.Visible = false;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     loadProduct();
                     break;
                 case globalConstants.REPORT_STOCK_DEVIATION:
-                    checkBox1.Enabled = false;
-                    SupplierNameCombobox.Enabled = false;
-                    nonactivecheckbox1.Enabled = false;
-                    checkBox2.Enabled = true;
-                    ProductcomboBox.Enabled = true;
-                    nonactivecheckbox2.Enabled = true;
+                    checkBox1.Visible = false;
+                    nonactivecheckbox1.Visible = false;
+                    LabelOptions1.Visible = false;
+                    SupplierNameCombobox.Visible = false;
+                    CustomercomboBox.Visible = false;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
                     loadProduct();
+                    break;
+                case globalConstants.REPORT_STOCK:
+                    checkBox1.Visible = false;
+                    nonactivecheckbox1.Visible = false;
+                    LabelOptions1.Visible = false;
+                    SupplierNameCombobox.Visible = false;
+                    CustomercomboBox.Visible = false;
+                    ProductcomboBox.Visible = false;
+                    checkBox2.Visible = true;
+                    ProductcomboBox.Visible = true;
+                    nonactivecheckbox2.Visible = true;
+                    LabelOptions2.Text = "Kategori";
+                    groupBox1.Text = "Kriteria Pencarian Stock Berdasar Kategori";
+                    label1.Visible = false;
+                    label2.Visible = false;
+                    datetoPicker.Visible = false;
+                    datefromPicker.Visible = false;
+                    loadTags();
                     break;
             }
          
@@ -218,50 +288,72 @@ namespace RoyalPetz_ADMIN
         {
             string dateFrom, dateTo;
             int cust_id = 0;
+            int supplier_id = 0;
+            int tags_id = 0;
             string prod_id = "";
             bool result;
             dateFrom = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(datefromPicker.Value));
             dateTo = String.Format(culture, "{0:yyyyMMdd}", Convert.ToDateTime(datetoPicker.Value));
             DS.mySqlConnect();
             string sqlCommandx = "";
-            string supplier = "";
-            string customer = "";
-            string produk = "";
-            if (ErrorLabel1.Visible == false && checkBox1.Checked == true)
+            string supplier = " ";
+            string customer = " ";
+            string produk = " ";
+            string tags = " ";
+            if (checkBox1.Checked == false)
             {
                 switch (originModuleID)
                 {
                     case globalConstants.REPORT_PURCHASE_RETURN:
+                        result = int.TryParse(SupplierNameCombobox.SelectedValue.ToString(), out supplier_id);
                         supplier = "AND RH.SUPPLIER_ID";
-                        supplier = " = " + SupplierNameCombobox.SelectedValue;
+                        supplier = " = " + supplier_id + " "; ;
                         break;
                     case globalConstants.REPORT_SALES_RETURN:
-                        customer = "AND RH.CUSTOMER_ID";
-                        customer = " = " + CustomercomboBox.SelectedValue;
+                        result = int.TryParse(CustomercomboBox.SelectedValue.ToString(), out cust_id);
+                        if ( cust_id > 0)
+                        {
+                            customer = "AND RH.CUSTOMER_ID";
+                            customer = " = " + cust_id + " ";
+                        }
                         break;
                 }
             }
-            if (ErrorLabel2.Visible == false && checkBox2.Checked == true)
+            if (checkBox2.Checked == false)
             {
                 switch (originModuleID)
                 {
-                    case globalConstants.REPORT_PURCHASE_RETURN:
-                        produk = "AND RD.PRODUCT_ID";
+                    case globalConstants.REPORT_STOCK:
+                        result = int.TryParse(TagsComboBox.SelectedValue.ToString(), out tags_id);
+                        if (tags_id > 0)
+                        {
+                            tags = "AND PC.CATEGORY_ID";
+                            tags = " = " + tags_id + " ";
+                        }
                         break;
-                    case globalConstants.REPORT_SALES_RETURN:
-                        produk = "AND RD.PRODUCT_ID";
-                        break;
-                    case globalConstants.REPORT_REQUEST_RETURN:
-                        produk = "AND RD.PRODUCT_ID";
-                        break;
-                    case globalConstants.REPORT_PRODUCT_MUTATION:
-                        produk = "AND MD.PRODUCT_ID";
-                        break;
-                    case globalConstants.REPORT_STOCK_DEVIATION:
+                    default :
                         produk = "AND PA.PRODUCT_ID";
+                        //switch (originModuleID)
+                        //{
+                        //    case globalConstants.REPORT_PURCHASE_RETURN:
+                        //        produk = "AND RD.PRODUCT_ID";
+                        //        break;
+                        //    case globalConstants.REPORT_SALES_RETURN:
+                        //        produk = "AND RD.PRODUCT_ID";
+                        //        break;
+                        //    case globalConstants.REPORT_REQUEST_RETURN:
+                        //        produk = "AND RD.PRODUCT_ID";
+                        //        break;
+                        //    case globalConstants.REPORT_PRODUCT_MUTATION:
+                        //        produk = "AND MD.PRODUCT_ID";
+                        //        break;
+                        //    case globalConstants.REPORT_STOCK_DEVIATION:
+                        //        produk = "AND PA.PRODUCT_ID";
+                        //        break;
+                        //}
+                        produk = produk + " = '" + ProductcomboBox.SelectedValue + "' ";
                         break;
                 }
-                produk = produk + " = '" + ProductcomboBox.SelectedValue + "' ";
             }
             switch (originModuleID)
             {
@@ -269,7 +361,7 @@ namespace RoyalPetz_ADMIN
                     sqlCommandx = "SELECT RH.RP_ID AS 'ID', MS.SUPPLIER_FULL_NAME AS 'SUPPLIER', RH.RP_DATE AS 'TANGGAL', RH.RP_TOTAL AS 'TOTAL', IF(RH.RP_PROCESSED=1,'SUDAH DIPROSES','BELUM DIPROSES') AS 'STATUS', " +
                                     "MP.PRODUCT_NAME AS 'PRODUK', RD.PRODUCT_BASEPRICE AS 'HARGA', RD.PRODUCT_QTY AS 'QTY', RD.RP_DESCRIPTION AS 'DESKRIPSI', RD.RP_SUBTOTAL AS 'SUBTOTAL' " +
                                     "FROM RETURN_PURCHASE_HEADER RH, MASTER_SUPPLIER MS, RETURN_PURCHASE_DETAIL RD, MASTER_PRODUCT MP " +
-                                    "WHERE RH.SUPPLIER_ID = MS.SUPPLIER_ID AND RH.RP_ID = RD.RP_ID AND RD.PRODUCT_ID = MP.PRODUCT_ID " + produk + supplier + " " +
+                                    "WHERE RH.SUPPLIER_ID = MS.SUPPLIER_ID AND RH.RP_ID = RD.RP_ID AND RD.PRODUCT_ID = MP.PRODUCT_ID " + produk + supplier + 
                                     "AND DATE_FORMAT(RH.RP_DATE, '%Y%m%d') >= '" + dateFrom + "' AND DATE_FORMAT(RH.RP_DATE, '%Y%m%d') <= '" + dateTo + "' " +
                                     "GROUP BY RD.ID";
                     DS.writeXML(sqlCommandx, globalConstants.PurchaseReturnXML);
@@ -277,11 +369,18 @@ namespace RoyalPetz_ADMIN
                     displayedForm1.ShowDialog(this);
                     break;
                 case globalConstants.REPORT_SALES_RETURN:
-                    sqlCommandx = "SELECT RH.RS_INVOICE AS 'INVOICE', RH.SALES_INVOICE AS 'NOTAJUAL', MC.CUSTOMER_FULL_NAME 'CUSTOMER', RH.RS_DATETIME AS 'TANGGAL', " +
+                    sqlCommandx = "SELECT RH.RS_INVOICE AS 'INVOICE', RH.SALES_INVOICE AS 'NOTAJUAL', MC.CUSTOMER_FULL_NAME AS 'CUSTOMER', RH.RS_DATETIME AS 'TANGGAL', " +
                                     "RH.RS_TOTAL AS 'TOTAL', MP.PRODUCT_NAME AS 'PRODUK', RD.PRODUCT_SALES_PRICE AS 'HARGAJUAL', RD.PRODUCT_SALES_QTY AS 'JMLJUAL', " +
                                     "RD.PRODUCT_RETURN_QTY AS 'JMLRETUR', RD.RS_DESCRIPTION AS 'DESKRIPSI', RD.RS_SUBTOTAL AS 'SUBTOTAL' " +
                                     "FROM RETURN_SALES_HEADER RH, MASTER_CUSTOMER MC, RETURN_SALES_DETAIL RD, MASTER_PRODUCT MP " +
-                                    "WHERE RH.CUSTOMER_ID = MC.CUSTOMER_ID AND RH.RS_INVOICE = RD.RS_INVOICE AND RD.PRODUCT_ID = MP.PRODUCT_ID " + produk + customer + " " +
+                                    "WHERE RH.CUSTOMER_ID = MC.CUSTOMER_ID AND RH.RS_INVOICE = RD.RS_INVOICE AND RD.PRODUCT_ID = MP.PRODUCT_ID " + produk + customer +
+                                    "AND DATE_FORMAT(RH.RS_DATETIME, '%Y%m%d') >= '" + dateFrom + "' AND DATE_FORMAT(RH.RS_DATETIME, '%Y%m%d') <= '" + dateTo + "' " +
+                                    "GROUP BY RD.ID UNION " +
+                                    "SELECT RH.RS_INVOICE AS 'INVOICE', RH.SALES_INVOICE AS 'NOTAJUAL', 'P-UMUM' AS 'CUSTOMER', RH.RS_DATETIME AS 'TANGGAL', " +
+                                    "RH.RS_TOTAL AS 'TOTAL', MP.PRODUCT_NAME AS 'PRODUK', RD.PRODUCT_SALES_PRICE AS 'HARGAJUAL', RD.PRODUCT_SALES_QTY AS 'JMLJUAL', " +
+                                    "RD.PRODUCT_RETURN_QTY AS 'JMLRETUR', RD.RS_DESCRIPTION AS 'DESKRIPSI', RD.RS_SUBTOTAL AS 'SUBTOTAL' " +
+                                    "FROM RETURN_SALES_HEADER RH, RETURN_SALES_DETAIL RD, MASTER_PRODUCT MP " +
+                                    "WHERE RH.CUSTOMER_ID = 0 AND RH.RS_INVOICE = RD.RS_INVOICE AND RD.PRODUCT_ID = MP.PRODUCT_ID " + produk + 
                                     "AND DATE_FORMAT(RH.RS_DATETIME, '%Y%m%d') >= '" + dateFrom + "' AND DATE_FORMAT(RH.RS_DATETIME, '%Y%m%d') <= '" + dateTo + "' " +
                                     "GROUP BY RD.ID";
                     DS.writeXML(sqlCommandx, globalConstants.SalesReturnXML);
@@ -324,28 +423,68 @@ namespace RoyalPetz_ADMIN
                     ReportStockDeviationForm displayedForm5 = new ReportStockDeviationForm();
                     displayedForm5.ShowDialog(this);
                     break;
+                case globalConstants.REPORT_STOCK:
+                    sqlCommandx = "SELECT MP.PRODUCT_NAME, MP.PRODUCT_STOCK_QTY, MU.UNIT_NAME, MC.CATEGORY_NAME " + 
+                                    "FROM MASTER_PRODUCT MP, PRODUCT_CATEGORY PC, MASTER_CATEGORY MC, MASTER_UNIT MU " +
+                                    "WHERE MP.PRODUCT_IS_SERVICE = 0 AND MP.PRODUCT_ACTIVE = 1 AND MP.UNIT_ID = MU.UNIT_ID " +
+                                    "AND MP.PRODUCT_ID = PC.PRODUCT_ID AND PC.CATEGORY_ID = MC.CATEGORY_ID" + tags;
+                    DS.writeXML(sqlCommandx, globalConstants.StockXML);
+                    ReportStockForm displayedForm6 = new ReportStockForm();
+                    displayedForm6.ShowDialog(this);
+                    break;
             }
         }
 
         private void nonactivecheckbox1_CheckedChanged(object sender, EventArgs e)
         {
-            LoadSupplier();
+            if (originModuleID == globalConstants.REPORT_SALES_RETURN)
+            {
+                LoadCustomer();
+            }
+            else
+            {
+                LoadSupplier();
+            }
         }
 
         private void nonactivecheckbox2_CheckedChanged(object sender, EventArgs e)
         {
-            loadProduct();
+            if (originModuleID == globalConstants.REPORT_STOCK)
+            {
+                loadTags();
+            } else
+            {
+                loadProduct();
+            }
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox1.Checked == false)
             {
-                SupplierNameCombobox.Enabled = true;
+                //CustomercomboBox.Enabled = true;
+                //SupplierNameCombobox.Enabled = true;
+                if (originModuleID == globalConstants.REPORT_SALES_RETURN)
+                {
+                    CustomercomboBox.Enabled = true;
+                }
+                else
+                {
+                    SupplierNameCombobox.Enabled = true;
+                }
             }
             else
             {
-                SupplierNameCombobox.Enabled = false;
+                //CustomercomboBox.Enabled = true;
+                //SupplierNameCombobox.Enabled = true;
+                if (originModuleID == globalConstants.REPORT_SALES_RETURN)
+                {
+                    CustomercomboBox.Enabled = false;
+                }
+                else
+                {
+                    SupplierNameCombobox.Enabled = false;
+                }
             }         
         }
 
@@ -353,11 +492,25 @@ namespace RoyalPetz_ADMIN
         {
             if (checkBox2.Checked == false)
             {
-                ProductcomboBox.Enabled = true;
+                if (originModuleID == globalConstants.REPORT_STOCK)
+                {
+                    TagsComboBox.Enabled = true;
+                }
+                else
+                {
+                    ProductcomboBox.Enabled = true;
+                }                
             }
             else
             {
-                ProductcomboBox.Enabled = false;
+                if (originModuleID == globalConstants.REPORT_STOCK)
+                {
+                    TagsComboBox.Enabled = false;
+                }
+                else
+                {
+                    ProductcomboBox.Enabled = false;
+                }                
             }
         }
 
