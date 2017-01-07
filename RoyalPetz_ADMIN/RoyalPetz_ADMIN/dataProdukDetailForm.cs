@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Globalization;
 
 using System.Text.RegularExpressions;
 using Hotkeys;
@@ -23,6 +24,7 @@ namespace RoyalPetz_ADMIN
 
         private int originModuleID = 0;
         private int selectedInternalProductID = 0;
+        private int selectedProductExpiryID = 0;
         private string productID = "";
         private int selectedUnitID;
         private string photoFileName = "";
@@ -40,10 +42,12 @@ namespace RoyalPetz_ADMIN
         private stokPecahBarangForm parentForm;
 
         dataKategoriProdukForm selectKategoriForm = null;
+        SupplierHistoryForm HistoryForm = null;
         dataSatuanForm selectSatuanForm = null;
 
         private Hotkeys.GlobalHotkey ghk_UP;
         private Hotkeys.GlobalHotkey ghk_DOWN;
+        private CultureInfo culture = new CultureInfo("id-ID");
 
         public dataProdukDetailForm()
         {
@@ -140,10 +144,21 @@ namespace RoyalPetz_ADMIN
 
         public dataProdukDetailForm(int moduleID, int productID)
         {
+            string selectedProductID = "";
             InitializeComponent();
 
             originModuleID = moduleID;
-            selectedInternalProductID = productID;
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                selectedProductExpiryID = productID;
+                selectedProductID = DS.getDataSingleValue("SELECT PRODUCT_ID FROM PRODUCT_EXPIRY WHERE ID = "+productID).ToString();
+                selectedInternalProductID = Convert.ToInt32(DS.getDataSingleValue("SELECT ID FROM MASTER_PRODUCT WHERE PRODUCT_ID = '" + selectedProductID + "'"));
+            }
+            else
+            { 
+                selectedInternalProductID = productID;
+            }
         }
 
         private void stokAwalTextBox_TextChanged(object sender, EventArgs e)
@@ -365,8 +380,12 @@ namespace RoyalPetz_ADMIN
             DataTable dt = new DataTable();
             string productShelves = "";
             string fileName = "";
+            double productExpiryAmount = 0;
 
             DS.mySqlConnect();
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+                productExpiryAmount = Convert.ToDouble(DS.getDataSingleValue("SELECT PRODUCT_AMOUNT FROM PRODUCT_EXPIRY WHERE ID = " + selectedProductExpiryID));
 
             // LOAD PRODUCT DATA
             using (rdr = DS.getData("SELECT * FROM MASTER_PRODUCT WHERE ID =  " + selectedInternalProductID))
@@ -383,8 +402,16 @@ namespace RoyalPetz_ADMIN
                         hargaEcerTextBox.Text = rdr.GetString("PRODUCT_RETAIL_PRICE");
                         hargaPartaiTextBox.Text = rdr.GetString("PRODUCT_BULK_PRICE");
                         hargaGrosirTextBox.Text = rdr.GetString("PRODUCT_WHOLESALE_PRICE"); ;
-                        merkTextBox.Text = rdr.GetString("PRODUCT_BRAND");
-                        stokAwalTextBox.Text = rdr.GetString("PRODUCT_STOCK_QTY");
+                        SupplierTextBox.Text = rdr.GetString("PRODUCT_BRAND");
+
+                        if (globalFeatureList.EXPIRY_MODULE == 1)
+                        {
+                            stokAwalTextBox.Text = productExpiryAmount.ToString();
+                        }
+                        else
+                        {
+                            stokAwalTextBox.Text = rdr.GetString("PRODUCT_STOCK_QTY");
+                        }
                         limitStokTextBox.Text = rdr.GetString("PRODUCT_LIMIT_STOCK");
 
                         productShelves = rdr.GetString("PRODUCT_SHELVES");
@@ -627,7 +654,7 @@ namespace RoyalPetz_ADMIN
             string produkHargaPartai = hargaPartaiTextBox.Text;
             string produkHargaGrosir = hargaGrosirTextBox.Text;
 
-            string produkBrand = merkTextBox.Text.Trim();
+            string produkBrand = SupplierTextBox.Text.Trim();
             if (produkBrand.Equals(""))
                 produkBrand = " ";
             else
@@ -742,7 +769,30 @@ namespace RoyalPetz_ADMIN
                                 throw internalEX;
                         }
                         break;
-                    
+
+                        if (globalFeatureList.EXPIRY_MODULE == 1)
+                        {
+                            // INSERT TO PRODUCT_EXPIRY
+                            DateTime productExpiryDateValue = expDatePicker.Value;
+                            string productExpiryDate = String.Format(culture, "{0:dd-MM-yyyy}", productExpiryDateValue);
+                            int lotID = 0;
+                            string productID = kodeProdukTextBox.Text;
+                            expiryModuleUtil expUtil = new expiryModuleUtil();
+
+                            // CHECK WHETHER THE PRODUCT WITH SAME EXPIRY DATE EXIST
+                            lotID = expUtil.getLotIDBasedOnExpiryDate(productExpiryDateValue, productID);
+
+                            if (lotID == 0)
+                                //sqlCommand = "INSERT INTO PRODUCT_EXPIRY (PRODUCT_ID, PRODUCT_EXPIRY_DATE, PRODUCT_AMOUNT, PR_INVOICE) VALUES ( '" + detailGridView.Rows[i].Cells["productID"].Value.ToString() + "', STR_TO_DATE('" + productExpiryDate + "', '%d-%m-%Y'), " + Convert.ToDouble(detailGridView.Rows[i].Cells["qtyReceived"].Value) + ", '" + PRInvoice + "')";
+                                sqlCommand = "INSERT INTO PRODUCT_EXPIRY (PRODUCT_ID, PRODUCT_EXPIRY_DATE, PRODUCT_AMOUNT) VALUES ( '" + productID + "', STR_TO_DATE('" + productExpiryDate + "', '%d-%m-%Y'), " + produkQty + ")";
+                            else
+                                sqlCommand = "UPDATE PRODUCT_EXPIRY SET PRODUCT_AMOUNT = PRODUCT_AMOUNT + " + produkQty + " WHERE ID = " + lotID;
+
+                            gUtil.saveSystemDebugLog(globalConstants.MENU_PENERIMAAN_BARANG, "INSERT TO PRODUCT EXPIRY [" + productID + "]");
+                            if (!DS.executeNonQueryCommand(sqlCommand, ref internalEX))
+                                throw internalEX;
+                        }
+
                 }
 
                 if (!selectedPhoto.Equals("PRODUCT_PHOTO/" + produkPhoto) && !selectedPhoto.Equals(""))// && result == true)
@@ -978,12 +1028,46 @@ namespace RoyalPetz_ADMIN
             }
         }
 
+        private void LoadLastSupplier()
+        {
+            string sqlCommand;
+            MySqlDataReader rdr;
+            string supplierName = "";
+            DS.mySqlConnect();
+
+            sqlCommand = "SELECT IFNULL(M.SUPPLIER_FULL_NAME, '') AS 'NAMA SUPPLIER', H.LAST_SUPPLY AS TANGGAL FROM MASTER_SUPPLIER M, SUPPLIER_HISTORY H WHERE H.PRODUCT_ID = '" + kodeProdukTextBox.Text + "' AND M.SUPPLIER_ID = H.SUPPLIER_ID ORDER BY TANGGAL DESC LIMIT 1";
+    
+            using (rdr = DS.getData(sqlCommand))
+            {
+                if (rdr.HasRows)
+                {
+                    rdr.Read();
+                    supplierName = rdr.GetString("NAMA SUPPLIER");
+                }
+            }
+
+            if (supplierName.Equals(""))
+            {
+                SupplierHistoryButton.Enabled = false;
+            }
+            else
+            {
+                SupplierTextBox.Text = supplierName;
+            }
+        }
+
         private void dataProdukDetailForm_Load(object sender, EventArgs e)
         {
             int userAccessOption = 0;
             Button[] arrButton = new Button[2];
 
             errorLabel.Text = "";
+
+            if (globalFeatureList.EXPIRY_MODULE == 1)
+            {
+                expLabel.Visible = true;
+                expDatePicker.Visible = true;
+            }
 
             isLoading = true;
             loadProdukData();
@@ -993,6 +1077,8 @@ namespace RoyalPetz_ADMIN
             loadProductCategoryData();
 
             loadKategoriIDInformation();
+
+            LoadLastSupplier();
 
             switch (originModuleID)
             {
@@ -1022,6 +1108,12 @@ namespace RoyalPetz_ADMIN
                 if (userAccessOption != 4 && userAccessOption != 6)
                 {
                     gUtil.setReadOnlyAllControls(this);
+                }
+
+                if (globalFeatureList.EXPIRY_MODULE == 1)
+                {
+                    expLabel.Visible = false;
+                    expDatePicker.Visible = false;
                 }
             }
 
@@ -1124,6 +1216,16 @@ namespace RoyalPetz_ADMIN
             {
                 searchUnitButton.PerformClick();
             }
+        }
+
+        private void SupplierHistoryButton_Click(object sender, EventArgs e)
+        {
+            //TAMPILKAN LIST OF SUPPLIER HISTORY FORM
+            if (null == HistoryForm || HistoryForm.IsDisposed)
+                HistoryForm = new SupplierHistoryForm(kodeProdukTextBox.Text);
+
+            HistoryForm.Show();
+            HistoryForm.WindowState = FormWindowState.Normal;
         }
     }
 }

@@ -147,6 +147,7 @@ namespace RoyalPetz_ADMIN
         public const int MENU_MODULE_MESSAGING = 50;
         public const int MENU_TAX_MODULE = 51;
         public const int MENU_USB_UTILITY_MODULE = 52;
+        public const int MENU_PRODUCT_EXPIRY = 53;
 
 
         // CONSTANTS FOR USER CHANGE LOG
@@ -182,6 +183,8 @@ namespace RoyalPetz_ADMIN
         public const int REPORT_PRODUCT_MUTATION = 723;
         public const int REPORT_STOCK_DEVIATION = 724;
         public const int REPORT_STOCK = 725;
+        public const int REPORT_STOCK_EXPIRY = 726;
+        public const int REPORT_STOCK_AGING = 727;
 
         public const int REPORT_DEBT_PAYMENT = 731;
         public const int REPORT_CREDIT_PAYMENT = 732;
@@ -191,6 +194,8 @@ namespace RoyalPetz_ADMIN
         public const int REPORT_FINANCE_OUT = 742;
         public const int REPORT_MARGIN = 743;
         public const int REPORT_MONTHLY_BALANCE = 744;
+
+        public const int VIEW_SUPPLIER = 800;
 
         //XML file
         public const string AccountXML = "MasterAccount.xml";
@@ -232,6 +237,8 @@ namespace RoyalPetz_ADMIN
         public const string SalesReturnXML = "SalesReturn.xml";
         public const string PurchaseReturnXML = "PurchaseReturn.xml";
         public const string RequestReturnXML = "RequestReturn.xml";
+        public const string StockExpiryXML = "StockExpiry.xml";
+        public const string StockAgingXML = "StockAging.xml";
 
         public const string DebtUnpaidXML = "DebtUnpaid.xml";
         public const string DebtPaidXML = "DebtPaid.xml";

@@ -163,7 +163,6 @@ namespace RoyalPetz_ADMIN
                     noInvoiceParam = MySqlHelper.EscapeString(noInvoiceTextBox.Text);
                     sqlCommand = sqlCommand + "AND H.SALES_INVOICE like '%" + noInvoiceParam + "%' ";
                 }
-
                 //sqlCommand = sqlCommand + "AND SALES_PAID = 0";
             }
 

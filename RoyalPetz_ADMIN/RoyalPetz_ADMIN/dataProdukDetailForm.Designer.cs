@@ -48,7 +48,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.merkTextBox = new System.Windows.Forms.TextBox();
+            this.SupplierTextBox = new System.Windows.Forms.TextBox();
             this.noRakKolomTextBox = new System.Windows.Forms.MaskedTextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.searchUnitButton = new System.Windows.Forms.Button();
@@ -75,6 +75,9 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
+            this.expDatePicker = new System.Windows.Forms.DateTimePicker();
+            this.expLabel = new System.Windows.Forms.Label();
+            this.SupplierHistoryButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -279,9 +282,9 @@
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label6.Location = new System.Drawing.Point(6, 201);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(56, 18);
+            this.label6.Size = new System.Drawing.Size(93, 18);
             this.label6.TabIndex = 22;
-            this.label6.Text = "MERK";
+            this.label6.Text = "SUPPLIER";
             // 
             // label3
             // 
@@ -307,22 +310,24 @@
             this.label5.TabIndex = 20;
             this.label5.Text = "KATEGORI";
             // 
-            // merkTextBox
+            // SupplierTextBox
             // 
-            this.merkTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.merkTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.merkTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.merkTextBox.Location = new System.Drawing.Point(133, 198);
-            this.merkTextBox.MaxLength = 50;
-            this.merkTextBox.Name = "merkTextBox";
-            this.merkTextBox.Size = new System.Drawing.Size(228, 26);
-            this.merkTextBox.TabIndex = 17;
+            this.SupplierTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.SupplierTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.SupplierTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.SupplierTextBox.Enabled = false;
+            this.SupplierTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SupplierTextBox.Location = new System.Drawing.Point(133, 198);
+            this.SupplierTextBox.MaxLength = 50;
+            this.SupplierTextBox.Name = "SupplierTextBox";
+            this.SupplierTextBox.Size = new System.Drawing.Size(286, 26);
+            this.SupplierTextBox.TabIndex = 17;
             // 
             // noRakKolomTextBox
             // 
             this.noRakKolomTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.noRakKolomTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noRakKolomTextBox.Location = new System.Drawing.Point(530, 198);
+            this.noRakKolomTextBox.Location = new System.Drawing.Point(707, 198);
             this.noRakKolomTextBox.Mask = "00";
             this.noRakKolomTextBox.Name = "noRakKolomTextBox";
             this.noRakKolomTextBox.Size = new System.Drawing.Size(33, 26);
@@ -335,7 +340,7 @@
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label19.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label19.Location = new System.Drawing.Point(376, 201);
+            this.label19.Location = new System.Drawing.Point(553, 201);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(118, 18);
             this.label19.TabIndex = 21;
@@ -369,7 +374,7 @@
             this.noRakBarisTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.noRakBarisTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.noRakBarisTextBox.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.noRakBarisTextBox.Location = new System.Drawing.Point(490, 198);
+            this.noRakBarisTextBox.Location = new System.Drawing.Point(667, 198);
             this.noRakBarisTextBox.MaxLength = 2;
             this.noRakBarisTextBox.Name = "noRakBarisTextBox";
             this.noRakBarisTextBox.Size = new System.Drawing.Size(34, 26);
@@ -499,10 +504,11 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.SupplierHistoryButton);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.barcodeTextBox);
             this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.merkTextBox);
+            this.groupBox1.Controls.Add(this.SupplierTextBox);
             this.groupBox1.Controls.Add(this.produkKategoriTextBox);
             this.groupBox1.Controls.Add(this.searchUnitButton);
             this.groupBox1.Controls.Add(this.produkDescTextBox);
@@ -644,12 +650,48 @@
             this.label25.TabIndex = 76;
             this.label25.Text = "HARGA JUAL PARTAI";
             // 
+            // expDatePicker
+            // 
+            this.expDatePicker.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.expDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.expDatePicker.Location = new System.Drawing.Point(596, 410);
+            this.expDatePicker.Name = "expDatePicker";
+            this.expDatePicker.Size = new System.Drawing.Size(144, 27);
+            this.expDatePicker.TabIndex = 78;
+            this.expDatePicker.Visible = false;
+            // 
+            // expLabel
+            // 
+            this.expLabel.AutoSize = true;
+            this.expLabel.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.expLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.expLabel.Location = new System.Drawing.Point(542, 413);
+            this.expLabel.Name = "expLabel";
+            this.expLabel.Size = new System.Drawing.Size(59, 18);
+            this.expLabel.TabIndex = 79;
+            this.expLabel.Text = "EXP : ";
+            this.expLabel.Visible = false;
+            // 
+            // SupplierHistoryButton
+            // 
+            this.SupplierHistoryButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.SupplierHistoryButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("SupplierHistoryButton.BackgroundImage")));
+            this.SupplierHistoryButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.SupplierHistoryButton.Location = new System.Drawing.Point(425, 198);
+            this.SupplierHistoryButton.Name = "SupplierHistoryButton";
+            this.SupplierHistoryButton.Size = new System.Drawing.Size(26, 26);
+            this.SupplierHistoryButton.TabIndex = 81;
+            this.SupplierHistoryButton.UseVisualStyleBackColor = true;
+            this.SupplierHistoryButton.Click += new System.EventHandler(this.SupplierHistoryButton_Click);
+            // 
             // dataProdukDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
             this.ClientSize = new System.Drawing.Size(756, 609);
+            this.Controls.Add(this.expDatePicker);
+            this.Controls.Add(this.expLabel);
             this.Controls.Add(this.nonAktifCheckbox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label15);
@@ -698,7 +740,7 @@
         private System.Windows.Forms.Button searchKategoriButton;
         private System.Windows.Forms.TextBox unitTextBox;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox merkTextBox;
+        private System.Windows.Forms.TextBox SupplierTextBox;
         private System.Windows.Forms.TextBox hargaEcerTextBox;
         private System.Windows.Forms.TextBox hppTextBox;
         private System.Windows.Forms.TextBox namaProdukTextBox;
@@ -730,5 +772,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox barcodeTextBox;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.DateTimePicker expDatePicker;
+        private System.Windows.Forms.Label expLabel;
+        private System.Windows.Forms.Button SupplierHistoryButton;
     }
 }

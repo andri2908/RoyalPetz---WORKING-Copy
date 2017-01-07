@@ -20,6 +20,7 @@ namespace RoyalPetz_ADMIN
         private int selectedProductID = 0;
         private string selectedkodeProduct = "";
         private string selectedProductName = "";
+        private int selectedRowIndex = 0;
 
         private stokPecahBarangForm parentForm;
         private cashierForm parentCashierForm;
@@ -154,6 +155,23 @@ namespace RoyalPetz_ADMIN
             newButton.Visible = false;
         }
 
+        public dataProdukForm(int moduleID, cashierForm thisParentForm, string productID = "", string productName = "", int rowIndex = -1)
+        {
+            InitializeComponent();
+
+            originModuleID = moduleID;
+            parentCashierForm = thisParentForm;
+
+            // accessed from other form other than Master -> Data Produk
+            // it means that this form is only displayed for browsing / searching purpose only
+            newButton.Visible = false;
+
+            namaProdukTextBox.Text = productName;
+            textBox1.Text = productID;
+            selectedRowIndex = rowIndex;
+        }
+
+
         private void captureAll(Keys key)
         {
             switch (key)
@@ -226,7 +244,7 @@ namespace RoyalPetz_ADMIN
                     break;
 
                 case globalConstants.CASHIER_MODULE:
-                    parentCashierForm.addNewRowFromBarcode(selectedkodeProduct, selectedProductName);
+                    parentCashierForm.addNewRowFromBarcode(selectedkodeProduct, selectedProductName, selectedRowIndex);
                     this.Close();
                     break;
 
@@ -323,6 +341,10 @@ namespace RoyalPetz_ADMIN
             else if (originModuleID == globalConstants.RETUR_PEMBELIAN)
             {
                 sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_IS_SERVICE = 0 AND (PRODUCT_STOCK_QTY - PRODUCT_LIMIT_STOCK > 0) ORDER BY PRODUCT_NAME ASC";
+            }
+            else if (originModuleID == globalConstants.PENERIMAAN_BARANG)
+            {
+                sqlCommand = "SELECT ID, PRODUCT_ID AS 'PRODUK ID', PRODUCT_NAME AS 'NAMA PRODUK', PRODUCT_DESCRIPTION AS 'DESKRIPSI PRODUK' FROM MASTER_PRODUCT WHERE PRODUCT_ACTIVE = 1 AND PRODUCT_ID LIKE '%" + kodeProductParam + "%' AND PRODUCT_NAME LIKE '%" + namaProductParam + "%'";
             }
             else
             {

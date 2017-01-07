@@ -100,19 +100,19 @@ namespace RoyalPetz_ADMIN
 
             DS.mySqlConnect();
 
-            using (rdr = DS.getData("SELECT * FROM MASTER_SUPPLIER WHERE SUPPLIER_ID =  " + selectedSupplierID))
+            using (rdr = DS.getData("SELECT IFNULL(SUPPLIER_FULL_NAME,'') AS NAME,IFNULL(SUPPLIER_ADDRESS1,'') AS ADDRESS1,IFNULL(SUPPLIER_ADDRESS2,'') AS ADDRESS2,IFNULL(SUPPLIER_ADDRESS_CITY,'') AS CITY,IFNULL(SUPPLIER_PHONE, '') AS PHONE, IFNULL(SUPPLIER_FAX, '') AS FAX,IFNULL(SUPPLIER_EMAIL, '') AS EMAIL,SUPPLIER_ACTIVE FROM MASTER_SUPPLIER WHERE SUPPLIER_ID =  " + selectedSupplierID))
             {
                 if (rdr.HasRows)
                 {
                     while (rdr.Read())
                     {
-                        supplierNameTextBox.Text = rdr.GetString("SUPPLIER_FULL_NAME");
-                        supplierAddress1TextBox.Text = rdr.GetString("SUPPLIER_ADDRESS1");
-                        supplierAddress2TextBox.Text = rdr.GetString("SUPPLIER_ADDRESS2");
-                        supplierAddressCityTextBox.Text = rdr.GetString("SUPPLIER_ADDRESS_CITY");
-                        supplierPhoneTextBox.Text = rdr.GetString("SUPPLIER_PHONE");
-                        supplierFaxTextBox.Text = rdr.GetString("SUPPLIER_FAX");
-                        supplierEmailTextBox.Text = rdr.GetString("SUPPLIER_EMAIL");
+                        supplierNameTextBox.Text = rdr.GetString("NAME");
+                        supplierAddress1TextBox.Text = rdr.GetString("ADDRESS1");
+                        supplierAddress2TextBox.Text = rdr.GetString("ADDRESS2");
+                        supplierAddressCityTextBox.Text = rdr.GetString("CITY");
+                        supplierPhoneTextBox.Text = rdr.GetString("PHONE");
+                        supplierFaxTextBox.Text = rdr.GetString("FAX");
+                        supplierEmailTextBox.Text = rdr.GetString("EMAIL");
 
                         if (rdr.GetString("SUPPLIER_ACTIVE").Equals("1"))
                             nonAktifCheckbox.Checked = false;
@@ -126,6 +126,33 @@ namespace RoyalPetz_ADMIN
         private void dataSupplierDetailForm_Load(object sender, EventArgs e)
         {
             Button[] arrButton = new Button[2];
+
+            errorLabel.Text = "";
+            switch (originModuleID)
+            {
+                case globalConstants.NEW_SUPPLIER:
+                    options = gUtil.INS;
+                    nonAktifCheckbox.Enabled = false;
+                    break;
+                case globalConstants.EDIT_SUPPLIER:
+                    options = gUtil.UPD;
+                    nonAktifCheckbox.Enabled = true;
+                    loadSupplierData();
+                    break;
+                case globalConstants.VIEW_SUPPLIER:
+                    loadSupplierData();
+                    supplierNameTextBox.Enabled = false;
+                    supplierAddress1TextBox.Enabled = false;
+                    supplierAddress2TextBox.Enabled = false;
+                    supplierAddressCityTextBox.Enabled = false;
+                    supplierEmailTextBox.Enabled = false;
+                    supplierFaxTextBox.Enabled = false;
+                    supplierPhoneTextBox.Enabled = false;
+                    nonAktifCheckbox.Enabled = false;
+                    saveButton.Enabled = false;
+                    resetbutton.Enabled = false;
+                    break;
+            }
 
             arrButton[0] = saveButton;
             arrButton[1] = resetbutton;
@@ -326,19 +353,6 @@ namespace RoyalPetz_ADMIN
         {
             /*if (selectedSupplierID != 0)  //old code
                 loadSupplierData(); */
-            errorLabel.Text = "";
-            switch (originModuleID)
-            {
-                case globalConstants.NEW_SUPPLIER:
-                    options = gUtil.INS;
-                    nonAktifCheckbox.Enabled = false;
-                    break;
-                case globalConstants.EDIT_SUPPLIER:
-                    options = gUtil.UPD;
-                    nonAktifCheckbox.Enabled = true;
-                    loadSupplierData();
-                    break;
-            }
             registerGlobalHotkey();
         }
 
